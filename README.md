@@ -27,8 +27,10 @@ QQ: 546025324
       - `cd sciter-sdk/bin.osx/`
       - `export DYLD_LIBRARY_PATH=$PWD`
 
-Ubuntu
+#### Ubuntu
+```
 apt-get install build-essential pkg-config
 apt-get install gnome-devel gnome-devel-docs --fix-missing
 apt-get install glade libglade2-dev
 apt-get install glade-gnome
+```
