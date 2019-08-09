@@ -1,0 +1,43 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+<div>
+    Get Data From MySQL:
+    <button id="get_list_bun" data-limit="5">Get List</button>
+    <br/>
+</div>
+
+<div id="data_json"> </div>
+<br />
+<div id="data_area">
+
+</div>
+<script type="text/tiscript">
+                $(#get_list_bun).on("click", function() {
+                    
+                    var limit = this.attributes["data-limit"];
+            
+                    var data = view.get_list(limit,"我是汉字","abcdefg",100);
+            
+                    var result = "";
+                    result += "limit -> " + limit + "<br />";
+                    result += "data.length -> " + data.length + "<br />";
+
+                    for (var i=0;i<data.length;i++) {
+                        result += " i: " + i;
+                        result += " user_id: " + data[i].user_id;
+                        result += " company_name: " + data[i].user_company;
+                        result += "<br />";
+                    }
+                    
+                    result += "读取完成";
+            
+                    $(#data_area).html = result;
+                    $(#data_json).html = JSON.stringify(data);
+                });
+
+</script>
+</body>
+</html>

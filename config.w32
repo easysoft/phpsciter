@@ -1,0 +1,34 @@
+// $Id$
+// vim:ft=javascript
+
+ARG_ENABLE("phpsciter", "enable phpsciter support", "yes");
+
+if (PHP_PHPSCITER == "yes") {
+
+    if (CHECK_HEADER_ADD_INCLUDE("sciter-x-api.h", "CFLAGS_SEASLOG", configure_module_dirname + "\\include;" + PHP_EXTRA_INCLUDES)) {
+
+        phpsciter_source_file="callback.cpp \
+            tool.cpp \
+            value.cpp"
+
+        phpsciter_lib_file="php-window.cpp"
+
+        EXTENSION("phpsciter", "phpsciter.cpp");
+
+        ADD_SOURCES(configure_module_dirname + "\\src", phpsciter_source_file, "phpsciter");
+        ADD_SOURCES(configure_module_dirname + "\\lib", phpsciter_lib_file, "phpsciter");
+
+        ADD_FLAG("CFLAGS_PHPSCITER", " /I " + configure_module_dirname + "\\");
+        ADD_FLAG("CFLAGS_PHPSCITER", " /EHsc /I " + configure_module_dirname + "\\include");
+
+        ADD_FLAG("CFLAG_ENCHANT", "/D _WIN32");
+	    AC_DEFINE("HAVE_PHPSCITER", 1, "Have phpsciter Support");
+
+    } else {
+        WARNING("phpsciter not enabled, headers not found");
+    }
+
+}
+
+
+//CHECK_LIB("glib-2.0.lib;gtk-win32-2.0.lib;gdk-win32-2.0.lib;gobject-2.0.lib;gdk_pixbuf-2.0.lib;gthread-2.0.lib;gmodule-2.0.lib;pango-1.0.lib;intl.lib;", "phpsciter", PHP_PHPSCITER)
