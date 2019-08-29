@@ -130,13 +130,13 @@ build_script:
                         7z x c:\build-cache\$bname -oc:\build-cache
                         move c:\build-cache\$dname0 c:\build-cache\$dname1
                 }
-                cd c:\projects\seaslog
+                cd c:\projects\phpsciter
                 $env:PATH = 'c:\build-cache\' + $dname1 + ';' + $env:PATH
                 #echo "@echo off" | Out-File -Encoding "ASCII" task.bat
                 #echo "" | Out-File -Encoding "ASCII" -Append task.bat
                 echo "" | Out-File -Encoding "ASCII" task.bat
                 echo "call phpize 2>&1" | Out-File -Encoding "ASCII" -Append task.bat
-                $conf_cmd = 'call configure --enable-seaslog --enable-debug-pack 2>&1'
+                $conf_cmd = 'call configure --enable-phpsciter --enable-debug-pack 2>&1'
                 echo $conf_cmd | Out-File -Encoding "ASCII" -Append task.bat
                 echo "nmake /nologo 2>&1" | Out-File -Encoding "ASCII" -Append task.bat
                 echo "exit %errorlevel%" | Out-File -Encoding "ASCII" -Append task.bat
@@ -148,12 +148,12 @@ after_build:
         ps: |
                 $ts_part = 'ts'
                 if ('0' -eq $env:TS) { $ts_part = 'nts' }
-                $zip_bname = 'php_seaslog-' + $env:APPVEYOR_REPO_COMMIT.substring(0, 8) + '-' + $env:PHP_VER.substring(0, 3) + '-' + $ts_part + '-' + $env:VC + '-' + $env:ARCH + '.zip'
-                $dir = 'c:\projects\seaslog\';
+                $zip_bname = 'php_phpsciter-' + $env:APPVEYOR_REPO_COMMIT.substring(0, 8) + '-' + $env:PHP_VER.substring(0, 3) + '-' + $ts_part + '-' + $env:VC + '-' + $env:ARCH + '.zip'
+                $dir = 'c:\projects\phpsciter\';
                 if ('x64' -eq $env:ARCH) { $dir = $dir + 'x64\' }
                 $dir = $dir + 'Release'
                 if ('1' -eq $env:TS) { $dir = $dir + '_TS' }
-                & 7z a c:\$zip_bname $dir\php_seaslog.dll c:\projects\seaslog\LICENSE
+                & 7z a c:\$zip_bname $dir\php_phpsciter.dll c:\projects\phpsciter\LICENSE
                 Push-AppveyorArtifact c:\$zip_bname
 test_script:
         ps: |
@@ -170,10 +170,10 @@ test_script:
                 if (-not (Test-Path c:\build-cache\$dname)) {
                         7z x c:\build-cache\$bname -oc:\build-cache\$dname
                 }
-                cd c:\projects\seaslog
+                cd c:\projects\phpsciter
                 echo "" | Out-File -Encoding "ASCII" task.bat
                 echo "set REPORT_EXIT_STATUS=1" | Out-File -Encoding "ASCII" -Append task.bat
-                $cmd = 'call configure --enable-seaslog --with-prefix=c:\build-cache\' + $dname + ' 2>&1'
+                $cmd = 'call configure --enable-phpsciter --with-prefix=c:\build-cache\' + $dname + ' 2>&1'
                 echo $cmd | Out-File -Encoding "ASCII" -Append task.bat
                 echo 'nmake /nologo test TESTS="-q --show-diff --set-timeout 120" 2>&1' | Out-File -Encoding "ASCII" -Append task.bat
                 echo "exit %errorlevel%" | Out-File -Encoding "ASCII" -Append task.bat
