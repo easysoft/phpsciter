@@ -32,6 +32,9 @@ extern "C"
 #include "ext/standard/info.h"
 #include "zend_exceptions.h"
 #include "php7_wrapper.h"
+#ifdef ZTS
+# include "TSRM.h"
+#endif
 }
 
 #include "php_window.h"
@@ -63,20 +66,20 @@ extern zend_module_entry phpsciter_module_entry;
 #define PHP_PHPSCITER_API
 #endif
 
-extern "C"
-{
-#ifdef ZTS
-# include "TSRM.h"
-#endif
-}
+ZEND_BEGIN_MODULE_GLOBALS(phpsciter)
+char *resource_base_path;
+char *default_title;
+zend_bool loadFile;
+zend_bool loadHtml;
+ZEND_END_MODULE_GLOBALS(phpsciter)
+
+extern ZEND_DECLARE_MODULE_GLOBALS(phpsciter);
 
 #ifdef ZTS
 # define PHPSCITER_G(v) TSRMG(phpsciter_globals_id, zend_phpsciter_globals *, v)
 #else
 # define PHPSCITER_G(v) (phpsciter_globals.v)
 #endif
-
-extern ZEND_DECLARE_MODULE_GLOBALS(phpsciter);
 
 PHP_MINIT_FUNCTION(phpsciter);
 PHP_MSHUTDOWN_FUNCTION(phpsciter);
@@ -99,13 +102,6 @@ PHP_METHOD(phpsciter, loadHtml);
 PHP_METHOD(phpsciter, defineFunction);
 PHP_METHOD(phpsciter, ifDefined);
 PHP_METHOD(phpsciter, run);
-
-ZEND_BEGIN_MODULE_GLOBALS(phpsciter)
-char *resource_base_path;
-char *default_title;
-zend_bool loadFile;
-zend_bool loadHtml;
-ZEND_END_MODULE_GLOBALS(phpsciter)
 
 PHP_GINIT_FUNCTION(phpsciter);
 PHP_GSHUTDOWN_FUNCTION(phpsciter);
