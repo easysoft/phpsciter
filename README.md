@@ -34,10 +34,31 @@ QQ: 546025324
       - `cd sciter-sdk/bin.osx/`
       - `export DYLD_LIBRARY_PATH=$PWD`
 
-#### Ubuntu
+#### Ubuntu 16.04
 ```
 apt-get install build-essential pkg-config
 apt-get install gnome-devel gnome-devel-docs --fix-missing
 apt-get install glade libglade2-dev
 apt-get install glade-gnome
+
+git clone https://github.com/easysoft/phpsciter.git
+cd phpsciter
+phpize
+./configure
+make
+make install
+
+php examples/callback/index.php
+```
+
+#### Mac OS
+```
+git clone https://github.com/easysoft/phpsciter.git
+cd phpsciter
+phpize
+./configure
+make
+make install
+
+php examples/callback/index.php
 ```
