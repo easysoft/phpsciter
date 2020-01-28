@@ -43,7 +43,7 @@ extern zend_module_entry phpsciter_module_entry;
 #define phpext_phpsciter_ptr &phpsciter_module_entry
 
 #define PHPSCITER_NAME "phpsciter"
-#define PHP_PHPSCITER_VERSION "0.2.0"
+#define PHP_PHPSCITER_VERSION "0.3.0"
 
 #define PHPSCITER_INSTANCE_DEFAULT              ((char *)"default")
 #define PHPSCITER_INSTANCE_DEFAULT_LEN          strlen(PHPSCITER_INSTANCE_DEFAULT)
@@ -94,6 +94,7 @@ PHP_METHOD(phpsciter, __wakeup);
 PHP_METHOD(phpsciter, __clone);
 PHP_METHOD(phpsciter, getInstance);
 PHP_METHOD(phpsciter, getVersion);
+PHP_METHOD(phpsciter, getPHPSciterVersion);
 PHP_METHOD(phpsciter, setResourcePath);
 PHP_METHOD(phpsciter, setWindowFrame);
 PHP_METHOD(phpsciter, setWindowTitle);

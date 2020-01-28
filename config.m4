@@ -35,30 +35,41 @@ if test "$PHP_PHPsciter" != "no"; then
   dnl
   dnl PHP_SUBST(PHPsciter_SHARED_LIBADD)
 
-  THIS_DIR=`dirname $0`
-  MAKE_LIB_JSONNET=`cd ${THIS_DIR}/lib && make php-window.o`
-
   PHP_REQUIRE_CXX()
   PHP_SUBST(PHPSCITER_SHARED_LIBADD)
   PHP_ADD_LIBRARY(stdc++, 1, PHPSCITER_SHARED_LIBADD)
-  PHP_ADD_LIBRARY(objc, 1, PHPSCITER_SHARED_LIBADD)
 
-  dnl PHP_ADD_LIBRARY(libsciter-gtk-64, ./lib, PHPSCITER_SHARED_LIBADD)
-  PHP_ADD_LIBRARY_WITH_PATH(sciter-osx-64, ./lib, PHPSCITER_SHARED_LIBADD)
-
-
-  PHP_ADD_FRAMEWORK_WITH_PATH(Cocoa, /System/Library/Frameworks)
   # PHP_SUBST(PHP_FRAMEWORKS)
   # PHPSCITER_CFLAGS=-DKAFFE
   case $host in
     *darwin*)
-      CXXFLAGS="$CXXFLAGS -Wno-unused-function -Wno-deprecated -Wno-deprecated-declarations -std=c++11"
+        THIS_DIR=`dirname $0`
+        MAKE_LIB_JSONNET=`cd ${THIS_DIR}/lib && make php-window.o`
+        PHP_ADD_LIBRARY(objc, 1, PHPSCITER_SHARED_LIBADD)
+        PHP_ADD_LIBRARY_WITH_PATH(sciter-osx-64, ./lib, PHPSCITER_SHARED_LIBADD)
+        PHP_ADD_FRAMEWORK_WITH_PATH(Cocoa, /System/Library/Frameworks)
+        CXXFLAGS="$CXXFLAGS -Wno-unused-function -Wno-deprecated -Wno-deprecated-declarations -std=c++11"
+        window_file="lib/php-window.mm"
     ;;
     *linux*)
+        gtkconfig=`pkg-config --cflags --libs gtk+-3.0`
+        CXXFLAGS="$CXXFLAGS $gtkconfig -w -std=c++11 -fno-stack-protector"
+        PHP_ADD_LIBRARY(gtk-3, 1, PHPSCITER_SHARED_LIBADD)
+        PHP_ADD_LIBRARY(gdk-3, 1, PHPSCITER_SHARED_LIBADD)
+        PHP_ADD_LIBRARY(atk-1.0, 1, PHPSCITER_SHARED_LIBADD)
+        PHP_ADD_LIBRARY(gio-2.0, 1, PHPSCITER_SHARED_LIBADD)
+        PHP_ADD_LIBRARY(pangocairo-1.0, 1, PHPSCITER_SHARED_LIBADD)
+        PHP_ADD_LIBRARY(gdk_pixbuf-2.0, 1, PHPSCITER_SHARED_LIBADD)
+        PHP_ADD_LIBRARY(cairo-gobject, 1, PHPSCITER_SHARED_LIBADD)
+        PHP_ADD_LIBRARY(pango-1.0, 1, PHPSCITER_SHARED_LIBADD)
+        PHP_ADD_LIBRARY(cairo, 1, PHPSCITER_SHARED_LIBADD)
+        PHP_ADD_LIBRARY(gobject-2.0, 1, PHPSCITER_SHARED_LIBADD)
+        PHP_ADD_LIBRARY_WITH_PATH(sciter-gtk-64, ./lib, PHPSCITER_SHARED_LIBADD)
+        window_file="lib/php-window-linux.cpp"
       ;;
   esac
 
-  source_file="lib/php-window.mm \
+  source_file="$window_file \
     src/callback.cpp \
     src/tool.cpp \
     src/value.cpp \

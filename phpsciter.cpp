@@ -70,6 +70,7 @@ const zend_function_entry phpsciter_methods[] =
     PHP_ME(phpsciter, run, 			NULL, ZEND_ACC_PUBLIC)
 
     PHP_ME(phpsciter, getVersion,   NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(phpsciter, getPHPSciterVersion,   NULL, ZEND_ACC_PUBLIC)
     PHP_ME(phpsciter, setResourcePath, phpsciter_setResourcePath_arginfo, ZEND_ACC_PUBLIC)
     PHP_ME(phpsciter, setWindowFrame, phpsciter_setWindowFrame_arginfo, ZEND_ACC_PUBLIC)
     PHP_ME(phpsciter, setWindowTitle, phpsciter_setWindowTitle_arginfo, ZEND_ACC_PUBLIC)
@@ -310,10 +311,12 @@ PHP_METHOD(phpsciter, run)
     frame.right = Z_LVAL_P(frame_right);
     frame.bottom = Z_LVAL_P(frame_bottom);
 
-    HWINDOW hw = SciterCreateWindow(SW_MAIN | SW_ALPHA | SW_TOOL, &frame, 0,0,0);
+    SciterWindowInit();
+
+    HWINDOW hw = SciterCreateWindow(SW_RESIZEABLE | SW_MAIN | SW_TOOL | SW_ENABLE_DEBUG, &frame, 0,0,0);
 
     SciterSetCallback(hw, &SciterViewCallback, NULL);
-//    SciterSetWindowTitle(hw,Z_STRVAL_P(title));
+    SciterSetWindowTitle(hw,Z_STRVAL_P(title));
 
     aux::a2w resource_path_as_wstr(Z_STRVAL_P(resource_path));
     SciterSetHomeURL(hw,LPCWSTR(resource_path_as_wstr.c_str()));
@@ -337,7 +340,9 @@ PHP_METHOD(phpsciter, run)
         RETURN_FALSE;
     }
 
+
     SciterShowWindow(hw);
+
     SciterApplicationRun(hw);
 
     RETURN_TRUE;
@@ -351,6 +356,11 @@ PHP_METHOD(phpsciter, getVersion)
     len = spprintf(&strg, 0, "%d", SciterVersion(FALSE));
 
     RETURN_STRINGL(strg, len);
+}
+
+PHP_METHOD(phpsciter, getPHPSciterVersion)
+{
+    RETURN_STRINGL(PHP_PHPSCITER_VERSION, strlen(PHP_PHPSCITER_VERSION));
 }
 
 PHP_METHOD(phpsciter,setResourcePath)
@@ -367,13 +377,16 @@ PHP_METHOD(phpsciter,setResourcePath)
 
     PHPSCITER_ZEND_UPDATE_PROPERTY_STRING(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_RESOURCE_PATH), ZSTR_VAL(resource_path));
 
-    RETURN_ZVAL(instance, 1, 0);
+    RETURN_TRUE;
 }
 
 PHP_METHOD(phpsciter,setWindowFrame)
 {
     zval *instance;
-    int frame_top = 0, frame_left = 0, frame_right = 0, frame_bottom = 0;
+    zend_long frame_top = 0;
+    zend_long frame_left = 0;
+    zend_long frame_right = 0;
+    zend_long frame_bottom = 0;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llll", &frame_top, &frame_left, &frame_right, &frame_bottom) == FAILURE)
     {
@@ -387,7 +400,7 @@ PHP_METHOD(phpsciter,setWindowFrame)
     PHPSCITER_ZEND_UPDATE_PROPERTY_LONG(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_RIGHT), frame_right);
     PHPSCITER_ZEND_UPDATE_PROPERTY_LONG(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_BOTTOM), frame_bottom);
 
-    RETURN_ZVAL(instance, 1, 0);
+    RETURN_TRUE;
 }
 
 PHP_METHOD(phpsciter,setWindowTitle)
@@ -404,7 +417,7 @@ PHP_METHOD(phpsciter,setWindowTitle)
 
     PHPSCITER_ZEND_UPDATE_PROPERTY_STRING(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_TITLE), ZSTR_VAL(title));
 
-    RETURN_ZVAL(instance, 1, 0);
+    RETURN_TRUE;
 }
 
 PHP_METHOD(phpsciter,loadFile)
@@ -421,7 +434,7 @@ PHP_METHOD(phpsciter,loadFile)
     PHPSCITER_G(loadFile) = TRUE;
     PHPSCITER_ZEND_UPDATE_PROPERTY_STRING(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_LOAD_FILE), ZSTR_VAL(file_name));
 
-    RETURN_ZVAL(instance, 1, 0);
+    RETURN_TRUE;
 }
 
 PHP_METHOD(phpsciter,loadHtml)
@@ -439,7 +452,7 @@ PHP_METHOD(phpsciter,loadHtml)
     PHPSCITER_ZEND_UPDATE_PROPERTY_STRING(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_LOAD_HTML), ZSTR_VAL(html));
     PHPSCITER_G(loadHtml) = TRUE;
 
-    RETURN_ZVAL(instance, 1, 0);
+    RETURN_TRUE;
 }
 
 PHP_MINIT_FUNCTION(phpsciter)

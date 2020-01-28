@@ -7,6 +7,11 @@
 
 #include "sciter-x-window.hpp"
 
+void SciterWindowInit()
+{
+
+}
+
 void SciterSetWindowTitle(HWINDOW hw, char* title)
 {
     //gtk_window_set_title(GTK_WINDOW(hw), title);

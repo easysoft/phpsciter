@@ -39,7 +39,7 @@
 #define PHPSCITER_ZEND_UPDATE_PROPERTY_NULL(ce,z,zl) zend_update_property_null(ce, z, zl)
 #define PHPSCITER_ZEND_UPDATE_PROPERTY_EX(ce,z,zl,zn) zend_update_property_ex(ce, z, zl, zn)
 #define PHPSCITER_ZEND_UPDATE_STATIC_PROPERTY(ce,zl,zn) zend_update_static_property(ce, zl, &zn)
-#define PHPSCITER_ZEND_UPDATE_PROPERTY_LONG(ce,z,zl,zn) zend_update_property_long(ce,z,zl,zn)
+#define PHPSCITER_ZEND_UPDATE_PROPERTY_LONG(ce,z,zl,zn) zend_update_property_long(ce,z,zl,zn TSRMLS_CC)
 #define PHPSCITER_ZEND_UPDATE_PROPERTY_STRING(ce,z,zl,s) zend_update_property_string(ce,z,zl,s)
 #define PHPSCITER_ZEND_READ_PROPERTY(ce,z,sl) zend_read_property(ce,z,sl,0,NULL)
 

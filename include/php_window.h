@@ -3,6 +3,8 @@
 
 #include "sciter-x-types.h"
 
+void SciterWindowInit();
+
 void SciterSetWindowTitle(HWINDOW hw, char * title);
 void SciterShowWindow(HWINDOW hw);
 

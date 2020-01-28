@@ -3,6 +3,11 @@
 #include <stdlib.h>
 #include "php_window.h"
 
+void SciterWindowInit()
+{
+
+}
+
 void SciterSetWindowTitle(HWINDOW hw, char * title)
 {
     [[(NSView*)hw window] setTitle:[NSString stringWithUTF8String:title]];
