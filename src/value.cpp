@@ -17,31 +17,6 @@
 
 zval **CallBackGetValueTmp;
 
-//void saveLog(char *strLog)
-//{
-//    int pid = getpid();
-//
-//    char *tmp;
-//    spprintf(&tmp, 0, "%s pid -> %d", strLog, pid);
-//
-//    FILE *fp;
-//    char *endStr = "\n";
-//
-//    if ((fp = fopen("logs.log", "a+")) == NULL)
-//    {
-//        printf("cant open file\n");
-//        exit(0);
-//    }
-//
-//    if (fwrite(tmp, strlen(tmp), 1, fp) != 1)
-//    {
-//        printf("file write error\n");
-//    }
-//    fwrite(endStr, strlen(endStr), 1, fp);
-//    fclose(fp);
-//    efree(tmp);
-//}
-
 char *getSciterString(const VALUE *p)
 {
     char *cstr = NULL;
@@ -57,9 +32,6 @@ char *getSciterString(const VALUE *p)
         aux::w2utf str_null(WSTR(""));
         spprintf(&cstr, 0, "%s",str_null.c_str());
     }
-
-//    saveLog(cstr);
-//    php_printf("getSciterString -> %s\n",cstr);
 
     return cstr;
 }
