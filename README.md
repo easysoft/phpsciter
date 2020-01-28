@@ -1,5 +1,5 @@
 ### About PHPSciter
-============
+
 
 [![Build status](https://ci.appveyor.com/api/projects/status/hx8atlbq1ilx5ex5?svg=true)](https://ci.appveyor.com/project/Neeke/phpsciter)
 
