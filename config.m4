@@ -73,7 +73,10 @@ if test "$PHP_PHPsciter" != "no"; then
     src/callback.cpp \
     src/tool.cpp \
     src/value.cpp \
-    phpsciter.cpp"
+    phpsciter.cpp \
+    phpsciter_application.cc \
+    phpsciter_global.cc \
+    lib/util.cc"
 
   PHP_ADD_INCLUDE(./include)
   PHP_ADD_BUILD_DIR($ext_builddir/lib)

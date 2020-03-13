@@ -38,7 +38,6 @@ extern "C"
 }
 
 #include "php_window.h"
-
 extern zend_module_entry phpsciter_module_entry;
 #define phpext_phpsciter_ptr &phpsciter_module_entry
 
@@ -66,46 +65,14 @@ extern zend_module_entry phpsciter_module_entry;
 #define PHP_PHPSCITER_API
 #endif
 
-ZEND_BEGIN_MODULE_GLOBALS(phpsciter)
-char *resource_base_path;
-char *default_title;
-zend_bool loadFile;
-zend_bool loadHtml;
-ZEND_END_MODULE_GLOBALS(phpsciter)
-
-extern ZEND_DECLARE_MODULE_GLOBALS(phpsciter);
-
-#ifdef ZTS
-# define PHPSCITER_G(v) TSRMG(phpsciter_globals_id, zend_phpsciter_globals *, v)
-#else
-# define PHPSCITER_G(v) (phpsciter_globals.v)
-#endif
+#include "phpsciter_global.h"
 
 PHP_MINIT_FUNCTION(phpsciter);
 PHP_MSHUTDOWN_FUNCTION(phpsciter);
 PHP_RINIT_FUNCTION(phpsciter);
 PHP_RSHUTDOWN_FUNCTION(phpsciter);
 PHP_MINFO_FUNCTION(phpsciter);
-
-PHP_METHOD(phpsciter, __construct);
-PHP_METHOD(phpsciter, __destruct);
-PHP_METHOD(phpsciter, __sleep);
-PHP_METHOD(phpsciter, __wakeup);
-PHP_METHOD(phpsciter, __clone);
-PHP_METHOD(phpsciter, getInstance);
-PHP_METHOD(phpsciter, getVersion);
-PHP_METHOD(phpsciter, getPHPSciterVersion);
-PHP_METHOD(phpsciter, setResourcePath);
-PHP_METHOD(phpsciter, setWindowFrame);
-PHP_METHOD(phpsciter, setWindowTitle);
-PHP_METHOD(phpsciter, loadFile);
-PHP_METHOD(phpsciter, loadHtml);
-PHP_METHOD(phpsciter, defineFunction);
-PHP_METHOD(phpsciter, ifDefined);
-PHP_METHOD(phpsciter, run);
-
 PHP_GINIT_FUNCTION(phpsciter);
 PHP_GSHUTDOWN_FUNCTION(phpsciter);
-
 
 #endif /* PHP_PHPsciter_H */
