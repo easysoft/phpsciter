@@ -45,15 +45,34 @@ UINT SC_CALLBACK SciterViewCallback(LPSCITER_CALLBACK_NOTIFICATION pns, LPVOID c
     // php_printf("SciterViewCallback start\n");
     switch(pns->code)
     {
-    case SC_LOAD_DATA:
-    {
-        LPSCN_LOAD_DATA pc = LPSCN_LOAD_DATA(pns);
-        return LOAD_OK;
-    }
-    case SC_DATA_LOADED:
-        break;
-    case SC_ATTACH_BEHAVIOR:
-        break;
+        case SC_LOAD_DATA:
+        {
+            LPSCN_LOAD_DATA pc = LPSCN_LOAD_DATA(pns);
+            aux::wchars wu = aux::chars_of(pc->uri);
+            if(wu.like(WSTR("file:///*")) && wu.like(WSTR("file:///*.php")))
+            {
+                string resource_dir = PHPSCITER_G(tool)->U16toString(pc->uri);
+                char* file_name = (char*)resource_dir.c_str() + 7;
+                zend_op_array* op_array = PHPSCITER_G(tool)->zendCompileFile(file_name);
+                if(op_array)
+                {
+                    string content = PHPSCITER_G(tool)->zendExecute(op_array);
+                    cout<<content<<endl;
+                    if(UNEXPECTED(!content.empty())) {
+                        efree(op_array);
+                        //aux::a2w w_content(content.c_str());
+                        ::SciterDataReady(pc->hwnd, pc->uri, (LPCBYTE) (content.c_str()), content.length());
+                    }
+                }
+
+            }
+
+            return LOAD_OK;
+        }
+        case SC_DATA_LOADED:
+            break;
+        case SC_ATTACH_BEHAVIOR:
+            break;
     }
     // php_printf("SciterViewCallback end\n");
     return 0;
