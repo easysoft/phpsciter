@@ -5,23 +5,22 @@
 #ifndef PHPSCITER_PHPSCITER_GLOBAL_H
 #define PHPSCITER_PHPSCITER_GLOBAL_H
 
+#include "php-sciter-request.h"
+#include "util.h"
 #include <memory>
 
-#include "include/util.h"
-
-ZEND_BEGIN_MODULE_GLOBALS(phpsciter)
+typedef struct _zend_phpsciter_globals {
     uint8_t loadModal;
     zend_bool loadFile;
     zend_bool loadHtml;
     char *resource_base_path;
     char *default_title;
     zend_op_array *cureent_op_array;
+    shared_ptr<Util> tool;
+    shared_ptr<ZendSciterRequest> request;
+} zend_phpsciter_globals;
 
-    Util* tool;
-ZEND_END_MODULE_GLOBALS(phpsciter)
-
-extern ZEND_DECLARE_MODULE_GLOBALS(phpsciter);
-
+extern ZEND_DECLARE_MODULE_GLOBALS(phpsciter)
 #ifdef ZTS
 # define PHPSCITER_G(v) TSRMG(phpsciter_globals_id, zend_phpsciter_globals *, v)
 #else

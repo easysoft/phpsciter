@@ -23,7 +23,6 @@ int strlen16(char16_t* strarg);
 LPCWSTR ForwardToWSTR(char* quote);
 UINT ForwardToLength(char* quote);
 CHAR* ForwardToChar(LPCWSTR quote);
-std::string U16toString(const std::u16string &wstr);
 
 //#define CHAR2WSTR(quote, len) charToWSTR(quote, len)
 

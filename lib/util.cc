@@ -2,7 +2,7 @@
 // Created by root on 20-3-3.
 //
 
-#include "include/util.h"
+#include "util.h"
 #include <fcntl.h>
 #include <php.h>
 
@@ -22,11 +22,13 @@ int Util::isFile(const char *name) {
             return SUCCESS;
         } else {
             this->setErrno(CUSTOMER_ERROR);
-            this->setError("Filename must be a normal file");
+            this->setError((error+"Filename must be a normal file;file path"+file_name).c_str());
             return FAILURE;
         }
     } else {
-        this->setUnixError(errno);
+        string error(strerror(errno));
+        this->setErrno(CUSTOMER_ERROR);
+        this->setError((error + ";"+file_name).c_str());
         return FAILURE;
     }
 }
@@ -75,6 +77,12 @@ string Util::zendExecute(zend_op_array *op_array)
         zend_error(E_ERROR,this->getError());
     }
 
+    if(!op_array)
+    {
+        this->setErrno(CUSTOMER_ERROR);
+        this->setError("failed to open stream: No such file or directory");
+        zend_bailout();
+    }
     zend_execute(op_array,&result);
     flags = fcntl(pipe_fd[0],F_GETFL,0);
     fcntl(pipe_fd[0],F_SETFL,flags|O_NONBLOCK);

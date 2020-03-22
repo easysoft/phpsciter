@@ -37,7 +37,10 @@ PHP_INI_END()
 PHP_GINIT_FUNCTION(phpsciter)
 {
     memset(phpsciter_globals, 0, sizeof(zend_phpsciter_globals));
-    phpsciter_globals->tool = new Util;
+    shared_ptr<Util> util = make_shared<Util>();
+    phpsciter_globals->tool =  util;
+    shared_ptr<ZendSciterRequest> request = make_shared<ZendSciterRequest>();
+    phpsciter_globals->request = request;
 }
 
 PHP_GSHUTDOWN_FUNCTION(phpsciter)

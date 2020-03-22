@@ -76,6 +76,7 @@ if test "$PHP_PHPsciter" != "no"; then
     phpsciter.cpp \
     phpsciter_application.cc \
     phpsciter_global.cc \
+    src/php-sciter-request.cc \
     lib/util.cc"
 
   PHP_ADD_INCLUDE(./include)

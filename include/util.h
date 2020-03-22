@@ -5,10 +5,10 @@
 #ifndef PHPSCITER_PHPSCITER_UTIL_H
 #define PHPSCITER_PHPSCITER_UTIL_H
 
+#include <iostream>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <string>
 #include <zend_types.h>
 #include <zend_compile.h>
 
@@ -38,7 +38,7 @@ public:
         return this->error.c_str();
     }
 
-    std::string U16toString(const std::u16string &wstr);
+    string U16toString(const std::u16string &wstr);
 
 private:
 

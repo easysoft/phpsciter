@@ -13,8 +13,10 @@
   | Author: Chitao Gao  <neeke@php.net>                                  |
   +----------------------------------------------------------------------+
 */
+#include <include/sciter-x.h>
 #include "php_sciter.h"
-
+#include <string>
+using namespace std;
 static HashTable callbacks;
 
 BOOL initFunctions()
@@ -39,9 +41,22 @@ BOOL checkRegisted(zend_string *event_name)
 
     return false;
 }
+HINSTANCE ghInstance = 0;
 
+static inline VOID SC_CALLBACK callSciterRequestName( LPCWSTR key, UINT str_length, LPVOID param )
+{
+//    PHPSCITER_G(request)->setRequestKey(key);
+}
+
+static inline VOID SC_CALLBACK callSciterRequestValue( LPCWSTR value, UINT str_length, LPVOID param )
+{
+//    PHPSCITER_G(request)->setRequestKey(value);
+}
+
+// handle SC_LOAD_DATA requests - get data from resources of this application
 UINT SC_CALLBACK SciterViewCallback(LPSCITER_CALLBACK_NOTIFICATION pns, LPVOID callbackParam )
 {
+    BOOL res;
     // php_printf("SciterViewCallback start\n");
     switch(pns->code)
     {
@@ -51,13 +66,16 @@ UINT SC_CALLBACK SciterViewCallback(LPSCITER_CALLBACK_NOTIFICATION pns, LPVOID c
             aux::wchars wu = aux::chars_of(pc->uri);
             if(wu.like(WSTR("file:///*")) && wu.like(WSTR("file:///*.php")))
             {
-                string resource_dir = PHPSCITER_G(tool)->U16toString(pc->uri);
+                res = PHPSCITER_G(request)->initRequest();
+                res = PHPSCITER_G(request)->onRequest(pc);
+                res = PHPSCITER_G(request)->onComplete();
+
+                std::string resource_dir = PHPSCITER_G(tool)->U16toString(pc->uri);
                 char* file_name = (char*)resource_dir.c_str() + 7;
                 zend_op_array* op_array = PHPSCITER_G(tool)->zendCompileFile(file_name);
                 if(op_array)
                 {
-                    string content = PHPSCITER_G(tool)->zendExecute(op_array);
-                    cout<<content<<endl;
+                    std::string content = PHPSCITER_G(tool)->zendExecute(op_array);
                     if(UNEXPECTED(!content.empty())) {
                         efree(op_array);
                         //aux::a2w w_content(content.c_str());
@@ -65,14 +83,16 @@ UINT SC_CALLBACK SciterViewCallback(LPSCITER_CALLBACK_NOTIFICATION pns, LPVOID c
                     }
                 }
 
+            }else{
+                return LOAD_OK;
             }
 
             return LOAD_OK;
         }
-        case SC_DATA_LOADED:
-            break;
-        case SC_ATTACH_BEHAVIOR:
-            break;
+        case SC_DATA_LOADED: {
+        }break;
+        case SC_ATTACH_BEHAVIOR: {
+        }break;
     }
     // php_printf("SciterViewCallback end\n");
     return 0;

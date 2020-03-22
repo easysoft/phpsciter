@@ -55,7 +55,18 @@ extern zend_module_entry phpsciter_module_entry;
 #define PHPSCITER_PROPERTY_TITLE                "title"
 #define PHPSCITER_PROPERTY_LOAD_FILE            "load_file"
 #define PHPSCITER_PROPERTY_LOAD_HTML            "load_html"
+#define PHPSCITER_FILE_HLEN 7
 
+#define ZEND_GET "_GET"
+#define ZEND_GET_LEN 4
+#define ZEND_POST "_POST"
+#define ZEND_POST_LEN 5
+#define ZEND_REQUEST "_REQUEST"
+#define ZEND_REQUEST_LEN 8
+#define ZEND_SERVER "_SERVER"
+#define ZEND_SERVER_LEN 8
+#define ZEND_COOKIE "_COOKIE"
+#define ZEND_COOKIE_LEN 7
 
 #ifdef PHP_WIN32
 #define PHP_PHPSCITER_API __declspec(dllexport)

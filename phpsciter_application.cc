@@ -217,6 +217,20 @@ PHP_METHOD(phpsciter, ifDefined)
         RETURN_FALSE;
 }
 
+static void inline checkFileExist(const std::string& resource_path)
+{
+    //检查是否是一个文件
+    if(resource_path.length() > PHPSCITER_FILE_HLEN) {
+        if (PHPSCITER_G(tool)->isFile(resource_path.c_str() + PHPSCITER_FILE_HLEN) == FAILURE) {
+            zend_error(E_ERROR, PHPSCITER_G(tool)->getError());
+        }
+    }else{
+        if (PHPSCITER_G(tool)->isFile(resource_path.c_str()) == FAILURE) {
+            zend_error(E_ERROR, PHPSCITER_G(tool)->getError());
+        }
+    }
+}
+
 PHP_METHOD(phpsciter, run)
 {
         zval *instance;
@@ -225,6 +239,7 @@ PHP_METHOD(phpsciter, run)
 
         char* file_name = NULL;
         int file_name_len = 0;
+        std::string file_path;
         int res;
 
 //        if (!PHPSCITER_G(loadHtml) && !PHPSCITER_G(loadFile))
@@ -269,27 +284,35 @@ PHP_METHOD(phpsciter, run)
             case LOAD_HTML_FILE: {
                 loadFile = PHPSCITER_ZEND_READ_PROPERTY(phpsciter_ce, instance,
                                                         ZEND_STRL(PHPSCITER_PROPERTY_LOAD_FILE));
-
                 file_name_len = spprintf(&file_name, 0, "%s%s", Z_STRVAL_P(resource_path), Z_STRVAL_P(loadFile));
-
+                file_path.append(file_name);
+                checkFileExist(file_path);
                 aux::a2w file_name_as_wstr(file_name);
                 SciterLoadFile(hw, LPCWSTR(file_name_as_wstr.c_str()));
             } break;
             case LOAD_PHP: {
-                string content = PHPSCITER_G(tool)->zendExecute(PHPSCITER_G(cureent_op_array));
+                std::string content = PHPSCITER_G(tool)->zendExecute(PHPSCITER_G(cureent_op_array));
                 SciterLoadHtml(hw, (byte *) content.c_str(), strlen(content.c_str()),
                                LPCWSTR(resource_path_as_wstr.c_str()));
                 efree(PHPSCITER_G(cureent_op_array));
                 PHPSCITER_G(cureent_op_array) = nullptr;
             } break;
             case LOAD_PHP_FILE: {
-                string content = PHPSCITER_G(tool)->zendExecute(PHPSCITER_G(cureent_op_array));
+                loadFile = PHPSCITER_ZEND_READ_PROPERTY(phpsciter_ce, instance,
+                                                        ZEND_STRL(PHPSCITER_PROPERTY_LOAD_FILE));
+                file_name_len = spprintf(&file_name, 0, "%s%s", Z_STRVAL_P(resource_path), Z_STRVAL_P(loadFile));
+                //检查是否是一个文件
+                file_path.append(file_name);
+                checkFileExist(file_path);
+                PHPSCITER_G(cureent_op_array) = PHPSCITER_G(tool)->zendCompileFile((file_name));
+                std::string content = PHPSCITER_G(tool)->zendExecute(PHPSCITER_G(cureent_op_array));
                 SciterLoadHtml(hw, (byte *) content.c_str(), strlen(content.c_str()),
                                LPCWSTR(resource_path_as_wstr.c_str()));
                 efree(PHPSCITER_G(cureent_op_array));
                 PHPSCITER_G(cureent_op_array) = nullptr;
             } break;
             default:
+                RETURN_FALSE;
                 break;
         }
 
@@ -394,7 +417,6 @@ PHP_METHOD(phpsciter,loadFile)
     if (PHPSCITER_G(tool)->checkPhpFile(ZSTR_VAL(file_name)) == FAILURE) {
         PHPSCITER_G(loadModal) = LOAD_HTML_FILE;
     } else {
-        PHPSCITER_G(cureent_op_array) = PHPSCITER_G(tool)->zendCompileFile(ZSTR_VAL(file_name));
         PHPSCITER_G(loadModal) = LOAD_PHP_FILE;
     }
 
@@ -415,7 +437,7 @@ PHP_METHOD(phpsciter,loadHtml)
 
         PHPSCITER_ZEND_UPDATE_PROPERTY_STRING(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_LOAD_HTML), ZSTR_VAL(html));
         PHPSCITER_G(loadHtml) = TRUE;
-        PHPSCITER_G(loadHtml) = LOAD_HTML;
+        PHPSCITER_G(loadModal) = LOAD_HTML;
 
         RETURN_TRUE;
 }
