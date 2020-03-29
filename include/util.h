@@ -11,6 +11,7 @@
 #include <unistd.h>
 #include <zend_types.h>
 #include <zend_compile.h>
+#include <vector>
 
 using namespace std;
 
@@ -39,6 +40,8 @@ public:
     }
 
     string U16toString(const std::u16string &wstr);
+
+    void splitString(const string& subject, vector<string>& v, const string& delimiter);
 
 private:
 

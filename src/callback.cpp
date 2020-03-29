@@ -43,47 +43,44 @@ BOOL checkRegisted(zend_string *event_name)
 }
 HINSTANCE ghInstance = 0;
 
-static inline VOID SC_CALLBACK callSciterRequestName( LPCWSTR key, UINT str_length, LPVOID param )
-{
-//    PHPSCITER_G(request)->setRequestKey(key);
-}
-
-static inline VOID SC_CALLBACK callSciterRequestValue( LPCWSTR value, UINT str_length, LPVOID param )
-{
-//    PHPSCITER_G(request)->setRequestKey(value);
-}
-
 // handle SC_LOAD_DATA requests - get data from resources of this application
 UINT SC_CALLBACK SciterViewCallback(LPSCITER_CALLBACK_NOTIFICATION pns, LPVOID callbackParam )
 {
     BOOL res;
-    // php_printf("SciterViewCallback start\n");
     switch(pns->code)
     {
         case SC_LOAD_DATA:
         {
             LPSCN_LOAD_DATA pc = LPSCN_LOAD_DATA(pns);
             aux::wchars wu = aux::chars_of(pc->uri);
-            if(wu.like(WSTR("file:///*")) && wu.like(WSTR("file:///*.php")))
-            {
-                res = PHPSCITER_G(request)->initRequest();
-                res = PHPSCITER_G(request)->onRequest(pc);
-                res = PHPSCITER_G(request)->onComplete();
-
+            if(wu.like(WSTR("file:///*")) && (wu.like(WSTR("file:///*.php")) || wu.like(WSTR("file:///*.php?*")))) {
                 std::string resource_dir = PHPSCITER_G(tool)->U16toString(pc->uri);
                 char* file_name = (char*)resource_dir.c_str() + 7;
-                zend_op_array* op_array = PHPSCITER_G(tool)->zendCompileFile(file_name);
-                if(op_array)
-                {
-                    std::string content = PHPSCITER_G(tool)->zendExecute(op_array);
-                    if(UNEXPECTED(!content.empty())) {
-                        efree(op_array);
-                        //aux::a2w w_content(content.c_str());
-                        ::SciterDataReady(pc->hwnd, pc->uri, (LPCBYTE) (content.c_str()), content.length());
-                    }
+                PHPSCITER_G(request)->initRequest(file_name);
+                PHPSCITER_G(request)->onRequest(pc);
+                resource_dir = PHPSCITER_G(request)->onComplete();
+                PHPSCITER_G(request)->onClose();
+                file_name = (char *)resource_dir.c_str();
+
+                if(PHPSCITER_G(tool)->isFile(file_name) == FAILURE) {
+                    return LOAD_OK;
                 }
 
-            }else{
+                zval content;
+                zval args[1];//自定义参数
+                zval zend_file_name;
+                ZVAL_STRING(&zend_file_name,file_name);
+                args[0] = zend_file_name;
+                call_user_function_ex(EG(function_table),&EG(current_execute_data)->This, PHPSCITER_G(load_hook_name),
+                                      &content, 1, args, 0, nullptr);
+
+                if(Z_TYPE(content) == IS_STRING)
+                {
+//                        aux::a2w w_content(Z_STRVAL(content));
+                        ::SciterDataReady(pc->hwnd, pc->uri, (LPCBYTE) (Z_STRVAL(content)), Z_STRLEN(content));
+                }
+
+            }else {
                 return LOAD_OK;
             }
 

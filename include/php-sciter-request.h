@@ -44,13 +44,16 @@ public:
     }
 
     //初始化请求
-    BOOL initRequest();
+    BOOL initRequest(const std::string& request_uri);
 
     //请求到达的时候
     BOOL onRequest(LPSCN_LOAD_DATA load_data);
 
     //请求解析完成
-    BOOL onComplete();
+    const std::string& onComplete();
+
+    //clear memory
+    BOOL onClose();
 
 private:
     //记录zend请求到达时候一些有用的数据
@@ -58,7 +61,11 @@ private:
         zval* get_data = nullptr;
         zval* post_data = nullptr;
         zval* request_data = nullptr;
+        zval* server_data = nullptr;
         REQUEST_RQ_TYPE request_type = RRT_GET;
+        std::string request_uri;
+        std::string request_real_uri;
+        map<std::string,std::string> url_param;
         map<std::string,std::string> request_table;
     }zend_request_info;
 

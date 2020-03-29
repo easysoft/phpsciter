@@ -146,3 +146,19 @@ std::string Util::U16toString(const std::u16string &wstr)
     }
     return str;
 }
+
+void Util::splitString(const string& subject, vector<string>& v, const string& delimiter)
+{
+    string::size_type pos1, pos2;
+    pos2 = subject.find(delimiter);
+    pos1 = 0;
+    while(string::npos != pos2)
+    {
+        v.push_back(subject.substr(pos1, pos2-pos1));
+
+        pos1 = pos2 + delimiter.size();
+        pos2 = subject.find(delimiter, pos1);
+    }
+    if(pos1 != subject.length())
+        v.push_back(subject.substr(pos1));
+}

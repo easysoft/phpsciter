@@ -1,4 +1,4 @@
-<?php $_REQUEST['a'] = "aaaa";?>
+<?php $data = 1;var_dump($b); ?>
 <html>
 <head>
     <title>Test</title>
@@ -12,7 +12,7 @@
 </head>
 <body>
 
-<form action="form.php" method="get">
+<form action="form.php?id=3" method="get">
     <label>First name:</label><input|text(first) required title="Must not be empty">
     <label>Second name:</label><input|text(second) required=".{2,}" title="Please enter 2 characters or more." >
     <button|submit>Submit</button>

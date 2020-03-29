@@ -36,6 +36,7 @@ PHP_METHOD(phpsciter, setWindowTitle);
 PHP_METHOD(phpsciter, loadFile);
 PHP_METHOD(phpsciter, loadPHP);
 PHP_METHOD(phpsciter, loadHtml);
+PHP_METHOD(phpsciter, getSciterHtmlByPhpFile);
 PHP_METHOD(phpsciter, defineFunction);
 PHP_METHOD(phpsciter, ifDefined);
 PHP_METHOD(phpsciter, run);
@@ -65,6 +66,10 @@ ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(phpsciter_loadHtml_arginfo, 0, 0, 1)
 ZEND_ARG_INFO(0, html)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(phpsciter_getSciterHtmlByPhpFile_arginfo, 0, 0, 1)
+                ZEND_ARG_INFO(0, php_file_name)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(phpsciter_defineFunction_arginfo, 0, 0, 1)

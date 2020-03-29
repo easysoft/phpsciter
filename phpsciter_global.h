@@ -13,9 +13,10 @@ typedef struct _zend_phpsciter_globals {
     uint8_t loadModal;
     zend_bool loadFile;
     zend_bool loadHtml;
-    char *resource_base_path;
-    char *default_title;
-    zend_op_array *cureent_op_array;
+    char *resource_base_path = nullptr;
+    char *default_title = nullptr;
+    zval *load_hook_name;
+    zend_op_array *cureent_op_array = nullptr;
     shared_ptr<Util> tool;
     shared_ptr<ZendSciterRequest> request;
 } zend_phpsciter_globals;
