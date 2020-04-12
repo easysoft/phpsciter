@@ -144,7 +144,7 @@ UINT SetPHPValue(const VALUE* val, zval *item)
     }
     case T_STRING:
     {
-        ZVAL_STRING(item,(char *)getSciterString(val));
+        PHPSCITER_ZVAL_STRING(item,(char *)getSciterString(val));
         convert_to_string(item);
 //        saveLog(Z_STRVAL_P(item));
         break;
@@ -244,6 +244,7 @@ UINT SetSciterValue(VALUE *result, zval *entry)
         ok = ValueIntDataSet(result,(INT)0,T_NULL,0);
         break;
     }
+#if PHP_VERSION_ID >= 70000
     case IS_FALSE:
     {
         ok = ValueIntDataSet(result,(INT)0,T_BOOL,0);
@@ -254,6 +255,14 @@ UINT SetSciterValue(VALUE *result, zval *entry)
         ok = ValueIntDataSet(result,(INT)1,T_BOOL,0);
         break;
     }
+#else
+    case IS_BOOL:
+    {
+        long hval = (Z_LVAL_P(entry)?1:0);
+        ok = ValueIntDataSet(result,(INT)hval,T_BOOL,0);
+        break;
+    }
+#endif
     case IS_ARRAY:
     {
         ValueIntDataSet(result,(INT)0, T_MAP, 0);
@@ -264,29 +273,35 @@ UINT SetSciterValue(VALUE *result, zval *entry)
         zval *entry_tmp;
 
         ht = Z_ARRVAL_P(entry);
-        zend_long num_in = zend_array_count(ht);
+        zend_long num_in = PHPSCITER_ARRAY_COUNT(ht);
 
         if (num_in > 0)
         {
-            ZEND_HASH_FOREACH_KEY_VAL(ht, num_key, str_key, entry_tmp)
+#if PHP_VERSION_ID >= 70000
+        ZEND_HASH_FOREACH_KEY_VAL(ht, num_key, str_key, entry_tmp)
+        {
+            VALUE key = NewValue();
+            if (str_key)
             {
-                VALUE key = NewValue();
-                if (str_key)
-                {
-                    aux::a2w str_key_as_wstr(ZSTR_VAL(str_key));
-                    ValueStringDataSet(&key,LPCWSTR(str_key_as_wstr.c_str()), UINT(str_key_as_wstr.length()), T_STRING);
-                }
-                else
-                {
-                    ValueIntDataSet(&key,(INT)num_key,T_INT,0);
-                }
-
-                VALUE val = NewValue();
-                ok = SetSciterValue(&val, entry_tmp);
-
-                ValueSetValueToKey(result,&key,&val);
+                aux::a2w str_key_as_wstr(PHPSCITER_ZSTR_VAL(str_key));
+                ValueStringDataSet(&key,LPCWSTR(str_key_as_wstr.c_str()), UINT(str_key_as_wstr.length()), T_STRING);
             }
-            ZEND_HASH_FOREACH_END();
+            else
+            {
+                ValueIntDataSet(&key,(INT)num_key,T_INT,0);
+            }
+
+            VALUE val = NewValue();
+            ok = SetSciterValue(&val, entry_tmp);
+
+            ValueSetValueToKey(result,&key,&val);
+        }
+        ZEND_HASH_FOREACH_END();
+#else
+
+            Bucket ** _p = ht->arBuckets;
+
+#endif
         }
         break;
     }

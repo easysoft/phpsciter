@@ -3,6 +3,7 @@
 //
 
 #include "util.h"
+#include "php_phpsciter.h"
 #include <fcntl.h>
 #include <php.h>
 
@@ -83,7 +84,11 @@ string Util::zendExecute(zend_op_array *op_array)
         this->setError("failed to open stream: No such file or directory");
         zend_bailout();
     }
+#if PHP_VERSION_ID >= 70000
     zend_execute(op_array,&result);
+#else
+    zend_execute(op_array TSRMLS_DC);
+#endif
     flags = fcntl(pipe_fd[0],F_GETFL,0);
     fcntl(pipe_fd[0],F_SETFL,flags|O_NONBLOCK);
     errno = 0;
@@ -101,13 +106,35 @@ string Util::zendExecute(zend_op_array *op_array)
         }
     }
 
-
     dup2(stdout_fd,STDOUT_FILENO);
     close(pipe_fd[0]);
     close(pipe_fd[1]);
+    destroy_op_array(op_array TSRMLS_CC);
+    if (!EG(exception)) {
+        if (EG(return_value_ptr_ptr) && *EG(return_value_ptr_ptr)) {
+            zval_ptr_dtor(EG(return_value_ptr_ptr));
+        }
+    }
+    reStoreOldExecuteInfo();
     return content;
 }
 
+/*
+  +----------------------------------------------------------------------+
+  | Yet Another Framework                                                |
+  +----------------------------------------------------------------------+
+  | This source file is subject to version 3.01 of the PHP license,      |
+  | that is bundled with this package in the file LICENSE, and is        |
+  | available through the world-wide-web at the following url:           |
+  | http://www.php.net/license/3_01.txt                                  |
+  | If you did not receive a copy of the PHP license and are unable to   |
+  | obtain it through the world-wide-web, please send a note to          |
+  | license@php.net so we can mail you a copy immediately.               |
+  +----------------------------------------------------------------------+
+  | Author: Xinchen Hui  <laruence@php.net>                              |
+  +----------------------------------------------------------------------+
+*/
+//yaf_loader_import
 zend_op_array *Util::zendCompileFile(const char* file_name)
 {
     zend_file_handle file_handle;
@@ -120,14 +147,39 @@ zend_op_array *Util::zendCompileFile(const char* file_name)
         return nullptr;
     }
 
+#if PHP_VERSION_ID >= 70000
     if(!file_handle.opened_path)
         file_handle.opened_path = zend_string_init(file_name, strlen(file_name), 0);
+#else
+    if (!file_handle.opened_path) {
+        file_handle.opened_path = estrdup(file_name);
+    }
+#endif
 
     zend_op_array *op_array = zend_compile_file(&file_handle, ZEND_INCLUDE_ONCE);
 
     zend_destroy_file_handle(&file_handle);
+#if PHP_VERSION_ID >= 70000
     if(file_handle.opened_path)
         zend_string_release(file_handle.opened_path);
+#endif
+
+    if(op_array)
+    {
+        zval *result = NULL;
+
+        //copy by yaf
+        //http://pecl.php.net/package/yaf
+        storeOldExecuteInfo();
+        EG(return_value_ptr_ptr) = &result;
+        EG(active_op_array) 	 = op_array;
+
+#if ((PHP_MAJOR_VERSION == 5) && (PHP_MINOR_VERSION > 2)) || (PHP_MAJOR_VERSION > 5)
+        if (!EG(active_symbol_table)) {
+            zend_rebuild_symbol_table(TSRMLS_C);
+        }
+#endif
+    }
     return op_array;
 }
 

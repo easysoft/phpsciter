@@ -9,13 +9,13 @@ zend_class_entry *phpsciter_ce,*php_com_exception_class_entry;
 
 const zend_function_entry phpsciter_methods[] =
 {
-        PHP_ME(phpsciter, __construct,  NULL, ZEND_ACC_PRIVATE | ZEND_ACC_CTOR)
+        PHP_ME(phpsciter, __construct,  NULL, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
         PHP_ME(phpsciter, __destruct,   NULL, ZEND_ACC_PUBLIC | ZEND_ACC_DTOR)
         PHP_ME(phpsciter, __clone,      NULL, ZEND_ACC_PRIVATE)
         PHP_ME(phpsciter, __sleep,      NULL, ZEND_ACC_PRIVATE)
         PHP_ME(phpsciter, __wakeup,     NULL, ZEND_ACC_PRIVATE)
 
-        PHP_ME(phpsciter, getInstance,  NULL, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+        //PHP_ME(phpsciter, getInstance,  NULL, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
         PHP_ME(phpsciter, run, 			NULL, ZEND_ACC_PUBLIC)
 
         PHP_ME(phpsciter, getVersion,   NULL, ZEND_ACC_PUBLIC)
@@ -38,6 +38,19 @@ const zend_function_entry phpsciter_methods[] =
 
 PHP_METHOD(phpsciter, __construct)
 {
+    zval* instance = getThis();
+    PHPSCITER_ZEND_UPDATE_PROPERTY_STRING(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_RESOURCE_PATH), PHPSCITER_G(resource_base_path));
+    PHPSCITER_ZEND_UPDATE_PROPERTY_STRING(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_TITLE), PHPSCITER_G(default_title));
+
+    PHPSCITER_ZEND_UPDATE_PROPERTY_NULL(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_LOAD_FILE));
+    PHPSCITER_ZEND_UPDATE_PROPERTY_NULL(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_LOAD_HTML));
+
+    PHPSCITER_ZEND_UPDATE_PROPERTY_LONG(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_TOP), 0);
+    PHPSCITER_ZEND_UPDATE_PROPERTY_LONG(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_LEFT), 0);
+    PHPSCITER_ZEND_UPDATE_PROPERTY_LONG(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_RIGHT), 0);
+    PHPSCITER_ZEND_UPDATE_PROPERTY_LONG(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_BOTTOM), 0);
+
+
 }
 
 PHP_METHOD(phpsciter, __destruct)
@@ -56,121 +69,124 @@ PHP_METHOD(phpsciter, __clone)
 {
 }
 
+//discard method
 PHP_METHOD(phpsciter, getInstance)
 {
-        int argc = ZEND_NUM_ARGS();
-        char *instance_name;
-        zval *get_instance_array = NULL;
+    //discard
+    RETURN_FALSE
+    int argc = ZEND_NUM_ARGS();
+    char *instance_name;
+    zval *get_instance_array = NULL;
 
 #if PHP_VERSION_ID >= 70000
-        size_t  instance_name_len;
-        zval *ppzval = NULL;
-        zval set_instance_array;
+    size_t  instance_name_len;
+    zval *ppzval = NULL;
+    zval set_instance_array;
 #else
-        int  instance_name_len;
+    int  instance_name_len;
     zval **ppzval = NULL;
     zval *set_instance_array;
 #endif
 
-        zval *instance;
+    zval *instance;
 
 //In php7 , this params instance_name can not be empty.
 #if PHP_VERSION_ID >= 70000
-        if (zend_parse_parameters(argc TSRMLS_CC, "s", &instance_name, &instance_name_len) == FAILURE)
-        {
-                zend_throw_exception(php_com_exception_class_entry,"The instance_name can not be empty,you can use phpsciter::PHPSCITER_INSTANCE_DEFAULT",999 TSRMLS_CC);
-                RETURN_FALSE;
-        }
+    if (zend_parse_parameters(argc TSRMLS_CC, "s", &instance_name, &instance_name_len) == FAILURE)
+    {
+            zend_throw_exception(php_com_exception_class_entry,"The instance_name can not be empty,you can use phpsciter::PHPSCITER_INSTANCE_DEFAULT",999 TSRMLS_CC);
+            RETURN_FALSE;
+    }
 #else
-        if (zend_parse_parameters(argc TSRMLS_CC, "|s", &instance_name, &instance_name_len) == FAILURE)
+    if (zend_parse_parameters(argc TSRMLS_CC, "|s", &instance_name, &instance_name_len) == FAILURE)
     {
         RETURN_FALSE;
     }
 #endif
 
-        if (argc < 1)
-        {
-                instance_name     = PHPSCITER_INSTANCE_DEFAULT;
-                instance_name_len = PHPSCITER_INSTANCE_DEFAULT_LEN;
-        }
+    if (argc < 1)
+    {
+        instance_name     = PHPSCITER_INSTANCE_DEFAULT;
+        instance_name_len = PHPSCITER_INSTANCE_DEFAULT_LEN;
+    }
 
-        get_instance_array = zend_read_static_property(phpsciter_ce, ZEND_STRL(PHPSCITER_NAME), 1 TSRMLS_CC);
+    get_instance_array = zend_read_static_property(phpsciter_ce, ZEND_STRL(PHPSCITER_NAME), 1 TSRMLS_CC);
 
-        if (get_instance_array && Z_TYPE_P(get_instance_array) == IS_ARRAY)
-        {
+    if (get_instance_array && Z_TYPE_P(get_instance_array) == IS_ARRAY)
+    {
 
 #if PHP_VERSION_ID >= 70000
-                if ((ppzval = zend_hash_str_find(Z_ARRVAL_P(get_instance_array),instance_name,instance_name_len)) != NULL)
-                {
-                        RETURN_ZVAL(ppzval, 1, 0);
-                }
-                else
-                {
-                        goto initInstance;
-                }
-#else
-                if (zend_hash_find(Z_ARRVAL_P(get_instance_array), ZEND_STRL(instance_name), (void **)&ppzval) == SUCCESS )
+        if ((ppzval = zend_hash_str_find(Z_ARRVAL_P(get_instance_array),instance_name,instance_name_len)) != NULL)
         {
-            RETURN_ZVAL(*ppzval, 1, 0);
+                RETURN_ZVAL(ppzval, 1, 0);
         }
         else
         {
-            goto initInstance;
-        }
-#endif
-        }
-        else
-        {
-#if PHP_VERSION_ID >= 70000
-                array_init(&set_instance_array);
-#else
-                MAKE_STD_ZVAL(set_instance_array);
-        array_init(set_instance_array);
-#endif
                 goto initInstance;
         }
+#else
+    if (zend_hash_find(Z_ARRVAL_P(get_instance_array), ZEND_STRL(instance_name), (void **)&ppzval) == SUCCESS )
+    {
+        RETURN_ZVAL(*ppzval, 1, 0);
+    }
+    else
+    {
+        goto initInstance;
+    }
+#endif
+    }
+    else
+    {
+#if PHP_VERSION_ID >= 70000
+        array_init(&set_instance_array);
+#else
+        MAKE_STD_ZVAL(set_instance_array);
+        array_init(set_instance_array);
+#endif
+        goto initInstance;
+    }
 
     initInstance:
 #if PHP_VERSION_ID >= 70000
-        instance = getThis();
-        zval re_instance;
+    instance = getThis();
+    zval re_instance;
 
-        if (!instance)
-        {
-                ZVAL_NULL(&re_instance);
-                instance = &re_instance;
-        }
+    if (!instance)
+    {
+            ZVAL_NULL(&re_instance);
+            instance = &re_instance;
+    }
 #else
-        MAKE_STD_ZVAL(instance);
+    MAKE_STD_ZVAL(instance);
 #endif
 
-        object_init_ex(instance, phpsciter_ce);
+    object_init_ex(instance, phpsciter_ce);
 
-        PHPSCITER_ZEND_UPDATE_PROPERTY_STRING(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_RESOURCE_PATH), PHPSCITER_G(resource_base_path));
-        PHPSCITER_ZEND_UPDATE_PROPERTY_STRING(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_TITLE), PHPSCITER_G(default_title));
+    PHPSCITER_ZEND_UPDATE_PROPERTY_STRING(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_RESOURCE_PATH), PHPSCITER_G(resource_base_path));
+    PHPSCITER_ZEND_UPDATE_PROPERTY_STRING(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_TITLE), PHPSCITER_G(default_title));
 
-        PHPSCITER_ZEND_UPDATE_PROPERTY_NULL(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_LOAD_FILE));
-        PHPSCITER_ZEND_UPDATE_PROPERTY_NULL(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_LOAD_HTML));
+    PHPSCITER_ZEND_UPDATE_PROPERTY_NULL(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_LOAD_FILE));
+    PHPSCITER_ZEND_UPDATE_PROPERTY_NULL(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_LOAD_HTML));
 
-        PHPSCITER_ZEND_UPDATE_PROPERTY_LONG(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_TOP), 0);
-        PHPSCITER_ZEND_UPDATE_PROPERTY_LONG(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_LEFT), 0);
-        PHPSCITER_ZEND_UPDATE_PROPERTY_LONG(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_RIGHT), 0);
-        PHPSCITER_ZEND_UPDATE_PROPERTY_LONG(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_BOTTOM), 0);
+    PHPSCITER_ZEND_UPDATE_PROPERTY_LONG(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_TOP), 0);
+    PHPSCITER_ZEND_UPDATE_PROPERTY_LONG(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_LEFT), 0);
+    PHPSCITER_ZEND_UPDATE_PROPERTY_LONG(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_RIGHT), 0);
+    PHPSCITER_ZEND_UPDATE_PROPERTY_LONG(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_BOTTOM), 0);
 
-        if (get_instance_array && IS_ARRAY == Z_TYPE_P(get_instance_array))
-        {
-                PHPSCITER_ADD_ASSOC_ZVAL_EX(get_instance_array,instance_name,instance_name_len,instance);
-                zend_update_static_property(phpsciter_ce, ZEND_STRL(PHPSCITER_NAME), get_instance_array TSRMLS_CC);
-        }
-        else
-        {
-                PHPSCITER_ADD_ASSOC_ZVAL_EX_AND(set_instance_array,instance_name,instance_name_len,instance);
-                PHPSCITER_ZEND_UPDATE_STATIC_PROPERTY(phpsciter_ce, ZEND_STRL(PHPSCITER_NAME), set_instance_array);
+    if (get_instance_array && IS_ARRAY == Z_TYPE_P(get_instance_array))
+    {
+            PHPSCITER_ADD_ASSOC_ZVAL_EX(get_instance_array,instance_name,instance_name_len,instance);
+            zend_update_static_property(phpsciter_ce, ZEND_STRL(PHPSCITER_NAME), get_instance_array TSRMLS_CC);
+    }
+    else
+    {
+            PHPSCITER_ADD_ASSOC_ZVAL_EX_AND(set_instance_array,instance_name,instance_name_len,instance);
+            PHPSCITER_ZEND_UPDATE_STATIC_PROPERTY(phpsciter_ce, ZEND_STRL(PHPSCITER_NAME), set_instance_array);
 
-                zval_ptr_dtor(&set_instance_array);
-        }
+            zval_ptr_dtor(&set_instance_array);
+    }
 
-        RETURN_ZVAL(instance, 1, 0);
+    RETURN_ZVAL(instance, 1, 0);
 }
 
 PHP_METHOD(phpsciter, defineFunction)
@@ -178,44 +194,52 @@ PHP_METHOD(phpsciter, defineFunction)
         zval *callback;
         zend_string *event_name;
 
-        if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "Sz", &event_name, &callback) == FAILURE)
-        {
-                return;
-        }
+#if PHP_VERSION_ID >= 70000
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "Sz", &event_name, &callback) == FAILURE)
+    {
+            return;
+    }
+#else
+    int len;
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sz", &event_name, &len, &callback) == FAILURE)
+    {
+        return;
+    }
+#endif
 
-        char *func_name = NULL;
-        if (!PHPSCITER_ZEND_IS_CALLBACK(callback, 0, &func_name TSRMLS_CC))
-        {
-                php_printf("Function '%s' is not callable\n", func_name);
-                efree(func_name);
-                RETURN_FALSE;
-        }
+    char *func_name = NULL;
+    if (!PHPSCITER_ZEND_IS_CALLBACK(callback, 0, &func_name TSRMLS_CC))
+    {
+            php_printf("Function '%s' is not callable\n", func_name);
+            efree(func_name);
+            RETURN_FALSE;
+    }
 
-        zval *function_name;
-        PHPSCITER_MAKE_STD_ZVAL(function_name);
-        ZVAL_STRINGL(function_name , Z_STRVAL_P(callback), Z_STRLEN_P(callback));
-        functionRegister(event_name, function_name);
+    zval *function_name;
+    PHPSCITER_MAKE_STD_ZVAL(function_name);
+    PHPSCITER_ZVAL_STRINGL(function_name , Z_STRVAL_P(callback), Z_STRLEN_P(callback));
+    functionRegister(event_name, function_name);
 
-        efree(func_name);
+    efree(func_name);
 
-        RETURN_TRUE;
+    RETURN_TRUE;
 }
 
 PHP_METHOD(phpsciter, ifDefined)
 {
-        zend_string *event_name;
+    zend_string *event_name;
 
-        if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "S", &event_name) == FAILURE)
-        {
-                return;
-        }
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "S", &event_name) == FAILURE)
+    {
+            return;
+    }
 
-        if (SCDOM_OK == checkRegisted(event_name))
-        {
-                RETURN_TRUE;
-        }
+    if (SCDOM_OK == checkRegisted(event_name))
+    {
+            RETURN_TRUE;
+    }
 
-        RETURN_FALSE;
+    RETURN_FALSE;
 }
 
 static void inline checkFileExist(const std::string& resource_path)
@@ -234,103 +258,107 @@ static void inline checkFileExist(const std::string& resource_path)
 
 PHP_METHOD(phpsciter, run)
 {
-        zval *instance;
-        zval *frame_top,*frame_left,*frame_right,*frame_bottom;
-        zval *title,*loadFile,*loadHtml,*resource_path;
+    zval *instance;
+    zval *frame_top,*frame_left,*frame_right,*frame_bottom;
+    zval *title,*loadFile,*loadHtml,*resource_path;
 
-        char* file_name = NULL;
-        int file_name_len = 0;
-        std::string file_path;
-        int res;
+    char* file_name = NULL;
+    int file_name_len = 0;
+    std::string file_path;
+    int res;
 
-//        if (!PHPSCITER_G(loadHtml) && !PHPSCITER_G(loadFile))
-//        {
-//                RETURN_FALSE;
-//        }
+//    if (!PHPSCITER_G(loadHtml) && !PHPSCITER_G(loadFile))
+//    {
+//            RETURN_FALSE;
+//    }
 
-        instance = getThis();
+    instance = getThis();
 
-        frame_top = PHPSCITER_ZEND_READ_PROPERTY(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_TOP));
-        frame_left = PHPSCITER_ZEND_READ_PROPERTY(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_LEFT));
-        frame_right = PHPSCITER_ZEND_READ_PROPERTY(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_RIGHT));
-        frame_bottom = PHPSCITER_ZEND_READ_PROPERTY(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_BOTTOM));
+    frame_top = PHPSCITER_ZEND_READ_PROPERTY(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_TOP));
+    frame_left = PHPSCITER_ZEND_READ_PROPERTY(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_LEFT));
+    frame_right = PHPSCITER_ZEND_READ_PROPERTY(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_RIGHT));
+    frame_bottom = PHPSCITER_ZEND_READ_PROPERTY(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_BOTTOM));
 
-        title = PHPSCITER_ZEND_READ_PROPERTY(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_TITLE));
-        resource_path = PHPSCITER_ZEND_READ_PROPERTY(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_RESOURCE_PATH));
+    title = PHPSCITER_ZEND_READ_PROPERTY(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_TITLE));
+    resource_path = PHPSCITER_ZEND_READ_PROPERTY(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_RESOURCE_PATH));
 
-        RECT frame;
-        frame.top = Z_LVAL_P(frame_top);
-        frame.left = Z_LVAL_P(frame_left);
-        frame.right = Z_LVAL_P(frame_right);
-        frame.bottom = Z_LVAL_P(frame_bottom);
+    RECT frame;
+    frame.top = Z_LVAL_P(frame_top);
+    frame.left = Z_LVAL_P(frame_left);
+    frame.right = Z_LVAL_P(frame_right);
+    frame.bottom = Z_LVAL_P(frame_bottom);
 
-        SciterWindowInit();
+    SciterWindowInit();
 
-        HWINDOW hw = SciterCreateWindow(SW_RESIZEABLE | SW_MAIN | SW_TOOL | SW_ENABLE_DEBUG, &frame, 0,0,0);
+    HWINDOW hw = SciterCreateWindow(SW_RESIZEABLE | SW_MAIN | SW_TOOL | SW_ENABLE_DEBUG, &frame, 0,0,0);
 
-        SciterSetCallback(hw, &SciterViewCallback, NULL);
-        SciterSetWindowTitle(hw,Z_STRVAL_P(title));
+    SciterSetCallback(hw, &SciterViewCallback, NULL);
+    SciterSetWindowTitle(hw,Z_STRVAL_P(title));
 
-        aux::a2w resource_path_as_wstr(Z_STRVAL_P(resource_path));
-        SciterSetHomeURL(hw,LPCWSTR(resource_path_as_wstr.c_str()));
+    aux::a2w resource_path_as_wstr(Z_STRVAL_P(resource_path));
+    SciterSetHomeURL(hw,LPCWSTR(resource_path_as_wstr.c_str()));
 
-        zval hook_name;
-        ZVAL_STRING(&hook_name,PHPSCITER_LOOD_HOOK_NAME);
-        PHPSCITER_G(load_hook_name) = &hook_name;
+    zval hook_name;
+    PHPSCITER_ZVAL_STRING(&hook_name,PHPSCITER_LOOD_HOOK_NAME);
+    PHPSCITER_G(load_hook_name) = &hook_name;
 
-        switch (PHPSCITER_G(loadModal))
-        {
-            case LOAD_HTML: {
-                loadHtml = PHPSCITER_ZEND_READ_PROPERTY(phpsciter_ce, instance,
-                                                        ZEND_STRL(PHPSCITER_PROPERTY_LOAD_HTML));
-                SciterLoadHtml(hw, (byte *) Z_STRVAL_P(loadHtml), Z_STRLEN_P(loadHtml),
-                               LPCWSTR(resource_path_as_wstr.c_str()));
-            } break;
-            case LOAD_HTML_FILE: {
-                loadFile = PHPSCITER_ZEND_READ_PROPERTY(phpsciter_ce, instance,
-                                                        ZEND_STRL(PHPSCITER_PROPERTY_LOAD_FILE));
-                file_name_len = spprintf(&file_name, 0, "%s%s", Z_STRVAL_P(resource_path), Z_STRVAL_P(loadFile));
-                file_path.append(file_name);
-                checkFileExist(file_path);
-                aux::a2w file_name_as_wstr(file_name);
-                SciterLoadFile(hw, LPCWSTR(file_name_as_wstr.c_str()));
-            } break;
-            case LOAD_PHP: {
-                std::string content = PHPSCITER_G(tool)->zendExecute(PHPSCITER_G(cureent_op_array));
-                SciterLoadHtml(hw, (byte *) content.c_str(), strlen(content.c_str()),
-                               LPCWSTR(resource_path_as_wstr.c_str()));
-                efree(PHPSCITER_G(cureent_op_array));
-                PHPSCITER_G(cureent_op_array) = nullptr;
-            } break;
-            case LOAD_PHP_FILE: {
-                loadFile = PHPSCITER_ZEND_READ_PROPERTY(phpsciter_ce, instance,
-                                                        ZEND_STRL(PHPSCITER_PROPERTY_LOAD_FILE));
-                file_name_len = spprintf(&file_name, 0, "%s%s", Z_STRVAL_P(resource_path), Z_STRVAL_P(loadFile));
-                //检查是否是一个文件
-                file_path.append(file_name);
-                checkFileExist(file_path);
-                PHPSCITER_G(cureent_op_array) = PHPSCITER_G(tool)->zendCompileFile((file_name));
-                std::string content = PHPSCITER_G(tool)->zendExecute(PHPSCITER_G(cureent_op_array));
-                SciterLoadHtml(hw, (byte *) content.c_str(), strlen(content.c_str()),
-                               LPCWSTR(resource_path_as_wstr.c_str()));
-                efree(PHPSCITER_G(cureent_op_array));
-                PHPSCITER_G(cureent_op_array) = nullptr;
-            } break;
-            default:
+    switch (PHPSCITER_G(loadModal))
+    {
+        case LOAD_HTML: {
+            loadHtml = PHPSCITER_ZEND_READ_PROPERTY(phpsciter_ce, instance,
+                                                    ZEND_STRL(PHPSCITER_PROPERTY_LOAD_HTML));
+            SciterLoadHtml(hw, (byte *) Z_STRVAL_P(loadHtml), Z_STRLEN_P(loadHtml),
+                           LPCWSTR(resource_path_as_wstr.c_str()));
+        } break;
+        case LOAD_HTML_FILE: {
+            loadFile = PHPSCITER_ZEND_READ_PROPERTY(phpsciter_ce, instance,
+                                                    ZEND_STRL(PHPSCITER_PROPERTY_LOAD_FILE));
+            file_name_len = spprintf(&file_name, 0, "%s%s", Z_STRVAL_P(resource_path), Z_STRVAL_P(loadFile));
+            file_path.append(file_name);
+            checkFileExist(file_path);
+            aux::a2w file_name_as_wstr(file_name);
+            SciterLoadFile(hw, LPCWSTR(file_name_as_wstr.c_str()));
+        } break;
+        case LOAD_PHP: {
+            std::string content = PHPSCITER_G(tool)->zendExecute(PHPSCITER_G(cureent_op_array));
+            SciterLoadHtml(hw, (byte *) content.c_str(), strlen(content.c_str()),
+                           LPCWSTR(resource_path_as_wstr.c_str()));
+            efree(PHPSCITER_G(cureent_op_array));
+            PHPSCITER_G(cureent_op_array) = nullptr;
+        } break;
+        case LOAD_PHP_FILE: {
+            loadFile = PHPSCITER_ZEND_READ_PROPERTY(phpsciter_ce, instance,
+                                                    ZEND_STRL(PHPSCITER_PROPERTY_LOAD_FILE));
+            file_name_len = spprintf(&file_name, 0, "%s%s", Z_STRVAL_P(resource_path), Z_STRVAL_P(loadFile));
+            //检查是否是一个文件
+            file_path.append(file_name);
+            checkFileExist(file_path);
+            PHPSCITER_G(cureent_op_array) = PHPSCITER_G(tool)->zendCompileFile((file_name));
+            if(PHPSCITER_G(cureent_op_array) == nullptr)
+            {
                 RETURN_FALSE;
-                break;
-        }
+            }
+            std::string content = PHPSCITER_G(tool)->zendExecute(PHPSCITER_G(cureent_op_array));
+            SciterLoadHtml(hw, (byte *) content.c_str(), strlen(content.c_str()),
+                           LPCWSTR(resource_path_as_wstr.c_str()));
+            efree(PHPSCITER_G(cureent_op_array));
+            PHPSCITER_G(cureent_op_array) = nullptr;
+        } break;
+        default:
+            RETURN_FALSE;
+            break;
+    }
 
-        if (SCDOM_OK != SciterWindowAttachEventHandler(hw, ElementEventProcImplementeation, NULL, HANDLE_ALL))
-        {
-                RETURN_FALSE;
-        }
+    if (SCDOM_OK != SciterWindowAttachEventHandler(hw, ElementEventProcImplementeation, NULL, HANDLE_ALL))
+    {
+            RETURN_FALSE;
+    }
 
-        SciterShowWindow(hw);
+    SciterShowWindow(hw);
 
-        SciterApplicationRun(hw);
+    SciterApplicationRun(hw);
 
-        RETURN_TRUE;
+    RETURN_TRUE;
 }
 
 PHP_METHOD(phpsciter, getVersion)
@@ -340,69 +368,94 @@ PHP_METHOD(phpsciter, getVersion)
 
         len = spprintf(&strg, 0, "%d", SciterVersion(FALSE));
 
-        RETURN_STRINGL(strg, len);
+        PHPSCITER_RETURN_STRINGL(strg, len);
 }
 
 PHP_METHOD(phpsciter, getPHPSciterVersion)
 {
-        RETURN_STRINGL(PHP_PHPSCITER_VERSION, strlen(PHP_PHPSCITER_VERSION));
+        PHPSCITER_RETURN_STRINGL(PHP_PHPSCITER_VERSION, strlen(PHP_PHPSCITER_VERSION));
 }
 
 PHP_METHOD(phpsciter,setResourcePath)
 {
-        zval *instance;
+    zval *instance;
+    instance = getThis();
 
-        zend_string *resource_path = NULL;
+        zend_string *resource_path = nullptr;
+#if PHP_VERSION_ID >= 70000
         if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "S", &resource_path) == FAILURE)
         {
                 return;
         }
+#else
+    int len;
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &resource_path, &len) == FAILURE)
+    {
+        return;
+    }
+#endif
 
-        instance = getThis();
-
-        PHPSCITER_ZEND_UPDATE_PROPERTY_STRING(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_RESOURCE_PATH), ZSTR_VAL(resource_path));
-
+//        PHPSCITER_ZEND_UPDATE_PROPERTY_STRING(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_RESOURCE_PATH),
+//                PHPSCITER_ZSTR_VAL(resource_path));
+    zend_update_property_string(phpsciter_ce,instance,PHPSCITER_PROPERTY_RESOURCE_PATH
+            ,sizeof(PHPSCITER_PROPERTY_RESOURCE_PATH)-1,resource_path TSRMLS_CC);
         RETURN_TRUE;
 }
 
 PHP_METHOD(phpsciter,setWindowFrame)
 {
-        zval *instance;
-        zend_long frame_top = 0;
-        zend_long frame_left = 0;
-        zend_long frame_right = 0;
-        zend_long frame_bottom = 0;
+#if PHP_VERSION_ID>= 70000
+    zend_long frame_top = 1;
+    zend_long frame_left = 1;
+    zend_long frame_right = 1;
+    zend_long frame_bottom = 0;
+#else
+    long frame_top = 0;
+    long frame_left = 0;
+    long frame_right = 0;
+    long frame_bottom = 0;
+#endif
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llll", &frame_top, &frame_left, &frame_right,
+            &frame_bottom) == FAILURE)
+    {
+            RETURN_FALSE;
+    }
+    zval *instance;
 
-        if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llll", &frame_top, &frame_left, &frame_right, &frame_bottom) == FAILURE)
-        {
-                return;
-        }
+    instance = getThis();
 
-        instance = getThis();
+    PHPSCITER_ZEND_UPDATE_PROPERTY_LONG(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_TOP), frame_top);
+    PHPSCITER_ZEND_UPDATE_PROPERTY_LONG(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_LEFT), frame_left);
+    PHPSCITER_ZEND_UPDATE_PROPERTY_LONG(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_RIGHT), frame_right);
+    PHPSCITER_ZEND_UPDATE_PROPERTY_LONG(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_BOTTOM), frame_bottom);
 
-        PHPSCITER_ZEND_UPDATE_PROPERTY_LONG(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_TOP), frame_top);
-        PHPSCITER_ZEND_UPDATE_PROPERTY_LONG(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_LEFT), frame_left);
-        PHPSCITER_ZEND_UPDATE_PROPERTY_LONG(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_RIGHT), frame_right);
-        PHPSCITER_ZEND_UPDATE_PROPERTY_LONG(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_BOTTOM), frame_bottom);
-
-        RETURN_TRUE;
+    RETURN_TRUE;
 }
 
 PHP_METHOD(phpsciter,setWindowTitle)
 {
-        zval *instance;
+    zval *instance;
 
-        zend_string *title = NULL;
-        if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "S", &title) == FAILURE)
-        {
-                return;
-        }
+    zend_string *title = NULL;
+#if PHP_VERSION_ID >= 70000
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "S", &title) == FAILURE)
+    {
+            return;
+    }
+#else
+    int len;
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &title, &len) == FAILURE)
+    {
+            return;
+    }
+#endif
 
-        instance = getThis();
+    instance = getThis();
 
-        PHPSCITER_ZEND_UPDATE_PROPERTY_STRING(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_TITLE), ZSTR_VAL(title));
+    PHPSCITER_ZEND_UPDATE_PROPERTY_STRING(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_TITLE),
+                                          PHPSCITER_ZSTR_VAL(title));
 
-        RETURN_TRUE;
+    RETURN_TRUE;
 }
 
 PHP_METHOD(phpsciter,loadFile)
@@ -410,16 +463,25 @@ PHP_METHOD(phpsciter,loadFile)
     zval *instance;
 
     zend_string *file_name = NULL;
+#if PHP_VERSION_ID >= 70000
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "S", &file_name) == FAILURE)
     {
             return;
     }
+#else
+    int len;
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &file_name, &len) == FAILURE)
+    {
+        return;
+    }
+#endif
 
     instance = getThis();
     PHPSCITER_G(loadFile) = TRUE;
-    PHPSCITER_ZEND_UPDATE_PROPERTY_STRING(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_LOAD_FILE), ZSTR_VAL(file_name));
+    PHPSCITER_ZEND_UPDATE_PROPERTY_STRING(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_LOAD_FILE),
+                                          PHPSCITER_ZSTR_VAL(file_name));
 
-    if (PHPSCITER_G(tool)->checkPhpFile(ZSTR_VAL(file_name)) == FAILURE) {
+    if (PHPSCITER_G(tool)->checkPhpFile(PHPSCITER_ZSTR_VAL(file_name)) == FAILURE) {
         PHPSCITER_G(loadModal) = LOAD_HTML_FILE;
     } else {
         PHPSCITER_G(loadModal) = LOAD_PHP_FILE;
@@ -430,35 +492,42 @@ PHP_METHOD(phpsciter,loadFile)
 
 PHP_METHOD(phpsciter,loadHtml)
 {
-        zval *instance;
+    zval *instance;
 
-        zend_string *html = NULL;
-        if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "S", &html) == FAILURE)
-        {
-                return;
-        }
+    zend_string *html = NULL;
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "S", &html) == FAILURE)
+    {
+            return;
+    }
 
-        instance = getThis();
+    instance = getThis();
 
-        PHPSCITER_ZEND_UPDATE_PROPERTY_STRING(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_LOAD_HTML), ZSTR_VAL(html));
-        PHPSCITER_G(loadHtml) = TRUE;
-        PHPSCITER_G(loadModal) = LOAD_HTML;
+    PHPSCITER_ZEND_UPDATE_PROPERTY_STRING(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_LOAD_HTML),
+                                          PHPSCITER_ZSTR_VAL(html));
+    PHPSCITER_G(loadHtml) = TRUE;
+    PHPSCITER_G(loadModal) = LOAD_HTML;
 
-        RETURN_TRUE;
+    RETURN_TRUE;
 }
 
 PHP_METHOD(phpsciter,loadPHP)
 {
-        zend_string *php_content = NULL;
-        ZEND_PARSE_PARAMETERS_START(1, 1)
-            Z_PARAM_STR(php_content)
-        ZEND_PARSE_PARAMETERS_END();
-
-        zval php_content_zval;
-        ZVAL_STR(&php_content_zval,php_content);
-        PHPSCITER_G(cureent_op_array) = zend_compile_string(&php_content_zval,"Standard input code");
-        PHPSCITER_G(loadModal) = LOAD_PHP;
-        RETURN_TRUE;
+    zend_string *php_content = NULL;
+#if PHP_VERSION_ID >= 70000
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_STR(php_content)
+    ZEND_PARSE_PARAMETERS_END();
+#else
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "S", &php_content) == FAILURE)
+    {
+        return;
+    }
+#endif
+    zval php_content_zval;
+    PHPSCITER_ZVAL_STR(&php_content_zval,php_content);
+    PHPSCITER_G(cureent_op_array) = zend_compile_string(&php_content_zval,"Standard input code");
+    PHPSCITER_G(loadModal) = LOAD_PHP;
+    RETURN_TRUE;
 }
 
 PHP_METHOD(phpsciter, getSciterHtmlByPhpFile)
@@ -471,14 +540,14 @@ PHP_METHOD(phpsciter, getSciterHtmlByPhpFile)
         RETURN_FALSE
     }
 
-    zend_op_array* op_array = PHPSCITER_G(tool)->zendCompileFile(ZSTR_VAL(load_file_name));
+    zend_op_array* op_array = PHPSCITER_G(tool)->zendCompileFile(PHPSCITER_ZSTR_VAL(load_file_name));
     std::string content;
     if(op_array) {
         content = PHPSCITER_G(tool)->zendExecute(op_array);
         if(UNEXPECTED(!content.empty())) {
             efree(op_array);
             //aux::a2w w_content(content.c_str());
-            RETURN_STRING(content.c_str());
+            PHPSCITER_RETURN_STRING(content.c_str());
         }else{
             efree(op_array);
             RETURN_EMPTY_STRING();
@@ -490,29 +559,28 @@ PHP_METHOD(phpsciter, getSciterHtmlByPhpFile)
 
 void load_phpsciter_application()
 {
-        zend_class_entry phpsciter;
+    zend_class_entry phpsciter;
 
-        INIT_CLASS_ENTRY(phpsciter, "phpsciter", phpsciter_methods);
+    INIT_CLASS_ENTRY(phpsciter, "phpsciter", phpsciter_methods);
 
 #if PHP_VERSION_ID >= 70000
-        phpsciter_ce = zend_register_internal_class_ex(&phpsciter, NULL);
+    phpsciter_ce = zend_register_internal_class_ex(&phpsciter, NULL);
 #else
-        phpsciter_ce = zend_register_internal_class_ex(&phpsciter, NULL, NULL TSRMLS_CC);
+    phpsciter_ce = zend_register_internal_class_ex(&phpsciter, NULL, NULL TSRMLS_CC);
 #endif
 
-        phpsciter_ce->ce_flags = ZEND_ACC_IMPLICIT_PUBLIC;
+    phpsciter_ce->ce_flags = ZEND_ACC_IMPLICIT_PUBLIC;
 
-        zend_declare_class_constant_stringl(phpsciter_ce,ZEND_STRL(PHPSCITER_INSTANCE_DEFAULT),ZEND_STRL(PHPSCITER_INSTANCE_DEFAULT) TSRMLS_CC);
-        zend_declare_class_constant_stringl(phpsciter_ce,ZEND_STRL(PHPSCITER_PROPERTY_TITLE),ZEND_STRL("phpsciter") TSRMLS_CC);
+    zend_declare_class_constant_stringl(phpsciter_ce,ZEND_STRL(PHPSCITER_INSTANCE_DEFAULT),ZEND_STRL(PHPSCITER_INSTANCE_DEFAULT) TSRMLS_CC);
+    zend_declare_class_constant_stringl(phpsciter_ce,ZEND_STRL(PHPSCITER_PROPERTY_TITLE),ZEND_STRL("phpsciter") TSRMLS_CC);
 
-        zend_declare_property_null(phpsciter_ce, ZEND_STRL(PHPSCITER_NAME), ZEND_ACC_STATIC | ZEND_ACC_PROTECTED TSRMLS_CC);
+    //zend_declare_property_null(phpsciter_ce, ZEND_STRL(PHPSCITER_NAME), ZEND_ACC_STATIC | ZEND_ACC_PROTECTED TSRMLS_CC);
 
-        zend_declare_property_null(phpsciter_ce, ZEND_STRL(PHPSCITER_PROPERTY_RESOURCE_PATH), ZEND_ACC_PROTECTED TSRMLS_CC);
-        zend_declare_property_long(phpsciter_ce, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_TOP),0, ZEND_ACC_PROTECTED TSRMLS_CC);
-        zend_declare_property_long(phpsciter_ce, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_LEFT),0, ZEND_ACC_PROTECTED TSRMLS_CC);
-        zend_declare_property_long(phpsciter_ce, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_RIGHT),0, ZEND_ACC_PROTECTED TSRMLS_CC);
-        zend_declare_property_long(phpsciter_ce, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_BOTTOM),0, ZEND_ACC_PROTECTED TSRMLS_CC);
+    zend_declare_property_null(phpsciter_ce, ZEND_STRL(PHPSCITER_PROPERTY_RESOURCE_PATH), ZEND_ACC_PROTECTED TSRMLS_CC);
+    zend_declare_property_long(phpsciter_ce, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_TOP),0, ZEND_ACC_PROTECTED TSRMLS_CC);
+    zend_declare_property_long(phpsciter_ce, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_LEFT),0, ZEND_ACC_PROTECTED TSRMLS_CC);
+    zend_declare_property_long(phpsciter_ce, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_RIGHT),0, ZEND_ACC_PROTECTED TSRMLS_CC);
+    zend_declare_property_long(phpsciter_ce, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_BOTTOM),0, ZEND_ACC_PROTECTED TSRMLS_CC);
 
-        //initialize static_members_table
-        zend_class_init_statics(phpsciter_ce);
+    //initialize static_members_table
 }

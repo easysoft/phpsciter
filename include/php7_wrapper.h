@@ -21,6 +21,7 @@
 #define PHPSCITER_STR_SIZE(s) sizeof(s) - 1
 #define PHPSCITER_ZVAL_STRING(z, s) ZVAL_STRING(z, s)
 #define PHPSCITER_ZVAL_STRINGL(z, s, l) ZVAL_STRINGL(z, s, l)
+#define PHPSCITER_RETURN_STRING(k) RETURN_STRING(k)
 #define PHPSCITER_RETURN_STRINGL(k, l) RETURN_STRINGL(k, l)
 #define PHPSCITER_ADD_INDEX_STRINGL(z, i, s, l) add_index_stringl(&z, i, s, l)
 #define PHPSCITER_ADD_INDEX_LONG(z, i, l) add_index_long(&z, i, l)
@@ -42,6 +43,16 @@
 #define PHPSCITER_ZEND_UPDATE_PROPERTY_LONG(ce,z,zl,zn) zend_update_property_long(ce,z,zl,zn TSRMLS_CC)
 #define PHPSCITER_ZEND_UPDATE_PROPERTY_STRING(ce,z,zl,s) zend_update_property_string(ce,z,zl,s)
 #define PHPSCITER_ZEND_READ_PROPERTY(ce,z,sl) zend_read_property(ce,z,sl,0,NULL)
+
+//zval
+#define PHPSCITER_ZVAL_STR(z, s) ZVAL_STR(z, s)
+#define PHPSCITER_ZVAL_COPY(z, d) ZVAL_COPY(z, d)
+
+//zend_String
+#define PHPSCITER_ZSTR_VAL(zstr) ZSTR_VAL(zstr)
+
+//array
+#define PHPSCITER_ARRAY_COUNT(ht) zend_array_count(ht)
 
 static inline int PHPSCITER_ZEND_IS_CALLBACK(zval *cb, int a, char **name)
 {
@@ -96,11 +107,27 @@ static inline int PHPSCITER_CALL_USER_FUNCTION_EX(HashTable *function_table, zva
 #define PHPSCITER_COPY_TO_STACK(a, b) {zval *__tmp = a; a = &b; memcpy(a, __tmp, sizeof(zval));}
 #define PHPSCITER_ZVAL_PTR_DTOR(p)  zval_ptr_dtor(*p)
 
+#define ZEND_GET "_GET"
+#define ZEND_GET_LEN strlen(ZEND_GET)
+#define ZEND_POST "_POST"
+#define ZEND_POST_LEN strlen(ZEND_POST)
+#define ZEND_REQUEST "_REQUEST"
+#define ZEND_REQUEST_LEN strlen(ZEND_REQUEST)
+#define ZEND_SERVER "_SERVER"
+#define ZEND_SERVER_LEN strlen(ZEND_SERVER)
+#define ZEND_SERVER_REQUEST_URI "REQUEST_URI"
+#define ZEND_SERVER_REQUEST_URI_LEN strlen(ZEND_SERVER_REQUEST_URI)
+#define ZEND_COOKIE "_COOKIE"
+#define ZEND_COOKIE_LEN strlen(ZEND_COOKIE)
+
 #else
+
+#define zend_string char
 
 #define PHPSCITER_STR_SIZE(s) strlen(s) + 1
 #define PHPSCITER_ZVAL_STRING(z, s) ZVAL_STRING(z, s, 1)
-#define PHPSCITER_ZVAL_STRINGL(z, s, l) ZVAL_STRING(z, s, l, 1)
+#define PHPSCITER_ZVAL_STRINGL(z, s, l) ZVAL_STRINGL(z, s, l, 1)
+#define PHPSCITER_RETURN_STRING(k) RETURN_STRING(k, 1)
 #define PHPSCITER_RETURN_STRINGL(k, l) RETURN_STRINGL(k, l, 1)
 #define PHPSCITER_ADD_INDEX_STRINGL(z, i, s, l) add_index_stringl(z, i, s, l, 1)
 #define PHPSCITER_ADD_INDEX_LONG(z, i, l) add_index_long(z, i, l)
@@ -138,4 +165,69 @@ static inline int PHPSCITER_CALL_USER_FUNCTION_EX(HashTable *function_table, zva
 #define PHPSCITER_ALLOC_INIT_ZVAL(p) ALLOC_INIT_ZVAL(p)
 #define PHPSCITER_COPY_TO_STACK(a, b)
 #define PHPSCITER_ZVAL_PTR_DTOR zval_ptr_dtor
+
+//zval
+#define PHPSCITER_ZVAL_STR(z, s) PHPSCITER_ZVAL_STRING(z, s)
+#define PHPSCITER_ZVAL_COPY(z, d) ZVAL_COPY(z, d)
+#define PHPSCITER_ZVAL_DTOR(p) zval_ptr_dtor(&p)
+
+//zend_string
+#define PHPSCITER_ZSTR_VAL(zstr) (zstr)
+#define PHPSCITER_ZSTR_LEN(zstr) strlen(zstr)
+
+//array
+#define PHPSCITER_ARRAY_COUNT(ht) zend_hash_num_elements(ht)
+
+//zend_int
+/* Integer types. */
+#ifdef ZEND_ENABLE_ZVAL_LONG64
+typedef int64_t zend_long;
+typedef uint64_t zend_ulong;
+typedef int64_t zend_off_t;
+# define ZEND_LONG_MAX INT64_MAX
+# define ZEND_LONG_MIN INT64_MIN
+# define ZEND_ULONG_MAX UINT64_MAX
+# define Z_L(i) INT64_C(i)
+# define Z_UL(i) UINT64_C(i)
+# define SIZEOF_ZEND_LONG 8
+#else
+typedef int32_t zend_long;
+typedef int32_t zend_off_t;
+#ifndef ZEND_LONG_MAX
+# define ZEND_LONG_MAX INT32_MAX
+#endif
+#ifndef ZEND_LONG_MIN
+# define ZEND_LONG_MIN INT32_MIN
+#endif
+#ifndef ZEND_ULONG_MAX
+# define ZEND_ULONG_MAX UINT32_MAX
+#endif
+#ifndef Z_L(i)
+# define Z_L(i) INT32_C(i)
+#endif
+#ifndef Z_UL(i)
+# define Z_UL(i) UINT32_C(i)
+#endif
+#ifndef SIZEOF_ZEND_LONG
+# define SIZEOF_ZEND_LONG 4
+#endif
+#endif
+
+#ifndef ZVAL_COPY(d, z)
+#define ZVAL_COPY(d, z) zval_copy_ctor(&d);
+#endif
+
+#define ZEND_GET "_GET"
+#define ZEND_GET_LEN sizeof(ZEND_GET)
+#define ZEND_POST "_POST"
+#define ZEND_POST_LEN sizeof(ZEND_POST)
+#define ZEND_REQUEST "_REQUEST"
+#define ZEND_REQUEST_LEN sizeof(ZEND_REQUEST)
+#define ZEND_SERVER "_SERVER"
+#define ZEND_SERVER_LEN sizeof(ZEND_SERVER)
+#define ZEND_SERVER_REQUEST_URI "REQUEST_URI"
+#define ZEND_SERVER_REQUEST_URI_LEN sizeof(ZEND_SERVER_REQUEST_URI)
+#define ZEND_COOKIE "_COOKIE"
+#define ZEND_COOKIE_LEN sizeof(ZEND_COOKIE)
+
 #endif
