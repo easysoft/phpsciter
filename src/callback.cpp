@@ -32,7 +32,7 @@ BOOL functionRegister(zend_string *event_name, zval *callback)
     zend_hash_add(&callbacks,event_name,callback);
 #else
     int res;
-    res = zend_hash_add(&callbacks, event_name, strlen(event_name),
+    res = zend_hash_add(&callbacks, event_name, strlen(event_name)+1,
             &callback, sizeof(zval), nullptr);
     if(res == FAILURE)
     {
@@ -50,7 +50,7 @@ BOOL checkRegisted(zend_string *event_name)
         return true;
     }
 #else
-    if (zend_hash_find(&callbacks, event_name, PHPSCITER_ZSTR_LEN(event_name), nullptr))
+    if (zend_hash_find(&callbacks, ZEND_STRS(event_name), nullptr))
     {
         return true;
     }
@@ -121,8 +121,8 @@ BOOL SciterExecuteFunction(HELEMENT he, SCRIPTING_METHOD_PARAMS* p)
 #if PHP_VERSION_ID >= 70000
     zval *callback = zend_hash_find(&callbacks, event_name);
 #else
-    zval* callback;
-    int res = zend_hash_find(&callbacks, event_name, PHPSCITER_ZSTR_LEN(event_name),(void**)&callback);
+    zval** callback;
+    int res = zend_hash_find(&callbacks, event_name, strlen(event_name)+1,(void**)&callback);
     if(res == FAILURE)
         return  false;
 #endif
@@ -132,7 +132,11 @@ BOOL SciterExecuteFunction(HELEMENT he, SCRIPTING_METHOD_PARAMS* p)
 
     if (callback)
     {
+#if PHP_VERSION_ID >= 70000
         if (IS_STRING == Z_TYPE_P(callback))
+#else
+        if (IS_STRING == Z_TYPE_P(*callback))
+#endif
         {
 
 #if PHP_VERSION_ID >= 70000
@@ -156,6 +160,18 @@ BOOL SciterExecuteFunction(HELEMENT he, SCRIPTING_METHOD_PARAMS* p)
                 php_printf("executeFunction error -> \n");
                 return false;
             }
+
+            if (EG(exception))
+            {
+                zend_exception_error(EG(exception), E_ERROR TSRMLS_CC);
+            }
+
+            if (retval != NULL)
+            {
+                ZVAL_COPY(&retval_copy,retval);
+                ok = SetSciterValue(&p->result, &retval_copy);
+            }
+
 #else
             args_count = p->argc;
             zval **args[args_count];
@@ -179,7 +195,7 @@ BOOL SciterExecuteFunction(HELEMENT he, SCRIPTING_METHOD_PARAMS* p)
                 ok = SetPHPValue(p2, *args[i]);
             }
 
-            if (PHPSCITER_CALL_USER_FUNCTION_EX(EG(function_table), NULL, callback, &retval, p->argc, args, 0,
+            if (PHPSCITER_CALL_USER_FUNCTION_EX(EG(function_table), NULL, *callback, &retval, p->argc, args, 0,
                                                 NULL TSRMLS_CC) == FAILURE)
             {
                 php_printf("executeFunction error -> \n");
@@ -191,7 +207,6 @@ BOOL SciterExecuteFunction(HELEMENT he, SCRIPTING_METHOD_PARAMS* p)
 
                 return false;
             }
-#endif
 
             if (EG(exception))
             {
@@ -208,7 +223,7 @@ BOOL SciterExecuteFunction(HELEMENT he, SCRIPTING_METHOD_PARAMS* p)
             {
                 delete *args[i];
             }
-
+#endif
             return true;
         }
         else

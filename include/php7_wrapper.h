@@ -106,19 +106,20 @@ static inline int PHPSCITER_CALL_USER_FUNCTION_EX(HashTable *function_table, zva
 #define PHPSCITER_ALLOC_INIT_ZVAL(p) do{p = (zval *)emalloc(sizeof(zval)); bzero(p, sizeof(zval));}while(0)
 #define PHPSCITER_COPY_TO_STACK(a, b) {zval *__tmp = a; a = &b; memcpy(a, __tmp, sizeof(zval));}
 #define PHPSCITER_ZVAL_PTR_DTOR(p)  zval_ptr_dtor(*p)
+#define PHPSCITER_ZVAL_DTOR(p) zval_ptr_dtor(p)
 
 #define ZEND_GET "_GET"
-#define ZEND_GET_LEN strlen(ZEND_GET)
+#define ZEND_GET_LEN sizeof(ZEND_GET)-1
 #define ZEND_POST "_POST"
-#define ZEND_POST_LEN strlen(ZEND_POST)
+#define ZEND_POST_LEN sizeof(ZEND_POST)-1
 #define ZEND_REQUEST "_REQUEST"
-#define ZEND_REQUEST_LEN strlen(ZEND_REQUEST)
+#define ZEND_REQUEST_LEN sizeof(ZEND_REQUEST)-1
 #define ZEND_SERVER "_SERVER"
-#define ZEND_SERVER_LEN strlen(ZEND_SERVER)
+#define ZEND_SERVER_LEN sizeof(ZEND_SERVER)-1
 #define ZEND_SERVER_REQUEST_URI "REQUEST_URI"
-#define ZEND_SERVER_REQUEST_URI_LEN strlen(ZEND_SERVER_REQUEST_URI)
+#define ZEND_SERVER_REQUEST_URI_LEN sizeof(ZEND_SERVER_REQUEST_URI)-1
 #define ZEND_COOKIE "_COOKIE"
-#define ZEND_COOKIE_LEN strlen(ZEND_COOKIE)
+#define ZEND_COOKIE_LEN sizeof(ZEND_COOKIE)-1
 
 #else
 

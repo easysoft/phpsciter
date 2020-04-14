@@ -110,12 +110,14 @@ string Util::zendExecute(zend_op_array *op_array)
     close(pipe_fd[0]);
     close(pipe_fd[1]);
     destroy_op_array(op_array TSRMLS_CC);
+#if PHP_VERSION_ID < 70000
     if (!EG(exception)) {
         if (EG(return_value_ptr_ptr) && *EG(return_value_ptr_ptr)) {
             zval_ptr_dtor(EG(return_value_ptr_ptr));
         }
     }
     reStoreOldExecuteInfo();
+#endif
     return content;
 }
 
@@ -164,6 +166,7 @@ zend_op_array *Util::zendCompileFile(const char* file_name)
         zend_string_release(file_handle.opened_path);
 #endif
 
+#if PHP_VERSION_ID < 70000
     if(op_array)
     {
         zval *result = NULL;
@@ -180,6 +183,7 @@ zend_op_array *Util::zendCompileFile(const char* file_name)
         }
 #endif
     }
+#endif
     return op_array;
 }
 

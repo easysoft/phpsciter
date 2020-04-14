@@ -395,10 +395,13 @@ PHP_METHOD(phpsciter,setResourcePath)
     }
 #endif
 
-//        PHPSCITER_ZEND_UPDATE_PROPERTY_STRING(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_RESOURCE_PATH),
-//                PHPSCITER_ZSTR_VAL(resource_path));
+#if PHP_VERSION_ID > 70000
+        PHPSCITER_ZEND_UPDATE_PROPERTY_STRING(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_RESOURCE_PATH),
+                PHPSCITER_ZSTR_VAL(resource_path));
+#else
     zend_update_property_string(phpsciter_ce,instance,PHPSCITER_PROPERTY_RESOURCE_PATH
             ,sizeof(PHPSCITER_PROPERTY_RESOURCE_PATH)-1,resource_path TSRMLS_CC);
+#endif
         RETURN_TRUE;
 }
 
