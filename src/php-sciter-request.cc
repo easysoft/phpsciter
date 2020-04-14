@@ -13,7 +13,7 @@ BOOL ZendSciterRequest::initRequest(const std::string& request_uri) {
         zend_is_auto_global(request_str);
         zend_string_release(request_str);
 #else
-        zend_is_auto_global(ZEND_REQUEST, ZEND_REQUEST_LEN);
+        zend_is_auto_global(ZEND_STRL(ZEND_REQUEST));
 #endif
     }
 
@@ -23,13 +23,12 @@ BOOL ZendSciterRequest::initRequest(const std::string& request_uri) {
         zend_is_auto_global(request_str);
         zend_string_release(request_str);
 #else
-        zend_is_auto_global(ZEND_SERVER, ZEND_SERVER_LEN);
+        zend_is_auto_global(ZEND_STRL(ZEND_SERVER));
 #endif
     }
 
     //clear and init global var
     zval* array;
-    MAKE_STD_ZVAL(array);
 #if PHP_VERSION_ID >= 70000
     zval* post_data = zend_hash_str_find(&EG(symbol_table),ZEND_POST,ZEND_POST_LEN);
     zval* get_data = zend_hash_str_find(&EG(symbol_table),ZEND_GET,ZEND_GET_LEN);
@@ -42,22 +41,22 @@ BOOL ZendSciterRequest::initRequest(const std::string& request_uri) {
     zval** request_data = nullptr;
     zval** server_data = nullptr;
 
-    res = zend_hash_find(&EG(symbol_table), ZEND_POST, ZEND_POST_LEN, (void**)&post_data);
+    res = zend_hash_find(&EG(symbol_table), ZEND_STRS(ZEND_POST), (void**)&post_data);
     if(res == FAILURE)
     {
         post_data = nullptr;
     }
-    res = zend_hash_find(&EG(symbol_table), ZEND_GET, ZEND_GET_LEN, (void**)&get_data);
+    res = zend_hash_find(&EG(symbol_table), ZEND_STRS(ZEND_GET), (void**)&get_data);
     if(res == FAILURE)
     {
         get_data = nullptr;
     }
-    res =zend_hash_find(&EG(symbol_table), ZEND_REQUEST, ZEND_REQUEST_LEN, (void**)&request_data);
+    res =zend_hash_find(&EG(symbol_table), ZEND_STRS(ZEND_REQUEST), (void**)&request_data);
     if(res == FAILURE)
     {
         request_data = nullptr;
     }
-    res = zend_hash_find(&EG(symbol_table), ZEND_SERVER, ZEND_SERVER_LEN, (void**)&server_data);
+    res = zend_hash_find(&EG(symbol_table), ZEND_STRS(ZEND_SERVER), (void**)&server_data);
     if(res == FAILURE)
     {
         server_data = nullptr;
@@ -67,36 +66,44 @@ BOOL ZendSciterRequest::initRequest(const std::string& request_uri) {
     if(get_data)
     {
         PHPSCITER_ZVAL_DTOR(*get_data);
+        MAKE_STD_ZVAL(*get_data);
         array_init(*get_data);
 
     }else{
 #if PHP_VERSION_ID >= 70000
         get_data = zend_hash_str_add(&EG(symbol_table),ZEND_GET,ZEND_GET_LEN,&array);
 #else
-        zend_hash_add(&EG(symbol_table), ZEND_GET,ZEND_GET_LEN, (void *)&array, sizeof(zval*), (void**)&get_data);
+        MAKE_STD_ZVAL(array);
+        array_init(array);
+        zend_hash_add(&EG(symbol_table), ZEND_GET, sizeof(ZEND_GET), (void *)&array, sizeof(zval*), (void**)&get_data);
 #endif
     }
     if(post_data)
     {
         PHPSCITER_ZVAL_DTOR(*post_data);
+        MAKE_STD_ZVAL(*post_data);
         array_init(*post_data);
     }else{
 #if PHP_VERSION_ID >= 70000
         post_data = zend_hash_str_add(&EG(symbol_table),ZEND_POST,ZEND_POST_LEN,&array);
 #else
-        zend_hash_add(&EG(symbol_table), ZEND_POST, ZEND_POST_LEN, (void *)&array, sizeof(zval*), (void**)&post_data);
+        MAKE_STD_ZVAL(array);
+        array_init(array);
+        zend_hash_add(&EG(symbol_table), ZEND_POST, sizeof(ZEND_POST), (void *)&array, sizeof(zval*), (void**)&post_data);
 #endif
     }
     if(request_data)
     {
         PHPSCITER_ZVAL_DTOR(*request_data);
+        MAKE_STD_ZVAL(*request_data);
         array_init(*request_data);
     }else{
 #if PHP_VERSION_ID >= 70000
         request_data = zend_hash_str_add(&EG(symbol_table),ZEND_REQUEST,ZEND_REQUEST_LEN,&array);
 #else
+        MAKE_STD_ZVAL(array);
         array_init(array);
-        zend_hash_add(&EG(symbol_table), ZEND_REQUEST, ZEND_REQUEST_LEN, (void *)&array, sizeof(zval*), (void**)&request_data);
+        res = zend_hash_add(&EG(symbol_table), ZEND_REQUEST, sizeof(ZEND_REQUEST), (void *)&array, sizeof(zval*), (void**)&request_data);
 #endif
 
     }
@@ -105,7 +112,9 @@ BOOL ZendSciterRequest::initRequest(const std::string& request_uri) {
 #if PHP_VERSION_ID >= 70000
         server_data = zend_hash_str_add(&EG(symbol_table),ZEND_SERVER,ZEND_SERVER_LEN,&array);;
 #else
-        zend_hash_add(&EG(symbol_table), ZEND_SERVER, ZEND_SERVER_LEN, (void *)array, sizeof(zval*), (void**)&server_data);
+        MAKE_STD_ZVAL(array);
+        array_init(array);
+        zend_hash_add(&EG(symbol_table), ZEND_SERVER, sizeof(ZEND_SERVER), (void *)array, sizeof(zval*), (void**)&server_data);
 #endif
     }
 
@@ -189,8 +198,17 @@ const std::string& ZendSciterRequest::onComplete() {
     zval* request_data;
     map<std::string,std::string> request_info;
     map<std::string,std::string>::iterator request_map_iter;
-    zval zend_data;
     int res;
+
+#if PHP_VERSION_ID>=70000
+    zval zend_data;
+    zval zend_request_uri;
+#else
+    zval* zend_data;
+    zval* zend_request_uri;
+
+    PHPSCITER_MAKE_STD_ZVAL(zend_request_uri);
+#endif
 
     switch(request_storage.request_type)
     {
@@ -213,14 +231,13 @@ const std::string& ZendSciterRequest::onComplete() {
         return FALSE;
 
     //parse url
-    zval zend_request_uri;
-    PHPSCITER_ZVAL_STRING(&zend_request_uri,request_storage.request_uri.c_str());
+    PHPSCITER_ZVAL_STRING(zend_request_uri,request_storage.request_uri.c_str());
 #if PHP_VERSION_ID >= 70000
     zend_hash_str_add(HASH_OF(request_storage.server_data),ZEND_SERVER_REQUEST_URI
             ,ZEND_SERVER_REQUEST_URI_LEN,&zend_request_uri);
 #else
-    res = zend_hash_add(HASH_OF(request_storage.server_data), ZEND_SERVER_REQUEST_URI, ZEND_SERVER_REQUEST_URI_LEN, (void *)&zend_request_uri,
-            sizeof(zval*), nullptr);
+    res = zend_hash_add(HASH_OF(request_storage.server_data), ZEND_SERVER_REQUEST_URI, sizeof(ZEND_SERVER_REQUEST_URI)
+            , (void *)&zend_request_uri, sizeof(zval*), nullptr);
 #endif
 
 
@@ -228,39 +245,45 @@ const std::string& ZendSciterRequest::onComplete() {
         request_map_iter!=request_storage.url_param.end();request_map_iter++) {
         std::string key = request_map_iter->first;
         std::string value  = request_map_iter->second;
-        PHPSCITER_ZVAL_STRING(&zend_data,key.c_str());
 #if PHP_VERSION_ID >= 70000
         zend_hash_str_add(HASH_OF(request_storage.get_data),key.c_str(),key.length(),&zend_data);
 #else
-        res = zend_hash_add(HASH_OF(request_storage.get_data), key.c_str(), key.length(), (void *)&zend_data,
+        PHPSCITER_MAKE_STD_ZVAL(zend_data);
+        PHPSCITER_ZVAL_STRING(zend_data,value.c_str());
+        res = zend_hash_add(HASH_OF(request_storage.get_data), key.c_str(), strlen(key.c_str())+1, (void *)&zend_data,
                       sizeof(zval*), nullptr);
 #endif
-        PHPSCITER_ZVAL_STRING(&zend_data,value.c_str());
 #if PHP_VERSION_ID >= 70000
-        zend_hash_str_add(HASH_OF(request_data),key.c_str(),key.length(),&zend_data);
+        zend_hash_str_add(HASH_OF(request_storage.get_data),key.c_str(),key.length(),&zend_data);
 #else
-        res = zend_hash_add(HASH_OF(request_data), key.c_str(),key.length(), (void *)&zend_data,
-                      sizeof(zval), nullptr);
+        PHPSCITER_MAKE_STD_ZVAL(zend_data);
+        PHPSCITER_ZVAL_STRING(zend_data,value.c_str());
+        res = zend_hash_add(HASH_OF(request_data), key.c_str(), strlen(key.c_str())+1, (void *)&zend_data,
+                      sizeof(zval*), nullptr);
 #endif
     }
 
+    //parse data
     for(request_map_iter = request_info.begin();
     request_map_iter!=request_info.end();request_map_iter++) {
         std::string key = request_map_iter->first;
         std::string value  = request_map_iter->second;
-        PHPSCITER_ZVAL_STRING(&zend_data,key.c_str());
 #if PHP_VERSION_ID >= 70000
         zend_hash_str_add(HASH_OF(storage_data), key.c_str(),key.length(), &zend_data);
 #else
-        res = zend_hash_add(HASH_OF(storage_data), key.c_str(),key.length(), (void *)&zend_data,
+        PHPSCITER_MAKE_STD_ZVAL(zend_data);
+        PHPSCITER_ZVAL_STRING(zend_data,value.c_str());
+        res = zend_hash_add(HASH_OF(storage_data), key.c_str(), strlen(key.c_str())+1, &zend_data,
                       sizeof(zval*), nullptr);
 #endif
-        PHPSCITER_ZVAL_STRING(&zend_data,value.c_str());
+
 #if PHP_VERSION_ID >= 70000
         zend_hash_str_add(HASH_OF(request_data), value.c_str(),value.length(), &zend_data);
 #else
-        res = zend_hash_add(HASH_OF(request_data), value.c_str(),value.length(), (void *)&zend_data,
-                      sizeof(zval), nullptr);
+        PHPSCITER_MAKE_STD_ZVAL(zend_data);
+        PHPSCITER_ZVAL_STRING(zend_data,value.c_str());
+        res = zend_hash_add(HASH_OF(request_data), key.c_str(), strlen(key.c_str())+1, &zend_data,
+                      sizeof(zval*), nullptr);
 #endif
     }
 
