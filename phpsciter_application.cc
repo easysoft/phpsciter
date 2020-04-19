@@ -74,119 +74,119 @@ PHP_METHOD(phpsciter, getInstance)
 {
     //discard
     RETURN_FALSE
-    int argc = ZEND_NUM_ARGS();
-    char *instance_name;
-    zval *get_instance_array = NULL;
-
-#if PHP_VERSION_ID >= 70000
-    size_t  instance_name_len;
-    zval *ppzval = NULL;
-    zval set_instance_array;
-#else
-    int  instance_name_len;
-    zval **ppzval = NULL;
-    zval *set_instance_array;
-#endif
-
-    zval *instance;
-
-//In php7 , this params instance_name can not be empty.
-#if PHP_VERSION_ID >= 70000
-    if (zend_parse_parameters(argc TSRMLS_CC, "s", &instance_name, &instance_name_len) == FAILURE)
-    {
-            zend_throw_exception(php_com_exception_class_entry,"The instance_name can not be empty,you can use phpsciter::PHPSCITER_INSTANCE_DEFAULT",999 TSRMLS_CC);
-            RETURN_FALSE;
-    }
-#else
-    if (zend_parse_parameters(argc TSRMLS_CC, "|s", &instance_name, &instance_name_len) == FAILURE)
-    {
-        RETURN_FALSE;
-    }
-#endif
-
-    if (argc < 1)
-    {
-        instance_name     = PHPSCITER_INSTANCE_DEFAULT;
-        instance_name_len = PHPSCITER_INSTANCE_DEFAULT_LEN;
-    }
-
-    get_instance_array = zend_read_static_property(phpsciter_ce, ZEND_STRL(PHPSCITER_NAME), 1 TSRMLS_CC);
-
-    if (get_instance_array && Z_TYPE_P(get_instance_array) == IS_ARRAY)
-    {
-
-#if PHP_VERSION_ID >= 70000
-        if ((ppzval = zend_hash_str_find(Z_ARRVAL_P(get_instance_array),instance_name,instance_name_len)) != NULL)
-        {
-                RETURN_ZVAL(ppzval, 1, 0);
-        }
-        else
-        {
-                goto initInstance;
-        }
-#else
-    if (zend_hash_find(Z_ARRVAL_P(get_instance_array), ZEND_STRL(instance_name), (void **)&ppzval) == SUCCESS )
-    {
-        RETURN_ZVAL(*ppzval, 1, 0);
-    }
-    else
-    {
-        goto initInstance;
-    }
-#endif
-    }
-    else
-    {
-#if PHP_VERSION_ID >= 70000
-        array_init(&set_instance_array);
-#else
-        MAKE_STD_ZVAL(set_instance_array);
-        array_init(set_instance_array);
-#endif
-        goto initInstance;
-    }
-
-    initInstance:
-#if PHP_VERSION_ID >= 70000
-    instance = getThis();
-    zval re_instance;
-
-    if (!instance)
-    {
-            ZVAL_NULL(&re_instance);
-            instance = &re_instance;
-    }
-#else
-    MAKE_STD_ZVAL(instance);
-#endif
-
-    object_init_ex(instance, phpsciter_ce);
-
-    PHPSCITER_ZEND_UPDATE_PROPERTY_STRING(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_RESOURCE_PATH), PHPSCITER_G(resource_base_path));
-    PHPSCITER_ZEND_UPDATE_PROPERTY_STRING(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_TITLE), PHPSCITER_G(default_title));
-
-    PHPSCITER_ZEND_UPDATE_PROPERTY_NULL(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_LOAD_FILE));
-    PHPSCITER_ZEND_UPDATE_PROPERTY_NULL(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_LOAD_HTML));
-
-    PHPSCITER_ZEND_UPDATE_PROPERTY_LONG(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_TOP), 0);
-    PHPSCITER_ZEND_UPDATE_PROPERTY_LONG(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_LEFT), 0);
-    PHPSCITER_ZEND_UPDATE_PROPERTY_LONG(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_RIGHT), 0);
-    PHPSCITER_ZEND_UPDATE_PROPERTY_LONG(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_BOTTOM), 0);
-
-    if (get_instance_array && IS_ARRAY == Z_TYPE_P(get_instance_array))
-    {
-            PHPSCITER_ADD_ASSOC_ZVAL_EX(get_instance_array,instance_name,instance_name_len,instance);
-            zend_update_static_property(phpsciter_ce, ZEND_STRL(PHPSCITER_NAME), get_instance_array TSRMLS_CC);
-    }
-    else
-    {
-            PHPSCITER_ADD_ASSOC_ZVAL_EX_AND(set_instance_array,instance_name,instance_name_len,instance);
-            PHPSCITER_ZEND_UPDATE_STATIC_PROPERTY(phpsciter_ce, ZEND_STRL(PHPSCITER_NAME), set_instance_array);
-
-            zval_ptr_dtor(&set_instance_array);
-    }
-
-    RETURN_ZVAL(instance, 1, 0);
+//    int argc = ZEND_NUM_ARGS();
+//    char *instance_name;
+//    zval *get_instance_array = NULL;
+//
+//#if PHP_VERSION_ID >= 70000
+//    size_t  instance_name_len;
+//    zval *ppzval = NULL;
+//    zval set_instance_array;
+//#else
+//    int  instance_name_len;
+//    zval **ppzval = NULL;
+//    zval *set_instance_array;
+//#endif
+//
+//    zval *instance;
+//
+////In php7 , this params instance_name can not be empty.
+//#if PHP_VERSION_ID >= 70000
+//    if (zend_parse_parameters(argc TSRMLS_CC, "s", &instance_name, &instance_name_len) == FAILURE)
+//    {
+//            zend_throw_exception(php_com_exception_class_entry,"The instance_name can not be empty,you can use phpsciter::PHPSCITER_INSTANCE_DEFAULT",999 TSRMLS_CC);
+//            RETURN_FALSE;
+//    }
+//#else
+//    if (zend_parse_parameters(argc TSRMLS_CC, "|s", &instance_name, &instance_name_len) == FAILURE)
+//    {
+//        RETURN_FALSE;
+//    }
+//#endif
+//
+//    if (argc < 1)
+//    {
+//        instance_name     = PHPSCITER_INSTANCE_DEFAULT;
+//        instance_name_len = PHPSCITER_INSTANCE_DEFAULT_LEN;
+//    }
+//
+//    get_instance_array = zend_read_static_property(phpsciter_ce, ZEND_STRL(PHPSCITER_NAME), 1 TSRMLS_CC);
+//
+//    if (get_instance_array && Z_TYPE_P(get_instance_array) == IS_ARRAY)
+//    {
+//
+//#if PHP_VERSION_ID >= 70000
+//        if ((ppzval = zend_hash_str_find(Z_ARRVAL_P(get_instance_array),instance_name,instance_name_len)) != NULL)
+//        {
+//                RETURN_ZVAL(ppzval, 1, 0);
+//        }
+//        else
+//        {
+//                goto initInstance;
+//        }
+//#else
+//    if (zend_hash_find(Z_ARRVAL_P(get_instance_array), ZEND_STRL(instance_name), (void **)&ppzval) == SUCCESS )
+//    {
+//        RETURN_ZVAL(*ppzval, 1, 0);
+//    }
+//    else
+//    {
+//        goto initInstance;
+//    }
+//#endif
+//    }
+//    else
+//    {
+//#if PHP_VERSION_ID >= 70000
+//        array_init(&set_instance_array);
+//#else
+//        MAKE_STD_ZVAL(set_instance_array);
+//        array_init(set_instance_array);
+//#endif
+//        goto initInstance;
+//    }
+//
+//    initInstance:
+//#if PHP_VERSION_ID >= 70000
+//    instance = getThis();
+//    zval re_instance;
+//
+//    if (!instance)
+//    {
+//            ZVAL_NULL(&re_instance);
+//            instance = &re_instance;
+//    }
+//#else
+//    MAKE_STD_ZVAL(instance);
+//#endif
+//
+//    object_init_ex(instance, phpsciter_ce);
+//
+//    PHPSCITER_ZEND_UPDATE_PROPERTY_STRING(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_RESOURCE_PATH), PHPSCITER_G(resource_base_path));
+//    PHPSCITER_ZEND_UPDATE_PROPERTY_STRING(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_TITLE), PHPSCITER_G(default_title));
+//
+//    PHPSCITER_ZEND_UPDATE_PROPERTY_NULL(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_LOAD_FILE));
+//    PHPSCITER_ZEND_UPDATE_PROPERTY_NULL(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_LOAD_HTML));
+//
+//    PHPSCITER_ZEND_UPDATE_PROPERTY_LONG(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_TOP), 0);
+//    PHPSCITER_ZEND_UPDATE_PROPERTY_LONG(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_LEFT), 0);
+//    PHPSCITER_ZEND_UPDATE_PROPERTY_LONG(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_RIGHT), 0);
+//    PHPSCITER_ZEND_UPDATE_PROPERTY_LONG(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_BOTTOM), 0);
+//
+//    if (get_instance_array && IS_ARRAY == Z_TYPE_P(get_instance_array))
+//    {
+//            PHPSCITER_ADD_ASSOC_ZVAL_EX(get_instance_array,instance_name,instance_name_len,instance);
+//            zend_update_static_property(phpsciter_ce, ZEND_STRL(PHPSCITER_NAME), get_instance_array TSRMLS_CC);
+//    }
+//    else
+//    {
+//            PHPSCITER_ADD_ASSOC_ZVAL_EX_AND(set_instance_array,instance_name,instance_name_len,instance);
+//            PHPSCITER_ZEND_UPDATE_STATIC_PROPERTY(phpsciter_ce, ZEND_STRL(PHPSCITER_NAME), set_instance_array);
+//
+//            zval_ptr_dtor(&set_instance_array);
+//    }
+//
+//    RETURN_ZVAL(instance, 1, 0);
 }
 
 PHP_METHOD(phpsciter, defineFunction)
@@ -229,12 +229,20 @@ PHP_METHOD(phpsciter, ifDefined)
 {
     zend_string *event_name;
 
+#if PHP_VERSION_ID >= 70000
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "S", &event_name) == FAILURE)
     {
             return;
     }
+#else
+    int len;
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &event_name ,&len) == FAILURE)
+    {
+        RETURN_FALSE;
+    }
+#endif
 
-    if (SCDOM_OK == checkRegisted(event_name))
+    if (checkRegisted(event_name))
     {
             RETURN_TRUE;
     }

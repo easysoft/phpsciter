@@ -50,7 +50,8 @@ BOOL checkRegisted(zend_string *event_name)
         return true;
     }
 #else
-    if (zend_hash_find(&callbacks, ZEND_STRS(event_name), nullptr))
+    zval** find_unit = nullptr;
+    if ((zend_hash_find(&callbacks, event_name, (uint)(strlen(event_name)+1), (void**)&find_unit)) == SUCCESS)
     {
         return true;
     }
@@ -176,14 +177,15 @@ BOOL SciterExecuteFunction(HELEMENT he, SCRIPTING_METHOD_PARAMS* p)
             args_count = p->argc;
             zval **args[args_count];
             zval *retval = NULL;
-            zval retval_copy;
+            zval* retval_copy;
+            zval* zv;
             zval *unit;
             int i = 0;
 
             for (i = 0; i < args_count; i++)
             {
-                unit = new zval;
-                args[i] = &unit;
+                MAKE_STD_ZVAL(zv);
+                args[i] = &zv;
             }
 
             const VALUE* p2;
@@ -200,11 +202,6 @@ BOOL SciterExecuteFunction(HELEMENT he, SCRIPTING_METHOD_PARAMS* p)
             {
                 php_printf("executeFunction error -> \n");
 
-                for (i = 0; i < args_count; i++)
-                {
-                    delete *args[i];
-                }
-
                 return false;
             }
 
@@ -215,13 +212,10 @@ BOOL SciterExecuteFunction(HELEMENT he, SCRIPTING_METHOD_PARAMS* p)
 
             if (retval != NULL)
             {
-                ZVAL_COPY(retval_copy,retval);
-                ok = SetSciterValue(&p->result, &retval_copy);
-            }
-
-            for (i = 0; i < args_count; i++)
-            {
-                delete *args[i];
+                MAKE_STD_ZVAL(retval_copy);
+                *retval_copy = *retval;
+                zval_copy_ctor(retval_copy);
+                ok = SetSciterValue(&p->result, retval_copy);
             }
 #endif
             return true;
