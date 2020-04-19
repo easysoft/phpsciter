@@ -189,18 +189,7 @@ zend_op_array *Util::zendCompileFile(const char* file_name)
 
 std::string Util::U16toString(const std::u16string &wstr)
 {
-    std::string str = "";
-    char cstr[4] = "\0";
-    mbstate_t mbs;
-    for (const auto& it: wstr)
-    {
-        memset (&mbs, 0, sizeof (mbs));
-        memmove(cstr, "\0\0\0", 3);
-        // c16rtomb (cstr, it, &mbs);
-        wcrtomb (cstr, it, &mbs);
-        str.append(std::string(cstr));
-    }
-    return str;
+    return aux::w2a(wstr).c_str();
 }
 
 void Util::splitString(const string& subject, vector<string>& v, const string& delimiter)

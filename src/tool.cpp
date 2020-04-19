@@ -54,7 +54,7 @@ CHAR* ForwardToChar(LPCWSTR quote)
 //
 //#else
 //    std::u16string a(quote);
-    str = U16toString((char16_t *)quote);
+    str = PHPSCITER_G(tool)->U16toString((char16_t *)quote);
     dest = (CHAR *)str.data();
 //#endif
 

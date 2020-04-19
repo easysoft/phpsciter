@@ -153,7 +153,7 @@ BOOL ZendSciterRequest::onRequest(LPSCN_LOAD_DATA load_data) {
     HREQUEST request_id;
     UINT request_param_number;
     uint8_t res;
-    UINT request_param_count;
+    UINT request_param_count = 0;
     REQUEST_RQ_TYPE rq_type;
 
     //parse url info
@@ -200,9 +200,9 @@ BOOL ZendSciterRequest::onRequest(LPSCN_LOAD_DATA load_data) {
     }
     request_storage.request_type = rq_type;
     res = rapi()->RequestGetNumberOfParameters(request_id, &request_param_number);
-    if (res == REQUEST_OK)
+    if (EXPECTED(res == REQUEST_OK))
     {
-        if(request_param_count > 0) {
+        if(request_param_number > 0) {
             LPVOID
             request_ptr = PHPSCITER_G(request).get();
             for (request_param_count = 0; request_param_count < request_param_number; request_param_count++) {
@@ -213,6 +213,8 @@ BOOL ZendSciterRequest::onRequest(LPSCN_LOAD_DATA load_data) {
                 request_storage.request_table[current_request_key] = current_request_value;
             }
         }
+    } else{
+        zend_error(E_WARNING, "RequestGetNumberOfParameters error");
     }
 }
 
@@ -270,6 +272,7 @@ const std::string& ZendSciterRequest::onComplete() {
         std::string key = request_map_iter->first;
         std::string value  = request_map_iter->second;
 #if PHP_VERSION_ID >= 70000
+        PHPSCITER_ZVAL_STRING(&zend_data, value.c_str());
         zend_hash_str_add(HASH_OF(request_storage.get_data),key.c_str(),key.length(),&zend_data);
 #else
         PHPSCITER_MAKE_STD_ZVAL(zend_data);
@@ -278,7 +281,8 @@ const std::string& ZendSciterRequest::onComplete() {
                       sizeof(zval*), nullptr);
 #endif
 #if PHP_VERSION_ID >= 70000
-        zend_hash_str_add(HASH_OF(request_storage.get_data),key.c_str(),key.length(),&zend_data);
+        PHPSCITER_ZVAL_STRING(&zend_data, value.c_str());
+        zend_hash_str_add(HASH_OF(request_data),key.c_str(),key.length(),&zend_data);
 #else
         PHPSCITER_MAKE_STD_ZVAL(zend_data);
         PHPSCITER_ZVAL_STRING(zend_data,value.c_str());
@@ -293,6 +297,7 @@ const std::string& ZendSciterRequest::onComplete() {
         std::string key = request_map_iter->first;
         std::string value  = request_map_iter->second;
 #if PHP_VERSION_ID >= 70000
+        PHPSCITER_ZVAL_STRING(&zend_data, value.c_str());
         zend_hash_str_add(HASH_OF(storage_data), key.c_str(),key.length(), &zend_data);
 #else
         PHPSCITER_MAKE_STD_ZVAL(zend_data);
@@ -302,7 +307,8 @@ const std::string& ZendSciterRequest::onComplete() {
 #endif
 
 #if PHP_VERSION_ID >= 70000
-        zend_hash_str_add(HASH_OF(request_data), value.c_str(),value.length(), &zend_data);
+        PHPSCITER_ZVAL_STRING(&zend_data, value.c_str());
+        zend_hash_str_add(HASH_OF(request_data), key.c_str(),key.length(), &zend_data);
 #else
         PHPSCITER_MAKE_STD_ZVAL(zend_data);
         PHPSCITER_ZVAL_STRING(zend_data,value.c_str());
