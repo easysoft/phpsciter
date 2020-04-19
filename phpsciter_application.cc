@@ -26,7 +26,6 @@ const zend_function_entry phpsciter_methods[] =
         PHP_ME(phpsciter, loadFile, phpsciter_loadFile_arginfo, ZEND_ACC_PUBLIC)
         PHP_ME(phpsciter, loadPHP, phpsciter_loadPHP_arginfo, ZEND_ACC_PUBLIC)
         PHP_ME(phpsciter, loadHtml, phpsciter_loadHtml_arginfo, ZEND_ACC_PUBLIC)
-        PHP_ME(phpsciter, getSciterHtmlByPhpFile, phpsciter_getSciterHtmlByPhpFile_arginfo, ZEND_ACC_PRIVATE)
 
         PHP_ME(phpsciter, defineFunction, phpsciter_defineFunction_arginfo, ZEND_ACC_PUBLIC)
         PHP_ME(phpsciter, ifDefined, phpsciter_ifDefined_arginfo, ZEND_ACC_PUBLIC)
@@ -529,7 +528,8 @@ PHP_METHOD(phpsciter,loadPHP)
         Z_PARAM_STR(php_content)
     ZEND_PARSE_PARAMETERS_END();
 #else
-    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "S", &php_content) == FAILURE)
+    int len;
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &php_content, &len) == FAILURE)
     {
         return;
     }
@@ -539,33 +539,6 @@ PHP_METHOD(phpsciter,loadPHP)
     PHPSCITER_G(cureent_op_array) = zend_compile_string(&php_content_zval,"Standard input code");
     PHPSCITER_G(loadModal) = LOAD_PHP;
     RETURN_TRUE;
-}
-
-PHP_METHOD(phpsciter, getSciterHtmlByPhpFile)
-{
-    zend_string *load_file_name = NULL;
-    zval result;
-
-    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "S", &load_file_name) == FAILURE)
-    {
-        RETURN_FALSE
-    }
-
-    zend_op_array* op_array = PHPSCITER_G(tool)->zendCompileFile(PHPSCITER_ZSTR_VAL(load_file_name));
-    std::string content;
-    if(op_array) {
-        content = PHPSCITER_G(tool)->zendExecute(op_array);
-        if(UNEXPECTED(!content.empty())) {
-            efree(op_array);
-            //aux::a2w w_content(content.c_str());
-            PHPSCITER_RETURN_STRING(content.c_str());
-        }else{
-            efree(op_array);
-            RETURN_EMPTY_STRING();
-        }
-    }
-
-    RETURN_FALSE
 }
 
 void load_phpsciter_application()
