@@ -45,6 +45,13 @@ PHP_GINIT_FUNCTION(phpsciter)
 
 PHP_GSHUTDOWN_FUNCTION(phpsciter)
 {
+    phpsciter_globals->tool.reset();
+    phpsciter_globals->request.reset();
+    if(phpsciter_globals->cureent_op_array)
+    {
+        efree(phpsciter_globals->cureent_op_array);
+    }
+    memset(phpsciter_globals, 0, sizeof(zend_phpsciter_globals));
 }
 
 PHP_MINIT_FUNCTION(phpsciter)
