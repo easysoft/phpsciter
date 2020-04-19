@@ -305,10 +305,6 @@ PHP_METHOD(phpsciter, run)
     aux::a2w resource_path_as_wstr(Z_STRVAL_P(resource_path));
     SciterSetHomeURL(hw,LPCWSTR(resource_path_as_wstr.c_str()));
 
-    zval hook_name;
-    PHPSCITER_ZVAL_STRING(&hook_name,PHPSCITER_LOOD_HOOK_NAME);
-    PHPSCITER_G(load_hook_name) = &hook_name;
-
     switch (PHPSCITER_G(loadModal))
     {
         case LOAD_HTML: {
@@ -522,11 +518,13 @@ PHP_METHOD(phpsciter,loadHtml)
 
 PHP_METHOD(phpsciter,loadPHP)
 {
-    zend_string *php_content = NULL;
+    zend_string *php_content = nullptr;
 #if PHP_VERSION_ID >= 70000
-    ZEND_PARSE_PARAMETERS_START(1, 1)
-        Z_PARAM_STR(php_content)
-    ZEND_PARSE_PARAMETERS_END();
+    int len;
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "S", &php_content) == FAILURE)
+    {
+        return;
+    }
 #else
     int len;
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &php_content, &len) == FAILURE)
@@ -553,7 +551,9 @@ void load_phpsciter_application()
     phpsciter_ce = zend_register_internal_class_ex(&phpsciter, NULL, NULL TSRMLS_CC);
 #endif
 
+#ifdef ZEND_ACC_IMPLICIT_PUBLIC
     phpsciter_ce->ce_flags = ZEND_ACC_IMPLICIT_PUBLIC;
+#endif
 
     zend_declare_class_constant_stringl(phpsciter_ce,ZEND_STRL(PHPSCITER_INSTANCE_DEFAULT),ZEND_STRL(PHPSCITER_INSTANCE_DEFAULT) TSRMLS_CC);
     zend_declare_class_constant_stringl(phpsciter_ce,ZEND_STRL(PHPSCITER_PROPERTY_TITLE),ZEND_STRL("phpsciter") TSRMLS_CC);
