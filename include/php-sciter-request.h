@@ -53,7 +53,7 @@ public:
     const std::string& onComplete();
 
     //clear memory
-    BOOL onClose();
+    void onClose();
 
 private:
     //记录zend请求到达时候一些有用的数据
