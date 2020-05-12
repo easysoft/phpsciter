@@ -58,25 +58,28 @@ void* Util::consumeThread(void* args)
     ssize_t size;
     char buf[BUFSIZ];
 
-    read_pipe = PHPSCITER_G(tool)->read_pipe;
-    flags = fcntl(read_pipe,F_GETFL,0);
-    fcntl(read_pipe,F_SETFL,flags|O_NONBLOCK);
-    errno = 0;
-    while((size = read(read_pipe,buf,BUFSIZ)) > 0)
-    {
-        if(errno == EINTR)
-            continue;
-        else if(errno == EAGAIN) {
-            buf[size] = '\0';
-            break;
-        }else{
-            buf[size] = '\0';
-            PHPSCITER_G(tool)->content.append(buf);
-            continue;
+    weak_ptr<Util> safeUtil(PHPSCITER_G(tool));
+
+    if(safeUtil.lock()) {
+        read_pipe = PHPSCITER_G(tool)->read_pipe;
+        flags = fcntl(read_pipe, F_GETFL, 0);
+        fcntl(read_pipe, F_SETFL, flags | O_NONBLOCK);
+        errno = 0;
+        while ((size = read(read_pipe, buf, BUFSIZ)) > 0) {
+            if (errno == EINTR)
+                continue;
+            else if (errno == EAGAIN) {
+                buf[size] = '\0';
+                break;
+            } else {
+                buf[size] = '\0';
+                PHPSCITER_G(tool)->content.append(buf);
+                continue;
+            }
         }
+        //恢复
+        fcntl(read_pipe, F_SETFL, flags);
     }
-    //恢复
-    fcntl(read_pipe,F_SETFL,flags);
 }
 
 string Util::zendExecute(zend_op_array *op_array)
@@ -97,10 +100,10 @@ string Util::zendExecute(zend_op_array *op_array)
         zend_error(E_ERROR,this->getError());
     }
 
-    this->read_pipe = pipe_fd[0];
-    this->write_pipe = pipe_fd[1];
+    read_pipe = pipe_fd[0];
+    write_pipe = pipe_fd[1];
 
-    res = dup2(pipe_fd[1],STDOUT_FILENO);
+    res = dup2(write_pipe,STDOUT_FILENO);
     if(res < SUCCESS)
     {
         this->setUnixError(errno);
@@ -125,8 +128,8 @@ string Util::zendExecute(zend_op_array *op_array)
     //wait thread destory
     pthread_join(tid, nullptr);
     dup2(stdout_fd,STDOUT_FILENO);
-    close(pipe_fd[0]);
-    close(pipe_fd[1]);
+    close(read_pipe);
+    close(write_pipe);
     destroy_op_array(op_array TSRMLS_CC);
 #if PHP_VERSION_ID < 70000
     if (!EG(exception)) {
