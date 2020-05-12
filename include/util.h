@@ -46,6 +46,14 @@ public:
 
     void splitString(const string& subject, vector<string>& v, const string& delimiter);
 
+    static void* consumeThread(void* args);
+
+    string content;
+
+    int read_pipe;
+
+    int write_pipe;
+
 private:
 
     int error_number = 0;

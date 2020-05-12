@@ -51,15 +51,41 @@ int Util::checkPhpFile(const char* name) {
     }
 }
 
+void* Util::consumeThread(void* args)
+{
+    int read_pipe;
+    int flags;
+    ssize_t size;
+    char buf[BUFSIZ];
+
+    read_pipe = PHPSCITER_G(tool)->read_pipe;
+    flags = fcntl(read_pipe,F_GETFL,0);
+    fcntl(read_pipe,F_SETFL,flags|O_NONBLOCK);
+    errno = 0;
+    while((size = read(read_pipe,buf,BUFSIZ)) > 0)
+    {
+        if(errno == EINTR)
+            continue;
+        else if(errno == EAGAIN) {
+            buf[size] = '\0';
+            break;
+        }else{
+            buf[size] = '\0';
+            PHPSCITER_G(tool)->content.append(buf);
+            continue;
+        }
+    }
+    //恢复
+    fcntl(read_pipe,F_SETFL,flags);
+}
+
 string Util::zendExecute(zend_op_array *op_array)
 {
     zval result;
     int pipe_fd[2];
     int res;
-    char buf[BUFSIZ];
-    int flags;
+
     ssize_t size;
-    string content;
     int stdout_fd;
 
     stdout_fd = dup(STDOUT_FILENO);
@@ -70,6 +96,9 @@ string Util::zendExecute(zend_op_array *op_array)
         this->setUnixError(errno);
         zend_error(E_ERROR,this->getError());
     }
+
+    this->read_pipe = pipe_fd[0];
+    this->write_pipe = pipe_fd[1];
 
     res = dup2(pipe_fd[1],STDOUT_FILENO);
     if(res < SUCCESS)
@@ -84,28 +113,17 @@ string Util::zendExecute(zend_op_array *op_array)
         this->setError("failed to open stream: No such file or directory");
         zend_bailout();
     }
+
+    //create an consume thread
+    pthread_t tid;
+    pthread_create(&tid, nullptr, &Util::consumeThread, (void*)this);
 #if PHP_VERSION_ID >= 70000
     zend_execute(op_array,&result);
 #else
     zend_execute(op_array TSRMLS_DC);
 #endif
-    flags = fcntl(pipe_fd[0],F_GETFL,0);
-    fcntl(pipe_fd[0],F_SETFL,flags|O_NONBLOCK);
-    errno = 0;
-    while((size = read(pipe_fd[0],buf,BUFSIZ)) > 0)
-    {
-        if(errno == EINTR)
-            continue;
-        else if(errno == EAGAIN) {
-            buf[size] = '\0';
-            break;
-        }else{
-            buf[size] = '\0';
-            content.append(buf);
-            continue;
-        }
-    }
-
+    //wait thread destory
+    pthread_join(tid, nullptr);
     dup2(stdout_fd,STDOUT_FILENO);
     close(pipe_fd[0]);
     close(pipe_fd[1]);
