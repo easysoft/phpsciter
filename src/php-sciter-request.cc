@@ -235,6 +235,8 @@ const std::string& ZendSciterRequest::onComplete() {
     PHPSCITER_MAKE_STD_ZVAL(zend_request_uri);
 #endif
 
+    request_storage.request_real_uri.clear();
+
     switch(request_storage.request_type)
     {
         case RRT_GET:
@@ -244,16 +246,16 @@ const std::string& ZendSciterRequest::onComplete() {
             storage_data = request_storage.post_data;
             break;
         default:
-            return FALSE;
+            return request_storage.request_real_uri;
             break;
     }
     request_data = request_storage.request_data;
     request_info = request_storage.request_table;
 
     if(!storage_data)
-        return FALSE;
+        return request_storage.request_real_uri;
     if(!request_data)
-        return FALSE;
+        return request_storage.request_real_uri;
 
     //parse url
 #if PHP_VERSION_ID >= 70000
@@ -320,7 +322,7 @@ const std::string& ZendSciterRequest::onComplete() {
     return request_storage.request_real_uri;
 }
 
-BOOL ZendSciterRequest::onClose()
+void ZendSciterRequest::onClose()
 {
     current_request_key.clear();
     current_request_value.clear();

@@ -86,6 +86,7 @@ private:
     {
         this->error_number = err;
         this->error = strerror(err);
+        return SUCCESS;
     }
 
     void setErrno(int err) {

@@ -19,7 +19,7 @@ SHARED_LDFLAGS ?= -shared
 php-window.o:
 	make -p ../.libs
 	cp -rf libsciter-osx-64.dylib /usr/local/lib/sciter-osx-64.dylib
-	g++ -std=c++11 -g -O2 -Wno-unused-function -Wno-deprecated -Wno-deprecated-declarations -DPIC -c php-window.mm -I../include -framework Cocoa -o ../.libs/php-window.o
+	g++ -std=c++11 -g -O2 -Wno-unused-function -Wno-deprecated -Wno-deprecated-declarations -DPIC -c php-window.mm -I../include -F Cocoa -o ../.libs/php-window.o
 
 
 clean:

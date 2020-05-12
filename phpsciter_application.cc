@@ -534,7 +534,7 @@ PHP_METHOD(phpsciter,loadPHP)
 #endif
     zval php_content_zval;
     PHPSCITER_ZVAL_STR(&php_content_zval,php_content);
-    PHPSCITER_G(cureent_op_array) = zend_compile_string(&php_content_zval,"Standard input code");
+    PHPSCITER_G(cureent_op_array) = zend_compile_string(&php_content_zval,(char*)"Standard input code");
     PHPSCITER_G(loadModal) = LOAD_PHP;
     RETURN_TRUE;
 }
