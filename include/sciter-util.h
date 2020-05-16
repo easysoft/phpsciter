@@ -42,6 +42,10 @@ namespace phpsciter {
 
         UINT ForwardToLength(char* quote);
 
+        time_t getUnixTime();
+
+        void getTimeString(char* time_format);
+
     private:
 
         int error_number = 0;

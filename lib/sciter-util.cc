@@ -104,3 +104,21 @@ UINT phpsciter::Util::ForwardToLength(char* quote)
     aux::a2w as(quote);
     return UINT(as.length());
 }
+
+time_t phpsciter::Util::getUnixTime()
+{
+    time_t now;
+    now = time(nullptr);
+    return now;
+}
+
+void phpsciter::Util::getTimeString(char* time_format)
+{
+    if(!time_format)
+    {
+        return;
+    }
+    time_t now_time = getUnixTime();
+    //ctime_r 是一个线程安全的函数
+    ctime_r(&now_time,time_format);
+}
