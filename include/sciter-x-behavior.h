@@ -23,7 +23,6 @@
 #include "sciter-x-dom.h"
 #include "sciter-x-value.h"
 #include "sciter-x-graphics.h"
-#include "sciter-om.h"
 
 #pragma pack(push,8)
 
@@ -101,12 +100,6 @@ typedef BOOL SC_CALLBACK SciterBehaviorFactory( LPCSTR, HELEMENT, LPElementEvent
   struct INITIALIZATION_PARAMS
   {
     UINT cmd; // INITIALIZATION_EVENTS
-#ifdef CPP11
-    som_passport_t* passport = nullptr;
-#else
-    som_passport_t* passport;
-    INITIALIZATION_PARAMS() : passport( nullptr ) {}
-#endif
   };
 
   enum DRAGGING_TYPE
@@ -205,21 +198,6 @@ typedef BOOL SC_CALLBACK SciterBehaviorFactory( LPCSTR, HELEMENT, LPElementEvent
       FOCUS_GOT = 2,            /**< target element got focus */
       FOCUS_LOST = 3,           /**< target element lost focus */
       FOCUS_REQUEST = 4,        /**< bubbling event/request, gets sent on child-parent chain to accept/reject focus to be set on the child (target) */
-      FOCUS_ADVANCE_REQUEST = 5,/**< bubbling event/request, gets sent on child-parent chain to advance focus */
-  };
-
-  enum FOCUS_CMD_TYPE {
-      FOCUS_RQ_NEXT,
-      FOCUS_RQ_PREV,
-      FOCUS_RQ_HOME,
-      FOCUS_RQ_END,
-      FOCUS_RQ_LEFT,
-      FOCUS_RQ_RIGHT,
-      FOCUS_RQ_UP,
-      FOCUS_RQ_DOWN,  // all these - by key
-      FOCUS_RQ_FIRST, // these two - by_code
-      FOCUS_RQ_LAST,  //
-      FOCUS_RQ_END_REACHED = 0x8000
   };
 
   /** #HANDLE_FOCUS params */
@@ -228,7 +206,7 @@ typedef BOOL SC_CALLBACK SciterBehaviorFactory( LPCSTR, HELEMENT, LPElementEvent
       UINT      cmd;            /**< #FOCUS_EVENTS */
       HELEMENT  target;         /**< target element, for #FOCUS_LOST it is a handle of new focus element
                                      and for #FOCUS_GOT it is a handle of old focus element, can be NULL */
-      UINT      cause;          /**< focus cause params or FOCUS_CMD_TYPE for FOCUS_ADVANCE_REQUEST */
+      BOOL      by_mouse_click; /**< true if focus is being set by mouse click */
       BOOL      cancel;         /**< in #FOCUS_REQUEST and #FOCUS_LOST phase setting this field to true will cancel transfer focus from old element to the new one. */
   };
 
@@ -647,7 +625,7 @@ typedef BOOL SC_CALLBACK SciterBehaviorFactory( LPCSTR, HELEMENT, LPElementEvent
     // event handler can be attached to the element as a "behavior" (see below)
     // or by sciter::dom::element::attach( event_handler* eh )
 
-    struct event_handler : public sciter::om::asset<event_handler>
+    struct event_handler
     {
       event_handler() // EVENT_GROUPS flags
       {
@@ -662,12 +640,6 @@ typedef BOOL SC_CALLBACK SciterBehaviorFactory( LPCSTR, HELEMENT, LPElementEvent
          event_groups = HANDLE_ALL;
          return true;
       }
-
-      // lifecycle of the event handler is determined by owner element, so:
-      virtual long asset_add_ref() { return 0; }
-      virtual long asset_release() { return 0; }
-
-      virtual som_passport_t* asset_get_passport() const { return nullptr; }
 
       // handlers with extended interface
       // by default they are calling old set of handlers (for compatibility with legacy code)
@@ -808,13 +780,10 @@ typedef BOOL SC_CALLBACK SciterBehaviorFactory( LPCSTR, HELEMENT, LPElementEvent
             case HANDLE_INITIALIZATION:
               {
                 INITIALIZATION_PARAMS *p = (INITIALIZATION_PARAMS *)prms;
-                if (p->cmd == BEHAVIOR_DETACH) {
+                if(p->cmd == BEHAVIOR_DETACH)
                   pThis->detached(he);
-                }
-                else if (p->cmd == BEHAVIOR_ATTACH) {
-                  p->passport = pThis->asset_get_passport();
+                else if(p->cmd == BEHAVIOR_ATTACH)
                   pThis->attached(he);
-                }
                 return true;
               }
             case HANDLE_MOUSE: {  MOUSE_PARAMS *p = (MOUSE_PARAMS *)prms; return pThis->handle_mouse( he, *p );  }

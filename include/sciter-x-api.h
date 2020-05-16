@@ -43,9 +43,9 @@ struct SciterGraphicsAPI;
 struct SCITER_X_MSG;
 
 #ifdef WINDOWLESS
-  #define SCITER_API_VERSION 0x10004
+  #define SCITER_API_VERSION 0x10001
 #else 
-  #define SCITER_API_VERSION 4
+  #define SCITER_API_VERSION 1
 #endif // !WINDOWLESS
 
 typedef struct _ISciterAPI {
@@ -268,10 +268,6 @@ typedef struct _ISciterAPI {
 #endif
 
   BOOL SCFN(SciterProcX)(HWINDOW hwnd, SCITER_X_MSG* pMsg ); // returns TRUE if handled
-
-  UINT64 SCFN(SciterAtomValue)(const char* name); // 
-  BOOL   SCFN(SciterAtomNameCB)(UINT64 atomv, LPCSTR_RECEIVER* rcv, LPVOID rcv_param);
-  BOOL   SCFN(SciterSetGlobalAsset)(som_asset_t* pass);
 
 } ISciterAPI;
 
@@ -689,9 +685,5 @@ inline ISciterAPI *_SAPI(ISciterAPI *ext) {
      return SAPI()->SciterProcX(hwnd, (SCITER_X_MSG*)(&msg));
   }
 #endif
-
-  inline UINT64 SCAPI SciterAtomValue(const char* name) { return SAPI()->SciterAtomValue(name); }
-  inline UINT64 SCAPI SciterAtomNameCB(UINT64 atomv, LPCSTR_RECEIVER* rcv, LPVOID rcv_param) { return SAPI()->SciterAtomNameCB(atomv, rcv, rcv_param); }
-  inline BOOL   SCAPI SciterSetGlobalAsset(som_asset_t* pass) { return SAPI()->SciterSetGlobalAsset(pass); }
 
 #endif

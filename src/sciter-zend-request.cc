@@ -5,7 +5,7 @@
 /**
  * 初始化_GET _POST _REQUEST的运行时变量
  */
-BOOL phpsciter::ZendSciterRequest::initRequest(const std::string& request_uri) {
+bool phpsciter::ZendSciterRequest::initRequest(const std::string& request_uri) {
     //initialize $_GET $_POST  $_REQUEST $_SERVER
     if (PG(auto_globals_jit)) {
 #if PHP_VERSION_ID >= 70000
@@ -147,9 +147,10 @@ BOOL phpsciter::ZendSciterRequest::initRequest(const std::string& request_uri) {
     request_storage.post_data = *post_data;
     request_storage.server_data = *server_data;
 #endif
+    return true;
 }
 
-BOOL phpsciter::ZendSciterRequest::onRequest(LPSCN_LOAD_DATA load_data) {
+bool phpsciter::ZendSciterRequest::onRequest(LPSCN_LOAD_DATA load_data) {
     HREQUEST request_id;
     UINT request_param_number;
     uint8_t res;
@@ -196,7 +197,7 @@ BOOL phpsciter::ZendSciterRequest::onRequest(LPSCN_LOAD_DATA load_data) {
     request_id = load_data->requestId;
     res = rapi()->RequestGetRequestType(request_id, &rq_type);
     if (res != REQUEST_OK) {
-        return FALSE;
+        return false;
     }
     request_storage.request_type = rq_type;
     res = rapi()->RequestGetNumberOfParameters(request_id, &request_param_number);
@@ -215,7 +216,9 @@ BOOL phpsciter::ZendSciterRequest::onRequest(LPSCN_LOAD_DATA load_data) {
         }
     } else{
         zend_error(E_WARNING, "RequestGetNumberOfParameters error");
+        return false;
     }
+    return true;
 }
 
 const std::string& phpsciter::ZendSciterRequest::onComplete() {
@@ -319,7 +322,7 @@ const std::string& phpsciter::ZendSciterRequest::onComplete() {
 #endif
     }
 
-    return request_storage.request_real_uri;
+    return request_storage.request_uri;
 }
 
 void phpsciter::ZendSciterRequest::onClose()

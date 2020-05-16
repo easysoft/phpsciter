@@ -29,19 +29,19 @@ namespace phpsciter {
             request->setRequestValue(value);
         }
 
-        BOOL setRequestKey(LPCWSTR key) {
+        bool setRequestKey(LPCWSTR key) {
             current_request_key = (aux::w2a(key).c_str());
-            return TRUE;
+            return true;
         }
 
-        BOOL setRequestValue(LPCWSTR value) {
+        bool setRequestValue(LPCWSTR value) {
             current_request_value = (aux::w2a(value).c_str());
-            return TRUE;
+            return true;
         }
 
-        BOOL initRequest(const std::string &request_uri);
+        bool initRequest(const std::string &request_uri);
 
-        BOOL onRequest(LPSCN_LOAD_DATA load_data);
+        bool onRequest(LPSCN_LOAD_DATA load_data);
 
         const std::string &onComplete();
 

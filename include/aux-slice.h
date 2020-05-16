@@ -48,11 +48,11 @@ namespace aux
 template <typename T >
    struct slice
    {
-      const T*  start;
-      size_t    length;
+      const T*       start;
+      unsigned int   length;
 
       slice(): start(0), length(0) {}
-      slice(const T* start_, size_t length_) { start = start_; length = length_; }
+      slice(const T* start_, size_t length_) { start = start_; length = (unsigned int)length_; }
       slice(const slice& src): start(src.start), length(src.length) {}
 
       slice& operator = (const slice& src) { start = src.start; length = src.length; return *this; }
@@ -159,24 +159,15 @@ template <typename T >
         return -1;
       }
 
-      void prune(size_t from_start, size_t from_end = 0)
+      void prune(unsigned int from_start, unsigned int from_end = 0)
       {
-        size_t s = from_start >= length? length : from_start;
-        size_t e = length - (from_end >= length? length: from_end);
+        unsigned int s = from_start >= length? length : from_start;
+        unsigned int e = length - (from_end >= length? length: from_end);
         start += s;
         if( s < e ) length = e-s;
         else length = 0;
       }
 
-#ifdef CPP11
-      explicit
-#endif
-      operator bool() const { return length > 0; }
-
-      T operator *() const { return length ? start[0] : T(); }
-
-      T operator++() { if (length) { ++start; if (--length) return *start; } return T(); }
-      T operator++(int) { if (length) { --length; ++start; return *(start - 1); } return T(); }
 
       bool like(const T* pattern) const;
 

@@ -29,6 +29,7 @@
 #include <memory>
 #include <memory>
 #include <map>
+#include <string>
 
 #ifdef WINDOWS
 #define uint UINT
@@ -65,7 +66,7 @@ extern "C"
 #include <zend_types.h>
 #include <zend_compile.h>
 #include <sciter-x-api.h>
-#include <sciter-x-api.h>
+#include <include/sciter-x.h>
 
 #include "php_window.h"
 extern zend_module_entry phpsciter_module_entry;
@@ -86,6 +87,8 @@ extern zend_module_entry phpsciter_module_entry;
 #define PHPSCITER_PROPERTY_LOAD_FILE            "load_file"
 #define PHPSCITER_PROPERTY_LOAD_HTML            "load_html"
 #define PHPSCITER_FILE_HLEN 7
+#define FINISH_EOF "\r\n\r\n\r\n\r\n"
+#define FINISH_EOF_LEN sizeof("\r\n\r\n\r\n\r\n")
 
 #ifdef PHP_WIN32
 #define PHP_PHPSCITER_API __declspec(dllexport)

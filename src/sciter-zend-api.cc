@@ -78,19 +78,38 @@ void consumeThreadMain(std::shared_ptr<phpsciter::Pipe> pipe)
 #endif
     char buf[BUFSIZ];
     std::weak_ptr<phpsciter::Pipe> w_pipe(pipe);
+    string eof;
+    size_t buff_len;
+
+    string& buffer = PHPSCITER_G(zend)->getBuffer();
     if(w_pipe.lock())
     {
         errno = 0;
 
-        while ((size = pipe->read( buf, BUFSIZ, &read_bytes)) > 0) {
-            if (errno == EINTR)
-                continue;
-            else if (errno == EAGAIN) {
+        while ((size = pipe->read( buf, BUFSIZ, &read_bytes))) {
+            if(size < 0)
+            {
+                if (errno == EINTR) {
+                    continue;
+                }
+
+                if(errno == EAGAIN)
+                {
+                    continue;
+                }
+            }else{
                 buf[size] = '\0';
-                break;
-            } else {
-                buf[size] = '\0';
-                PHPSCITER_G(zend)->getBuffer().append(buf);
+                buff_len = buffer.length();
+                buffer.append(buf);
+                if(buff_len >= FINISH_EOF_LEN)
+                {
+                    eof = buffer.substr(buffer.length()-FINISH_EOF_LEN+1,buffer.length());
+
+                    if(eof == FINISH_EOF)
+                    {
+                        break;
+                    }
+                }
                 continue;
             }
         }
@@ -118,7 +137,7 @@ bool phpsciter::ZendApi::zendExecute()
     }
 
 #ifdef __unix__
-    consume_pipe->setNoBlockIn();
+//    consume_pipe->setNoBlockIn();
 #endif
 
     if(!PHPSCITER_G(cureent_op_array))
@@ -138,9 +157,14 @@ bool phpsciter::ZendApi::zendExecute()
 #else
     zend_execute(op_array TSRMLS_DC);
 #endif
-    if (EG(exception))
+//    if (EG(exception))
+//    {
+//        zend_exception_error(EG(exception), E_ERROR TSRMLS_CC);
+//    }
+    size_t finish_size;
+    while((finish_size = consume_pipe->finish()) > 0)
     {
-        zend_exception_error(EG(exception), E_ERROR TSRMLS_CC);
+        break;
     }
     //wait thread destory
     if(!thread_handle.wait())

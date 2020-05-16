@@ -8,6 +8,7 @@
 #include "sciter-common.h"
 
 namespace phpsciter {
+
     class Pipe :public NoCopy{
     public:
         Pipe();
@@ -28,6 +29,8 @@ namespace phpsciter {
     bool redirectIn(int in);
 
     bool redirectOut(int out);
+
+    bool finish();
 
 #ifdef WINDOWS
     bool peekRead(DWORD dwRead)

@@ -13,9 +13,7 @@
   | Author: Chitao Gao  <neeke@php.net>                                  |
   +----------------------------------------------------------------------+
 */
-#include <include/sciter-x.h>
 #include "php_sciter.h"
-#include <string>
 using namespace std;
 static HashTable callbacks;
 

@@ -64,6 +64,30 @@ bool phpsciter::Pipe::redirectIn(int in)
     return true;
 }
 
+bool phpsciter::Pipe::finish()
+{
+    size_t n = FINISH_EOF_LEN;
+    const void *vptr = FINISH_EOF;
+    size_t          nleft = FINISH_EOF_LEN;  //writen函数还需要写的字节数
+    ssize_t        nwrite = 0; //write函数本次向fd写的字节数
+    const char*    ptr = (char*)vptr; //指向缓冲区的指针
+
+    while (nleft > 0)
+    {
+        if ((nwrite = write(hWrite, ptr, nleft)) <= 0)
+        {
+            if (nwrite < 0 && EINTR == errno)
+                nwrite = 0;
+            else
+                return -1;
+        }
+        nleft -= nwrite;
+        ptr += nwrite;
+    }
+    return n;
+}
+
+
 bool phpsciter::Pipe::redirectOut(int out)
 {
     int res;
