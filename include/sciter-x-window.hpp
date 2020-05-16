@@ -43,58 +43,74 @@ int uimain( std::function<int()> run );
 namespace sciter
 {
 
-namespace application
-{
-const std::vector<sciter::string>& argv();
-HINSTANCE                          hinstance();
-}
+  namespace application
+  {
+    const std::vector<sciter::string>& argv();
+    HINSTANCE                          hinstance();
+#ifdef WINDOWS
+    // this function will do PeekMessage/DispatchMessage, it is intended to be used in NodeJs environment.
+    bool pump_messages(); // returns false if it got WM_QUIT
+#endif 
 
-class window : public aux::asset
-    , public sciter::host<window>
-    , public sciter::event_handler
-{
+  }
+
+  class window : public sciter::event_handler
+               , public sciter::host<window>
+  {
     friend sciter::host<window>;
-public:
+  public:
     window( UINT creationFlags, RECT frame = RECT() );
 
-    bool is_valid() const
-    {
-        return _hwnd != 0;
-    }
+    bool is_valid() const { return _hwnd != 0; }
 
     void collapse(); // minimize
     void expand( bool maximize = false); // show or maximize
     void dismiss(); // delete the window
 
-    bool load( aux::bytes utf8_html, const WCHAR* base_url = 0 );
-    bool load( aux::chars utf8_html, const WCHAR* base_url = 0 );
-    bool load( const WCHAR* url );
-
-    // sciter::host traits:
-    HWINDOW   get_hwnd() const
+    bool load(aux::bytes utf8_html, const WCHAR* base_url = 0)
     {
-        return _hwnd;
+      bind(); return FALSE != ::SciterLoadHtml(_hwnd, utf8_html.start, UINT(utf8_html.length), base_url);
     }
-    HINSTANCE get_resource_instance() const
+    bool load(aux::chars utf8_html, const WCHAR* base_url = 0)
     {
-        return application::hinstance();
+      bind(); return FALSE != ::SciterLoadHtml(_hwnd, (LPCBYTE)utf8_html.start, UINT(utf8_html.length), base_url);
+    }
+    bool load(const WCHAR* url)
+    {
+      bind(); return FALSE != ::SciterLoadFile(_hwnd, url);
     }
 
-protected:
-    virtual LRESULT on_engine_destroyed()
-    {
-        _hwnd = 0;
-        asset::release();
-        return 0;
+  // sciter::host traits:
+    HWINDOW   get_hwnd() const { return _hwnd; }
+    HINSTANCE get_resource_instance() const { return application::hinstance(); }
+
+    //sciter::om::iasset
+    static const char* interface_name() { return "window.sciter.com"; }
+
+  protected:
+
+    void bind() {
+      if (_hwnd && !_bound) {
+        _bound = true;
+        setup_callback();
+        sciter::attach_dom_event_handler(get_hwnd(), this);
+      }
+    }
+
+    virtual LRESULT on_engine_destroyed() 
+    { 
+      _hwnd = 0; asset_release(); 
+      return 0; 
     }
 
 #if defined(WINDOWS)
     virtual LRESULT on_message( HWINDOW hwnd, UINT msg, WPARAM wParam, LPARAM lParam, BOOL& handled );
     static LRESULT SC_CALLBACK msg_delegate(HWINDOW hwnd, UINT msg, WPARAM wParam, LPARAM lParam, LPVOID pParam, BOOL* pHandled);
 #endif
-private:
-    HWINDOW _hwnd;
-};
+  private:
+     HWINDOW _hwnd;
+     bool    _bound = false;
+   };
 }
 
 #endif

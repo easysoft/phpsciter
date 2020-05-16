@@ -11,7 +11,7 @@ int phpsciter::Util::isFile(const char *name) {
     int res;
 
 
-    bzero(file_name,PATH_MAX);
+    memset(file_name, PATH_MAX, 0);
     //这是一个绝对路径
     strcpy(file_name,name);
     res = stat(file_name,&file_stat);
@@ -46,11 +46,6 @@ int phpsciter::Util::checkPhpFile(const char* name) {
             return FAILURE;
         }
     }
-}
-
-std::string phpsciter::Util::U16toString(const std::u16string &wstr)
-{
-    return aux::w2a(wstr).c_str();
 }
 
 void phpsciter::Util::splitString(const string& subject, vector<string>& v, const string& delimiter)
@@ -91,7 +86,7 @@ CHAR* phpsciter::Util::ForwardToChar(LPCWSTR quote)
 //
 //#else
 //    std::u16string a(quote);
-    str = PHPSCITER_G(tool)->U16toString((char16_t *)quote);
+    str = PHPSCITER_G(tool)->U16toString(quote);
     dest = (CHAR *)str.data();
 //#endif
 

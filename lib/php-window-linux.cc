@@ -50,7 +50,7 @@ int SciterApplicationRun(HWINDOW hw)
 }
 
 
-#elif __unix__
+#elif defined(__unix__)
 #include <stdlib.h>
 #include <gtk/gtk.h>
 #include <cairo.h>

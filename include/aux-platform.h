@@ -15,45 +15,43 @@
 
 
 #if defined(_WIN32_WCE) || defined(UNDER_CE)
-#define PLATFORM_WINCE
-#define WINDOWS
+  #define PLATFORM_WINCE
+  #define WINDOWS
 #elif defined(WIN64) || defined(_WIN64) || defined(_M_X64)
-#define PLATFORM_DESKTOP
-#define WINDOWS
-#define X64BITS
+  #define PLATFORM_DESKTOP
+  #define WINDOWS
+  #define X64BITS
 #elif defined(WIN32) || defined(_WIN32)
-#define PLATFORM_DESKTOP
-#ifndef WINDOWS
-#define WINDOWS
-#endif
+  #define PLATFORM_DESKTOP
+  #define WINDOWS
 #elif defined(__APPLE__)
-#define PLATFORM_OSX
-#define OSX
-#define UTF8_CHARS // const char* is UTF8 sequence
-#ifdef __x86_64__
-#define X64BITS
-#endif
-#define POSIX
+  #define PLATFORM_OSX
+  #define OSX
+  #define UTF8_CHARS // const char* is UTF8 sequence
+  #ifdef __x86_64__
+    #define X64BITS
+  #endif
+  #define POSIX
 #elif defined( __linux__ )
-#define PLATFORM_LINUX
-#ifndef LINUX
-#define LINUX
-#endif
-#ifdef __x86_64__
-#define X64BITS
-#endif
-#define POSIX
-#define UTF8_CHARS // const char* is UTF8 sequence
+  #define PLATFORM_LINUX
+  #ifndef LINUX
+    #define LINUX
+  #endif
+  #ifdef __x86_64__
+    #define X64BITS
+  #endif
+  #define POSIX
+  #define UTF8_CHARS // const char* is UTF8 sequence
 #else
-#error "Unknown platform"
+  #error "Unknown platform"
 #endif
 
 #if defined(WINDOWS)
-#define stricmp _stricmp
-#define wcsicmp _wcsicmp
+  #define stricmp _stricmp
+  #define wcsicmp _wcsicmp
 #elif defined(POSIX)
-#define stricmp strcasecmp
-#define wcsicmp wcscasecmp
+  #define stricmp strcasecmp
+  #define wcsicmp wcscasecmp
 #endif
 
 #endif

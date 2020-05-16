@@ -5,9 +5,7 @@
 #ifndef PHPSCITER_SCITERPARSE_H
 #define PHPSCITER_SCITERPARSE_H
 
-#include <memory>
-#include <sciter-x-api.h>
-#include <map>
+
 
 using namespace std;
 

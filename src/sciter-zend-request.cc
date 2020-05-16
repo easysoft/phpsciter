@@ -1,7 +1,7 @@
 //
 // Created by root on 20-3-15.
 //
-#include "php_sciter.h"
+#include "sciter-common.h"
 /**
  * 初始化_GET _POST _REQUEST的运行时变量
  */

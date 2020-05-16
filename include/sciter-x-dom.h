@@ -1,10 +1,10 @@
 /*
  * The Sciter Engine of Terra Informatica Software, Inc.
  * http://sciter.com
- *
+ * 
  * The code and information provided "as-is" without
  * warranty of any kind, either expressed or implied.
- *
+ * 
  * (C) 2003-2015, Terra Informatica Software, Inc.
  */
 
@@ -20,41 +20,32 @@
 #include <stdio.h> // for vsnprintf
 
 #if defined(__cplusplus) && !defined( PLAIN_API_ONLY )
-namespace html
-{
-struct element;
-struct node;
-}
-namespace tool
-{
-class sar;
-}
-typedef html::element* HELEMENT;
-/**DOM node handle.*/
-typedef html::node* HNODE;
-/**DOM range handle.*/
-typedef void*  HRANGE;
-typedef struct hposition
-{
-    HNODE hn;
-    INT pos;
-} HPOSITION;
-typedef tool::sar* HSARCHIVE;
+  namespace html
+  {
+    struct element;
+    struct node;
+  }
+  namespace tool {
+    class sar;
+  }
+  typedef html::element* HELEMENT;
+  /**DOM node handle.*/
+  typedef html::node* HNODE;
+  /**DOM range handle.*/
+  typedef void*  HRANGE;
+  typedef struct hposition { HNODE hn; INT pos; } HPOSITION;
+  typedef tool::sar* HSARCHIVE;
 #else
-/**DOM element handle.*/
-typedef void*  HELEMENT;
-/**DOM node handle.*/
-typedef void*  HNODE;
-/**DOM range handle.*/
-typedef void*  HRANGE;
-typedef void*  HSARCHIVE;
-typedef struct hposition
-{
-    HNODE hn;
-    INT pos;
-} HPOSITION;
+  /**DOM element handle.*/
+  typedef void*  HELEMENT;
+  /**DOM node handle.*/
+  typedef void*  HNODE;
+  /**DOM range handle.*/
+  typedef void*  HRANGE;
+  typedef void*  HSARCHIVE;
+  typedef struct hposition { HNODE hn; INT pos; } HPOSITION;
 
-struct BEHAVIOR_EVENT_PARAMS;
+  struct BEHAVIOR_EVENT_PARAMS;
 #endif
 
 //#include <string>
@@ -87,18 +78,16 @@ struct BEHAVIOR_EVENT_PARAMS;
 #define SCDOM_OPERATION_FAILED 5
 #define SCDOM_OK_NOT_HANDLED (-1)
 
-struct METHOD_PARAMS
-{
+  struct METHOD_PARAMS {
     UINT methodID;
-};
-struct REQUEST_PARAM
-{
-    LPCWSTR name;
-    LPCWSTR value;
-};
+  };
+  struct REQUEST_PARAM { 
+    LPCWSTR name; 
+    LPCWSTR value; 
+  };
 
-typedef struct METHOD_PARAMS METHOD_PARAMS;
-typedef struct REQUEST_PARAM REQUEST_PARAM;
+  typedef struct METHOD_PARAMS METHOD_PARAMS;
+  typedef struct REQUEST_PARAM REQUEST_PARAM;
 
 SCDOM_RESULT SCAPI Sciter_UseElement(HELEMENT he);
 
@@ -191,23 +180,23 @@ SCDOM_RESULT SCAPI SciterGetParentElement(HELEMENT he, HELEMENT* p_parent_he);
  */
 SCDOM_RESULT SCAPI SciterGetElementHtmlCB(HELEMENT he, BOOL outer, LPCBYTE_RECEIVER* rcv, LPVOID rcv_param);
 
-/**Get inner text of the element as LPWSTR (utf16 words).
-* \param[in] he \b #HELEMENT
-* \param[out] utf16words \b pointer to byte address receiving UTF16 encoded plain text
-* \return \b #SCDOM_RESULT SCAPI
-* OBSOLETE! use SciterGetElementTextCB instead
-*/
-//OBSOLETE SCDOM_RESULT SCAPI SciterGetElementText(HELEMENT he, LPWSTR* utf16);
+ /**Get inner text of the element as LPWSTR (utf16 words).
+ * \param[in] he \b #HELEMENT
+ * \param[out] utf16words \b pointer to byte address receiving UTF16 encoded plain text
+ * \return \b #SCDOM_RESULT SCAPI
+ * OBSOLETE! use SciterGetElementTextCB instead
+ */
+ //OBSOLETE SCDOM_RESULT SCAPI SciterGetElementText(HELEMENT he, LPWSTR* utf16);
 
 
-/**Get inner text of the element as LPCWSTR (utf16 words).
-* \param[in] he \b #HELEMENT
-* \param[in] rcv \b pointer to the function receiving UTF16 encoded plain text
-* \param[in] rcv_param \b param passed that passed to LPCWSTR_RECEIVER "as is"
-* \return \b #SCDOM_RESULT SCAPI
-*/
+ /**Get inner text of the element as LPCWSTR (utf16 words).
+ * \param[in] he \b #HELEMENT
+ * \param[in] rcv \b pointer to the function receiving UTF16 encoded plain text
+ * \param[in] rcv_param \b param passed that passed to LPCWSTR_RECEIVER "as is"
+ * \return \b #SCDOM_RESULT SCAPI
+ */
 
-SCDOM_RESULT SCAPI SciterGetElementTextCB(HELEMENT he, LPCWSTR_RECEIVER* rcv, LPVOID rcv_param);
+ SCDOM_RESULT SCAPI SciterGetElementTextCB(HELEMENT he, LPCWSTR_RECEIVER* rcv, LPVOID rcv_param);
 
 
 /**Set inner text of the element from LPCWSTR buffer (utf16 words).
@@ -216,7 +205,7 @@ SCDOM_RESULT SCAPI SciterGetElementTextCB(HELEMENT he, LPCWSTR_RECEIVER* rcv, LP
  * \param[in] length \b UINT, number of words in utf16words sequence
  * \return \b #SCDOM_RESULT SCAPI
  */
-SCDOM_RESULT SCAPI SciterSetElementText(HELEMENT he, LPCWSTR utf16, UINT length);
+ SCDOM_RESULT SCAPI SciterSetElementText(HELEMENT he, LPCWSTR utf16, UINT length);
 
 /**Get number of element's attributes.
  * \param[in] he \b #HELEMENT
@@ -224,7 +213,7 @@ SCDOM_RESULT SCAPI SciterSetElementText(HELEMENT he, LPCWSTR utf16, UINT length)
  * attributes.
  * \return \b #SCDOM_RESULT SCAPI
  **/
-SCDOM_RESULT SCAPI SciterGetAttributeCount(HELEMENT he, LPUINT p_count);
+ SCDOM_RESULT SCAPI SciterGetAttributeCount(HELEMENT he, LPUINT p_count);
 
 /**Get value of any element's attribute by attribute's number.
  * \param[in] he \b #HELEMENT
@@ -326,22 +315,22 @@ SCDOM_RESULT SCAPI SciterSetStyleAttribute(HELEMENT he, LPCSTR name, LPCWSTR val
 
 enum ELEMENT_AREAS
 {
-    ROOT_RELATIVE = 0x01,       // - or this flag if you want to get Sciter window relative coordinates,
-    //   otherwise it will use nearest windowed container e.g. popup window.
-    SELF_RELATIVE = 0x02,       // - "or" this flag if you want to get coordinates relative to the origin
-    //   of element iself.
-    CONTAINER_RELATIVE = 0x03,  // - position inside immediate container.
-    VIEW_RELATIVE = 0x04,       // - position relative to view - Sciter window
+  ROOT_RELATIVE = 0x01,       // - or this flag if you want to get Sciter window relative coordinates,
+                              //   otherwise it will use nearest windowed container e.g. popup window.
+  SELF_RELATIVE = 0x02,       // - "or" this flag if you want to get coordinates relative to the origin
+                              //   of element iself.
+  CONTAINER_RELATIVE = 0x03,  // - position inside immediate container.
+  VIEW_RELATIVE = 0x04,       // - position relative to view - Sciter window
 
-    CONTENT_BOX = 0x00,   // content (inner)  box
-    PADDING_BOX = 0x10,   // content + paddings
-    BORDER_BOX  = 0x20,   // content + paddings + border
-    MARGIN_BOX  = 0x30,   // content + paddings + border + margins
+  CONTENT_BOX = 0x00,   // content (inner)  box
+  PADDING_BOX = 0x10,   // content + paddings
+  BORDER_BOX  = 0x20,   // content + paddings + border
+  MARGIN_BOX  = 0x30,   // content + paddings + border + margins
 
-    BACK_IMAGE_AREA = 0x40, // relative to content origin - location of background image (if it set no-repeat)
-    FORE_IMAGE_AREA = 0x50, // relative to content origin - location of foreground image (if it set no-repeat)
+  BACK_IMAGE_AREA = 0x40, // relative to content origin - location of background image (if it set no-repeat)
+  FORE_IMAGE_AREA = 0x50, // relative to content origin - location of foreground image (if it set no-repeat)
 
-    SCROLLABLE_AREA = 0x60,   // scroll_area - scrollable area in content box
+  SCROLLABLE_AREA = 0x60,   // scroll_area - scrollable area in content box
 
 };
 
@@ -349,8 +338,8 @@ SCDOM_RESULT SCAPI SciterGetElementLocation(HELEMENT he, LPRECT p_location, UINT
 
 enum SCITER_SCROLL_FLAGS
 {
-    SCROLL_TO_TOP = 0x01,
-    SCROLL_SMOOTH = 0x10,
+  SCROLL_TO_TOP = 0x01,
+  SCROLL_SMOOTH = 0x10,
 };
 
 /*Scroll to view.
@@ -427,18 +416,18 @@ typedef BOOL SC_CALLBACK SciterElementCallback( HELEMENT he, LPVOID param );
  **/
 
 SCDOM_RESULT SCAPI SciterSelectElements(
-    HELEMENT  he,
-    LPCSTR    CSS_selectors,
-    SciterElementCallback*
-    callback,
-    LPVOID    param);
+          HELEMENT  he,
+          LPCSTR    CSS_selectors,
+          SciterElementCallback*
+                    callback,
+          LPVOID    param);
 
 SCDOM_RESULT SCAPI SciterSelectElementsW(
-    HELEMENT  he,
-    LPCWSTR   CSS_selectors,
-    SciterElementCallback*
-    callback,
-    LPVOID    param);
+          HELEMENT  he,
+          LPCWSTR   CSS_selectors,
+          SciterElementCallback*
+                    callback,
+          LPVOID    param);
 
 
 /**Find parent of the element by CSS selector.
@@ -455,26 +444,26 @@ SCDOM_RESULT SCAPI SciterSelectElementsW(
  **/
 
 SCDOM_RESULT SCAPI SciterSelectParent(
-    HELEMENT  he,
-    LPCSTR    selector,
-    UINT      depth,
-    /*out*/ HELEMENT* heFound);
+          HELEMENT  he,
+          LPCSTR    selector,
+          UINT      depth,
+          /*out*/ HELEMENT* heFound);
 
 SCDOM_RESULT SCAPI SciterSelectParentW(
-    HELEMENT  he,
-    LPCWSTR   selector,
-    UINT      depth,
-    /*out*/ HELEMENT* heFound);
+          HELEMENT  he,
+          LPCWSTR   selector,
+          UINT      depth,
+          /*out*/ HELEMENT* heFound);
 
 
 enum SET_ELEMENT_HTML
 {
-    SIH_REPLACE_CONTENT     = 0,
-    SIH_INSERT_AT_START     = 1,
-    SIH_APPEND_AFTER_LAST   = 2,
-    SOH_REPLACE             = 3,
-    SOH_INSERT_BEFORE       = 4,
-    SOH_INSERT_AFTER        = 5
+  SIH_REPLACE_CONTENT     = 0,
+  SIH_INSERT_AT_START     = 1,
+  SIH_APPEND_AFTER_LAST   = 2,
+  SOH_REPLACE             = 3,
+  SOH_INSERT_BEFORE       = 4,
+  SOH_INSERT_AFTER        = 5
 };
 
 /**Set inner or outer html of the element.
@@ -547,10 +536,10 @@ SCDOM_RESULT SCAPI SciterShowPopup(HELEMENT hePopup, HELEMENT heAnchor, UINT pla
 /** Shows block element (DIV) in popup window at given position.
  * \param[in] hePopup \b HELEMENT, element to show as popup
  * \param[in] pos \b POINT, popup element position, relative to origin of Sciter window.
- * \param[in] animate \b BOOL, true if animation is needed.
+ * \param[in] placement \b UINT, meaning of pos - number in 1..9 range. When 7 - pos is top/left corner of the popup
  **/
 
-SCDOM_RESULT SCAPI SciterShowPopupAt(HELEMENT hePopup, POINT pos, BOOL animate);
+SCDOM_RESULT SCAPI SciterShowPopupAt(HELEMENT hePopup, POINT pos, UINT placement);
 
 /** Removes popup window.
  * \param[in] he \b HELEMENT, element which belongs to popup window or popup element itself
@@ -571,46 +560,46 @@ typedef ElementEventProc* LPELEMENT_EVENT_PROC;
 
 enum ELEMENT_STATE_BITS
 {
-    STATE_LINK             = 0x00000001,
-    STATE_HOVER            = 0x00000002,
-    STATE_ACTIVE           = 0x00000004,
-    STATE_FOCUS            = 0x00000008,
-    STATE_VISITED          = 0x00000010,
-    STATE_CURRENT          = 0x00000020,  // current (hot) item
-    STATE_CHECKED          = 0x00000040,  // element is checked (or selected)
-    STATE_DISABLED         = 0x00000080,  // element is disabled
-    STATE_READONLY         = 0x00000100,  // readonly input element
-    STATE_EXPANDED         = 0x00000200,  // expanded state - nodes in tree view
-    STATE_COLLAPSED        = 0x00000400,  // collapsed state - nodes in tree view - mutually exclusive with
-    STATE_INCOMPLETE       = 0x00000800,  // one of fore/back images requested but not delivered
-    STATE_ANIMATING        = 0x00001000,  // is animating currently
-    STATE_FOCUSABLE        = 0x00002000,  // will accept focus
-    STATE_ANCHOR           = 0x00004000,  // anchor in selection (used with current in selects)
-    STATE_SYNTHETIC        = 0x00008000,  // this is a synthetic element - don't emit it's head/tail
-    STATE_OWNS_POPUP       = 0x00010000,  // this is a synthetic element - don't emit it's head/tail
-    STATE_TABFOCUS         = 0x00020000,  // focus gained by tab traversal
-    STATE_EMPTY            = 0x00040000,  // empty - element is empty (text.size() == 0 && subs.size() == 0)
-    //  if element has behavior attached then the behavior is responsible for the value of this flag.
-    STATE_BUSY             = 0x00080000,  // busy; loading
+   STATE_LINK             = 0x00000001,
+   STATE_HOVER            = 0x00000002,
+   STATE_ACTIVE           = 0x00000004,
+   STATE_FOCUS            = 0x00000008,
+   STATE_VISITED          = 0x00000010,
+   STATE_CURRENT          = 0x00000020,  // current (hot) item
+   STATE_CHECKED          = 0x00000040,  // element is checked (or selected)
+   STATE_DISABLED         = 0x00000080,  // element is disabled
+   STATE_READONLY         = 0x00000100,  // readonly input element
+   STATE_EXPANDED         = 0x00000200,  // expanded state - nodes in tree view
+   STATE_COLLAPSED        = 0x00000400,  // collapsed state - nodes in tree view - mutually exclusive with
+   STATE_INCOMPLETE       = 0x00000800,  // one of fore/back images requested but not delivered
+   STATE_ANIMATING        = 0x00001000,  // is animating currently
+   STATE_FOCUSABLE        = 0x00002000,  // will accept focus
+   STATE_ANCHOR           = 0x00004000,  // anchor in selection (used with current in selects)
+   STATE_SYNTHETIC        = 0x00008000,  // this is a synthetic element - don't emit it's head/tail
+   STATE_OWNS_POPUP       = 0x00010000,  // this is a synthetic element - don't emit it's head/tail
+   STATE_TABFOCUS         = 0x00020000,  // focus gained by tab traversal
+   STATE_EMPTY            = 0x00040000,  // empty - element is empty (text.size() == 0 && subs.size() == 0)
+                                         //  if element has behavior attached then the behavior is responsible for the value of this flag.
+   STATE_BUSY             = 0x00080000,  // busy; loading
 
-    STATE_DRAG_OVER        = 0x00100000,  // drag over the block that can accept it (so is current drop target). Flag is set for the drop target block
-    STATE_DROP_TARGET      = 0x00200000,  // active drop target.
-    STATE_MOVING           = 0x00400000,  // dragging/moving - the flag is set for the moving block.
-    STATE_COPYING          = 0x00800000,  // dragging/copying - the flag is set for the copying block.
-    STATE_DRAG_SOURCE      = 0x01000000,  // element that is a drag source.
-    STATE_DROP_MARKER      = 0x02000000,  // element is drop marker
+   STATE_DRAG_OVER        = 0x00100000,  // drag over the block that can accept it (so is current drop target). Flag is set for the drop target block
+   STATE_DROP_TARGET      = 0x00200000,  // active drop target.
+   STATE_MOVING           = 0x00400000,  // dragging/moving - the flag is set for the moving block.
+   STATE_COPYING          = 0x00800000,  // dragging/copying - the flag is set for the copying block.
+   STATE_DRAG_SOURCE      = 0x01000000,  // element that is a drag source.
+   STATE_DROP_MARKER      = 0x02000000,  // element is drop marker
 
-    STATE_PRESSED          = 0x04000000,  // pressed - close to active but has wider life span - e.g. in MOUSE_UP it
-    //   is still on; so behavior can check it in MOUSE_UP to discover CLICK condition.
-    STATE_POPUP            = 0x08000000,  // this element is out of flow - popup
+   STATE_PRESSED          = 0x04000000,  // pressed - close to active but has wider life span - e.g. in MOUSE_UP it
+                                         //   is still on; so behavior can check it in MOUSE_UP to discover CLICK condition.
+   STATE_POPUP            = 0x08000000,  // this element is out of flow - popup
 
-    STATE_IS_LTR           = 0x10000000,  // the element or one of its containers has dir=ltr declared
-    STATE_IS_RTL           = 0x20000000,  // the element or one of its containers has dir=rtl declared
+   STATE_IS_LTR           = 0x10000000,  // the element or one of its containers has dir=ltr declared
+   STATE_IS_RTL           = 0x20000000,  // the element or one of its containers has dir=rtl declared
 
 };
 
-/** Get/set state bits, stateBits*** accept or'ed values above
- **/
+  /** Get/set state bits, stateBits*** accept or'ed values above
+   **/
 SCDOM_RESULT SCAPI SciterGetElementState( HELEMENT he, UINT* pstateBits);
 
 /**
@@ -691,7 +680,7 @@ SCDOM_RESULT SCAPI SciterWindowDetachEventHandler( HWINDOW hwndLayout, LPELEMENT
  **/
 
 SCDOM_RESULT SCAPI SciterSendEvent(
-    HELEMENT he, UINT appEventCode, HELEMENT heSource, UINT reason, /*out*/ BOOL* handled);
+          HELEMENT he, UINT appEventCode, HELEMENT heSource, UINT_PTR reason, /*out*/ BOOL* handled);
 
 /** SciterPostEvent - post sinking/bubbling event to the child/parent chain of he element.
  *  Function will return immediately posting event into input queue of the application.
@@ -703,7 +692,7 @@ SCDOM_RESULT SCAPI SciterSendEvent(
 
  **/
 
-SCDOM_RESULT SCAPI SciterPostEvent( HELEMENT he, UINT appEventCode, HELEMENT heSource, UINT reason);
+SCDOM_RESULT SCAPI SciterPostEvent( HELEMENT he, UINT appEventCode, HELEMENT heSource, UINT_PTR reason);
 
 
 /** SciterFireEvent - sends or posts sinking/bubbling event to the child/parent chain of specified element.
@@ -737,7 +726,7 @@ SCDOM_RESULT SCAPI SciterCallBehaviorMethod(HELEMENT he, struct METHOD_PARAMS* p
   **/
 
 SCDOM_RESULT SCAPI SciterRequestElementData(
-    HELEMENT he, LPCWSTR url, UINT dataType, HELEMENT initiator );
+          HELEMENT he, LPCWSTR url, UINT dataType, HELEMENT initiator );
 
 /**
  *  SciterSendRequest - send GET or POST request for the element
@@ -749,22 +738,22 @@ SCDOM_RESULT SCAPI SciterRequestElementData(
 
 enum REQUEST_TYPE
 {
-    GET_ASYNC,  // async GET
-    POST_ASYNC, // async POST
-    GET_SYNC,   // synchronous GET
-    POST_SYNC   // synchronous POST
+  GET_ASYNC,  // async GET
+  POST_ASYNC, // async POST
+  GET_SYNC,   // synchronous GET
+  POST_SYNC   // synchronous POST
 };
 
 //struct REQUEST_PARAM { LPCWSTR name; LPCWSTR value; };
 
 SCDOM_RESULT SCAPI SciterHttpRequest(
-    HELEMENT        he,           // element to deliver data
-    LPCWSTR         url,          // url
-    UINT            dataType,     // data type, see SciterResourceType.
-    UINT            requestType,  // one of REQUEST_TYPE values
-    struct REQUEST_PARAM*  requestParams,// parameters
-    UINT            nParams       // number of parameters
-);
+          HELEMENT        he,           // element to deliver data
+          LPCWSTR         url,          // url
+          UINT            dataType,     // data type, see SciterResourceType.
+          UINT            requestType,  // one of REQUEST_TYPE values
+          struct REQUEST_PARAM*  requestParams,// parameters
+          UINT            nParams       // number of parameters
+          );
 
 /** SciterGetScrollInfo  - get scroll info of element with overflow:scroll or auto.
  * \param[in] he \b HELEMENT, element.
@@ -774,7 +763,7 @@ SCDOM_RESULT SCAPI SciterHttpRequest(
  **/
 
 SCDOM_RESULT SCAPI SciterGetScrollInfo(
-    HELEMENT he, LPPOINT scrollPos, LPRECT viewRect, LPSIZE contentSize );
+         HELEMENT he, LPPOINT scrollPos, LPRECT viewRect, LPSIZE contentSize );
 
 /** SciterSetScrollPos  - set scroll position of element with overflow:scroll or auto.
  * \param[in] he \b HELEMENT, element.
@@ -783,7 +772,7 @@ SCDOM_RESULT SCAPI SciterGetScrollInfo(
  **/
 
 SCDOM_RESULT SCAPI SciterSetScrollPos(
-    HELEMENT he, POINT scrollPos, BOOL smooth );
+         HELEMENT he, POINT scrollPos, BOOL smooth );
 
 /** SciterGetElementIntrinsicWidths  - get min-intrinsic and max-intrinsic widths of the element.
  * \param[in] he \b HELEMENT, element.
@@ -829,8 +818,8 @@ typedef INT SC_CALLBACK ELEMENT_COMPARATOR( HELEMENT he1, HELEMENT he2, LPVOID p
  **/
 
 SCDOM_RESULT SCAPI SciterSortElements(
-    HELEMENT he, UINT firstIndex, UINT lastIndex,
-    ELEMENT_COMPARATOR* cmpFunc, LPVOID cmpFuncParam );
+         HELEMENT he, UINT firstIndex, UINT lastIndex,
+         ELEMENT_COMPARATOR* cmpFunc, LPVOID cmpFuncParam );
 
 /** SciterSwapElements - swap element positions.
  * Function changes "insertion points" of two elements. So it swops indexes and parents of two elements.
@@ -839,7 +828,7 @@ SCDOM_RESULT SCAPI SciterSortElements(
  **/
 
 SCDOM_RESULT SCAPI SciterSwapElements(
-    HELEMENT he1, HELEMENT he2 );
+         HELEMENT he1, HELEMENT he2 );
 
 
 /** SciterTraverseUIEvent - traverse (sink-and-bubble) MOUSE or KEY event.
@@ -849,7 +838,7 @@ SCDOM_RESULT SCAPI SciterSwapElements(
  **/
 
 SCDOM_RESULT SCAPI SciterTraverseUIEvent(
-    UINT evt, LPVOID eventCtlStruct, BOOL* bOutProcessed );
+         UINT evt, LPVOID eventCtlStruct, BOOL* bOutProcessed );
 
 /** CallScriptingMethod - calls scripting method defined for the element.
  * \param[in] he \b HELEMENT, element which method will be callled.
@@ -889,57 +878,57 @@ SCDOM_RESULT SCAPI SciterAttachHwndToElement(HELEMENT he, HWINDOW hwnd);
 
 enum CTL_TYPE
 {
-    CTL_NO = 0,               ///< This dom element has no behavior at all.
-    CTL_UNKNOWN = 1,      ///< This dom element has behavior but its type is unknown.
+  CTL_NO = 0,               ///< This dom element has no behavior at all.
+  CTL_UNKNOWN = 1,      ///< This dom element has behavior but its type is unknown.
 
-    CTL_EDIT = 2,             ///< Single line edit box.
-    CTL_NUMERIC = 3,          ///< Numeric input with optional spin buttons.
-    CTL_CLICKABLE = 4,        ///< toolbar button, behavior:clickable.
-    CTL_BUTTON = 5,           ///< Command button.
-    CTL_CHECKBOX = 6,         ///< CheckBox (button).
-    CTL_RADIO = 7,            ///< OptionBox (button).
-    CTL_SELECT_SINGLE = 8,    ///< Single select, ListBox or TreeView.
-    CTL_SELECT_MULTIPLE = 9,  ///< Multiselectable select, ListBox or TreeView.
-    CTL_DD_SELECT = 10,        ///< Dropdown single select.
-    CTL_TEXTAREA = 11,         ///< Multiline TextBox.
-    CTL_HTMLAREA = 12,         ///< HTML selection behavior.
-    CTL_PASSWORD = 13,         ///< Password input element.
-    CTL_PROGRESS = 14,         ///< Progress element.
-    CTL_SLIDER = 15,           ///< Slider input element.
-    CTL_DECIMAL = 16,          ///< Decimal number input element.
-    CTL_CURRENCY = 17,         ///< Currency input element.
-    CTL_SCROLLBAR = 18,
-    CTL_LIST = 19,
-    CTL_RICHTEXT = 20,
-    CTL_CALENDAR = 21,
-    CTL_DATE = 22,
-    CTL_TIME = 23,
-    CTL_FILE = 24,             ///< file input element.
-    CTL_PATH = 25,             ///< path input element.
+  CTL_EDIT = 2,             ///< Single line edit box.
+  CTL_NUMERIC = 3,          ///< Numeric input with optional spin buttons.
+  CTL_CLICKABLE = 4,        ///< toolbar button, behavior:clickable.
+  CTL_BUTTON = 5,           ///< Command button.
+  CTL_CHECKBOX = 6,         ///< CheckBox (button).
+  CTL_RADIO = 7,            ///< OptionBox (button).
+  CTL_SELECT_SINGLE = 8,    ///< Single select, ListBox or TreeView.
+  CTL_SELECT_MULTIPLE = 9,  ///< Multiselectable select, ListBox or TreeView.
+  CTL_DD_SELECT = 10,        ///< Dropdown single select.
+  CTL_TEXTAREA = 11,         ///< Multiline TextBox.
+  CTL_HTMLAREA = 12,         ///< HTML selection behavior.
+  CTL_PASSWORD = 13,         ///< Password input element.
+  CTL_PROGRESS = 14,         ///< Progress element.
+  CTL_SLIDER = 15,           ///< Slider input element.  
+  CTL_DECIMAL = 16,          ///< Decimal number input element.
+  CTL_CURRENCY = 17,         ///< Currency input element.
+  CTL_SCROLLBAR = 18,
+  CTL_LIST = 19,
+  CTL_RICHTEXT = 20,
+  CTL_CALENDAR = 21,
+  CTL_DATE = 22,
+  CTL_TIME = 23,
+  CTL_FILE = 24,             ///< file input element.
+  CTL_PATH = 25,             ///< path input element.
 
-    CTL_LAST_INPUT = 26,
+  CTL_LAST_INPUT = 26,
 
-    CTL_HYPERLINK = CTL_LAST_INPUT,
-    CTL_FORM = 27,
+  CTL_HYPERLINK = CTL_LAST_INPUT,
+  CTL_FORM = 27,
 
-    CTL_MENUBAR = 28,
-    CTL_MENU = 29,
-    CTL_MENUBUTTON = 30,
+  CTL_MENUBAR = 28,
+  CTL_MENU = 29,
+  CTL_MENUBUTTON = 30,
 
-    CTL_FRAME = 31,
-    CTL_FRAMESET = 32,
+  CTL_FRAME = 31,
+  CTL_FRAMESET = 32,
 
-    CTL_TOOLTIP = 33,
+  CTL_TOOLTIP = 33,
 
-    CTL_HIDDEN = 34,
-    CTL_URL = 35,              ///< URL input element.
-    CTL_TOOLBAR = 36,
+  CTL_HIDDEN = 34,
+  CTL_URL = 35,              ///< URL input element.
+  CTL_TOOLBAR = 36,
 
-    CTL_WINDOW = 37,           ///< has HWND attached to it
+  CTL_WINDOW = 37,           ///< has HWND attached to it
 
-    CTL_LABEL = 38,
-    CTL_IMAGE = 39,            ///< image/video object.
-    CTL_PLAINTEXT = 40,        ///< Multiline TextBox + colorizer.
+  CTL_LABEL = 38,
+  CTL_IMAGE = 39,            ///< image/video object.  
+  CTL_PLAINTEXT = 40,        ///< Multiline TextBox + colorizer.
 
 };
 
@@ -1025,9 +1014,9 @@ SCDOM_RESULT SCAPI SciterNodeChildrenCount(HNODE hnode, UINT* pn);
 
 enum NODE_TYPE
 {
-    NT_ELEMENT,
-    NT_TEXT,
-    NT_COMMENT
+  NT_ELEMENT,
+  NT_TEXT,
+  NT_COMMENT
 };
 
 SCDOM_RESULT SCAPI SciterNodeType(HNODE hnode, UINT* pNodeType /*NODE_TYPE*/);
@@ -1037,10 +1026,10 @@ SCDOM_RESULT SCAPI SciterNodeSetText(HNODE hnode, LPCWSTR text, UINT textLength)
 
 enum NODE_INS_TARGET
 {
-    NIT_BEFORE,
-    NIT_AFTER,
-    NIT_APPEND,
-    NIT_PREPEND,
+  NIT_BEFORE,
+  NIT_AFTER,
+  NIT_APPEND,
+  NIT_PREPEND,
 };
 
 SCDOM_RESULT SCAPI SciterNodeInsert(HNODE hnode, UINT where /*NODE_INS_TARGET*/, HNODE what);

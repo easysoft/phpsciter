@@ -23,7 +23,7 @@ zend_op_array* phpsciter::ZendApi::zendCompileFile(const char* file_name)
 {
     zend_file_handle file_handle;
 
-    bzero(&file_handle, sizeof(zend_file_handle));
+    memset(&file_handle, sizeof(zend_file_handle), 0);
     if(zend_stream_open(file_name, &file_handle) != SUCCESS)
     {
         zend_error(E_WARNING,"open php file failed");
@@ -71,7 +71,11 @@ zend_op_array* phpsciter::ZendApi::zendCompileFile(const char* file_name)
 void consumeThreadMain(std::shared_ptr<phpsciter::Pipe> pipe)
 {
     ssize_t size;
+#ifdef WINDOWS
+    DWORD read_bytes;
+#elif defined(__unix__)
     size_t read_bytes;
+#endif
     char buf[BUFSIZ];
     std::weak_ptr<phpsciter::Pipe> w_pipe(pipe);
     if(w_pipe.lock())

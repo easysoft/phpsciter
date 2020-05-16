@@ -17,10 +17,10 @@ phpsciter::Thread::Thread(phpsciter::Thread::ThreadMain mainFun, const std::stri
 DWORD WINAPI phpsciter::Thread::run(LPVOID arg)
 {
     Thread* data = static_cast<Thread*>(obj);
-    data->tMain();
+    data->tMain(data->tPipe);
     return nullptr;
 }
-#elif __unix__
+#elif defined(__unix__)
 void* phpsciter::Thread::run(void* obj)
 {
     Thread* data = static_cast<Thread*>(obj);
@@ -41,7 +41,7 @@ bool phpsciter::Thread::start()
         zend_error(E_WARNING,strerror(errno));
         return false;
     }
-#elif __unix__
+#elif defined(__unix__)
     if(pthread_create(&pthread_id, nullptr, &Thread::run, (void*)this))
     {
         zend_error(E_WARNING,strerror(errno));
@@ -60,7 +60,7 @@ bool phpsciter::Thread::wait()
     int res = WaitForSingleObject(threadHandle, INFINITE);
     endState = true;
     return true;
-#elif __unix__
+#elif defined(__unix__)
     if(pthread_join(pthread_id, nullptr) == SUCCESS)
     {
         return true;

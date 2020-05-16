@@ -27,6 +27,16 @@
 #include <iostream>
 #include <vector>
 #include <memory>
+#include <memory>
+#include <map>
+
+#ifdef WINDOWS
+#define uint UINT
+
+#ifndef PATH_MAX
+#define PATH_MAX MAX_PATH
+#endif
+#endif
 
 //zend
 extern "C"
@@ -54,6 +64,7 @@ extern "C"
 //sciter-sdk
 #include <zend_types.h>
 #include <zend_compile.h>
+#include <sciter-x-api.h>
 #include <sciter-x-api.h>
 
 #include "php_window.h"

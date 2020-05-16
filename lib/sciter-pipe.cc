@@ -5,8 +5,8 @@
 
 phpsciter::Pipe::Pipe()
 {
-    int ret;
 #ifdef __unix__
+    int ret;
     int pipe_fd[2];
     ret = pipe(pipe_fd);
     if(ret == SUCCESS)
@@ -16,9 +16,9 @@ phpsciter::Pipe::Pipe()
     }else{
         zend_error(E_WARNING,strerror(errno));
     }
-#elif WINDOWS
-    res = CreatePipe(&hRead, &hWrite, nullptr, 0);
-    if(res <= 0)
+#elif defined(WINDOWS)
+    bool res = CreatePipe(&hRead, &hWrite, nullptr, 0);
+    if(!res)
     {
         zend_error(E_WARNING,strerror(errno));
     }
@@ -45,7 +45,7 @@ bool phpsciter::Pipe::redirectIn(int in)
         return false;
     }
 
-#elif WINDOWS
+#elif defined(WINDOWS)
     read_fd =_open_osfhandle((INT_PTR)hRead, _O_TEXT);
     if(read_fd < 0)
     {
@@ -83,7 +83,7 @@ bool phpsciter::Pipe::redirectOut(int out)
         zend_error(E_WARNING,strerror(errno));
         return false;
     }
-#elif WINDOWS
+#elif defined(WINDOWS)
     write_fd =_open_osfhandle((INT_PTR)hWrite, _O_TEXT);
     if(write_fd < 0)
     {

@@ -25,7 +25,10 @@ namespace phpsciter {
             return this->error.c_str();
         }
 
-        std::string U16toString(const std::u16string &wstr);
+        std::string U16toString(LPCWSTR wstr)
+        {
+            return aux::w2a(wstr).c_str();
+        }
 
         void splitString(const std::string &subject, std::vector <std::string> &v, const std::string &delimiter);
 

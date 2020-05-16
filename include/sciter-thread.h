@@ -24,13 +24,13 @@ namespace phpsciter{
         }
 
 #ifdef WINDOWS
-        DWORD WINAPI run(LPVOID arg);
+        static DWORD WINAPI run(LPVOID arg);
 
         ~Thread()
         {
-            assassert(endState);
+            assert(endState);
         }
-#elif __unix__
+#elif defined(__unix__)
         static void* run(void* arg);
 
         ~Thread()
@@ -52,8 +52,8 @@ namespace phpsciter{
         {
             if(tName.empty()) {
 #ifdef WINDOWS
-                tName = gettid();
-#elif __unix__
+                tName = ::GetCurrentThreadId();
+#elif defined(__unix__)
                 tName = pthread_self();
 #endif
             }
@@ -70,11 +70,11 @@ namespace phpsciter{
         int endState = false;
         HANDLE threadHandle = nullptr;
         DWORD  pthread_id;
-#elif __unix__
-        int tJoinStateStart;
+#elif defined(__unix__)
         pthread_t pthread_id;
 #endif
         std::shared_ptr<Pipe> tPipe = nullptr;
+        int tJoinStateStart;
     };
 }
 

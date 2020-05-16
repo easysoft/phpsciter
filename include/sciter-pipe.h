@@ -19,7 +19,7 @@ namespace phpsciter {
 #ifdef WINDOWS
             CloseHandle(hRead);
             CloseHandle(hWrite);
-#elif __unix__
+#elif defined(__unix__)
             close(hRead);
             close(hWrite);
 #endif
@@ -33,7 +33,7 @@ namespace phpsciter {
     bool peekRead(DWORD dwRead)
     {
         DWORD dwAvail = 0;
-        return (PeekNamedPipe(PHPSCITER_G(tool)->hRead, NULL, NULL, &dwRead, &dwAvail, NULL) || dwAvail <= 0);
+        return (PeekNamedPipe(hRead, NULL, NULL, &dwRead, &dwAvail, NULL) || dwAvail <= 0);
     }
 
     bool read(char* buf, size_t buf_size, DWORD* dwRead)
@@ -41,7 +41,7 @@ namespace phpsciter {
         return ReadFile(hRead, buf, buf_size, dwRead, nullptr);
     }
 
-#elif __unix__
+#elif defined(__unix__)
     bool setNoBlockIn()
     {
         inFlags = fcntl(hRead, F_GETFL, 0);
@@ -61,7 +61,7 @@ namespace phpsciter {
         HANDLE hWrite;
         int read_fd;
         int write_fd;
-#elif __unix__
+#elif defined(__unix__)
         int hRead;
         int hWrite;
 #endif
