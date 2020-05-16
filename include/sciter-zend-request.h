@@ -10,6 +10,7 @@
 using namespace std;
 
 namespace phpsciter {
+
     class ZendSciterRequest {
 
     public:
@@ -38,20 +39,16 @@ namespace phpsciter {
             return TRUE;
         }
 
-        //初始化请求
         BOOL initRequest(const std::string &request_uri);
 
-        //请求到达的时候
         BOOL onRequest(LPSCN_LOAD_DATA load_data);
 
-        //请求解析完成
         const std::string &onComplete();
 
         //clear memory
         void onClose();
 
     private:
-        //记录zend请求到达时候一些有用的数据
         typedef struct _zend_request_info {
             zval *get_data = nullptr;
             zval *post_data = nullptr;
