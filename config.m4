@@ -65,19 +65,20 @@ if test "$PHP_PHPsciter" != "no"; then
         PHP_ADD_LIBRARY(cairo, 1, PHPSCITER_SHARED_LIBADD)
         PHP_ADD_LIBRARY(gobject-2.0, 1, PHPSCITER_SHARED_LIBADD)
         PHP_ADD_LIBRARY_WITH_PATH(sciter-gtk-64, ./lib, PHPSCITER_SHARED_LIBADD)
-        window_file="lib/php-window-linux.cpp"
       ;;
   esac
 
-  source_file="$window_file \
-    src/callback.cpp \
-    src/tool.cpp \
-    src/value.cpp \
-    phpsciter.cpp \
+  source_file="src/sciter-callback.cc \
+    src/sciter-value.cc \
+    phpsciter.cc \
     phpsciter_application.cc \
     phpsciter_global.cc \
-    src/php-sciter-request.cc \
-    lib/util.cc"
+    src/sciter-zend-request.cc \
+    src/sciter-zend-api.cc \
+    lib/php-window-linux.cc \
+    lib/sciter-pipe.cc \
+    lib/sciter-thread.cc \
+    lib/sciter-util.cc"
 
   PHP_ADD_INCLUDE(./include)
   PHP_ADD_BUILD_DIR($ext_builddir/lib)

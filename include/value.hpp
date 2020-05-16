@@ -18,7 +18,7 @@
 #ifndef __value_hpp__
 #define __value_hpp__
 
-#include "value.h"
+#include "sciter-value.h"
 
 //  #include <string>
 #include <functional>

@@ -14,9 +14,8 @@
   +----------------------------------------------------------------------+
 */
 
-#include "php_phpsciter.h"
-#include "php_sciter.h"
-#include "phpsciter_application.h"
+#include "sciter-common.h"
+
 
 ZEND_DECLARE_MODULE_GLOBALS(phpsciter);
 
@@ -37,20 +36,19 @@ PHP_INI_END()
 PHP_GINIT_FUNCTION(phpsciter)
 {
     memset(phpsciter_globals, 0, sizeof(zend_phpsciter_globals));
-    shared_ptr<Util> util = make_shared<Util>();
+    shared_ptr<phpsciter::Util> util = make_shared<phpsciter::Util>();
     phpsciter_globals->tool =  util;
-    shared_ptr<ZendSciterRequest> request = make_shared<ZendSciterRequest>();
+    shared_ptr<phpsciter::ZendSciterRequest> request = make_shared<phpsciter::ZendSciterRequest>();
     phpsciter_globals->request = request;
+    shared_ptr<phpsciter::ZendApi> zend = make_shared<phpsciter::ZendApi>();
+    phpsciter_globals->zend = zend;
 }
 
 PHP_GSHUTDOWN_FUNCTION(phpsciter)
 {
     phpsciter_globals->tool.reset();
     phpsciter_globals->request.reset();
-    if(phpsciter_globals->cureent_op_array)
-    {
-        efree(phpsciter_globals->cureent_op_array);
-    }
+    phpsciter_globals->zend.reset();
     memset(phpsciter_globals, 0, sizeof(zend_phpsciter_globals));
 }
 

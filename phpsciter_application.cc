@@ -254,11 +254,11 @@ static void inline checkFileExist(const std::string& resource_path)
     //检查是否是一个文件
     if(resource_path.length() > PHPSCITER_FILE_HLEN) {
         if (PHPSCITER_G(tool)->isFile(resource_path.c_str() + PHPSCITER_FILE_HLEN) == FAILURE) {
-            zend_error(E_ERROR, PHPSCITER_G(tool)->getError());
+            zend_error(E_WARNING, PHPSCITER_G(tool)->getError());
         }
     }else{
         if (PHPSCITER_G(tool)->isFile(resource_path.c_str()) == FAILURE) {
-            zend_error(E_ERROR, PHPSCITER_G(tool)->getError());
+            zend_error(E_WARNING, PHPSCITER_G(tool)->getError());
         }
     }
 }
@@ -323,10 +323,14 @@ PHP_METHOD(phpsciter, run)
             SciterLoadFile(hw, LPCWSTR(file_name_as_wstr.c_str()));
         } break;
         case LOAD_PHP: {
-            std::string content = PHPSCITER_G(tool)->zendExecute(PHPSCITER_G(cureent_op_array));
-            SciterLoadHtml(hw, (byte *) content.c_str(), strlen(content.c_str()),
+            bool ret = PHPSCITER_G(zend)->zendExecute();
+            if(!ret)
+            {
+                zend_error(E_WARNING,"execute php code failed,file:%s;line:%d",__FILE__,__LINE__);
+                RETURN_FALSE
+            }
+            SciterLoadHtml(hw, (byte *) PHPSCITER_G(zend)->getBuffer().c_str(), strlen(PHPSCITER_G(zend)->getBuffer().c_str()),
                            LPCWSTR(resource_path_as_wstr.c_str()));
-            efree(PHPSCITER_G(cureent_op_array));
             PHPSCITER_G(cureent_op_array) = nullptr;
         } break;
         case LOAD_PHP_FILE: {
@@ -336,15 +340,15 @@ PHP_METHOD(phpsciter, run)
             //检查是否是一个文件
             file_path.append(file_name);
             checkFileExist(file_path);
-            PHPSCITER_G(cureent_op_array) = PHPSCITER_G(tool)->zendCompileFile((file_name));
-            if(PHPSCITER_G(cureent_op_array) == nullptr)
+            PHPSCITER_G(cureent_op_array) = PHPSCITER_G(zend)->zendCompileFile((file_name));
+            bool ret = PHPSCITER_G(zend)->zendExecute();
+            if(!ret)
             {
-                RETURN_FALSE;
+                zend_error(E_WARNING,"execute php code failed,file:%s;line:%d",__FILE__,__LINE__);
+                RETURN_FALSE
             }
-            std::string content = PHPSCITER_G(tool)->zendExecute(PHPSCITER_G(cureent_op_array));
-            SciterLoadHtml(hw, (byte *) content.c_str(), strlen(content.c_str()),
+            SciterLoadHtml(hw, (byte *) PHPSCITER_G(zend)->getBuffer().c_str(), strlen(PHPSCITER_G(zend)->getBuffer().c_str()),
                            LPCWSTR(resource_path_as_wstr.c_str()));
-            efree(PHPSCITER_G(cureent_op_array));
             PHPSCITER_G(cureent_op_array) = nullptr;
         } break;
         default:
@@ -532,6 +536,7 @@ PHP_METHOD(phpsciter,loadPHP)
         return;
     }
 #endif
+
     zval php_content_zval;
     PHPSCITER_ZVAL_STR(&php_content_zval,php_content);
     PHPSCITER_G(cureent_op_array) = zend_compile_string(&php_content_zval,(char*)"Standard input code");

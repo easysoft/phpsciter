@@ -5,7 +5,7 @@
 /**
  * 初始化_GET _POST _REQUEST的运行时变量
  */
-BOOL ZendSciterRequest::initRequest(const std::string& request_uri) {
+BOOL phpsciter::ZendSciterRequest::initRequest(const std::string& request_uri) {
     //initialize $_GET $_POST  $_REQUEST $_SERVER
     if (PG(auto_globals_jit)) {
 #if PHP_VERSION_ID >= 70000
@@ -149,7 +149,7 @@ BOOL ZendSciterRequest::initRequest(const std::string& request_uri) {
 #endif
 }
 
-BOOL ZendSciterRequest::onRequest(LPSCN_LOAD_DATA load_data) {
+BOOL phpsciter::ZendSciterRequest::onRequest(LPSCN_LOAD_DATA load_data) {
     HREQUEST request_id;
     UINT request_param_number;
     uint8_t res;
@@ -218,7 +218,7 @@ BOOL ZendSciterRequest::onRequest(LPSCN_LOAD_DATA load_data) {
     }
 }
 
-const std::string& ZendSciterRequest::onComplete() {
+const std::string& phpsciter::ZendSciterRequest::onComplete() {
     zval* storage_data;
     zval* request_data;
     map<std::string,std::string> request_info;
@@ -322,7 +322,7 @@ const std::string& ZendSciterRequest::onComplete() {
     return request_storage.request_real_uri;
 }
 
-void ZendSciterRequest::onClose()
+void phpsciter::ZendSciterRequest::onClose()
 {
     current_request_key.clear();
     current_request_value.clear();

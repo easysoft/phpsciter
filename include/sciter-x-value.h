@@ -20,7 +20,7 @@
 
 #define HAS_TISCRIPT
 
-#include "value.h"
+#include "sciter-value.h"
 
 #if defined(__cplusplus) && !defined( PLAIN_API_ONLY )
 typedef sciter::value SCITER_VALUE;

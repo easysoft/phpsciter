@@ -85,10 +85,10 @@ UINT SC_CALLBACK SciterViewCallback(LPSCITER_CALLBACK_NOTIFICATION pns, LPVOID c
                 }
 
                 std::string context;
-                zend_op_array* op_array = PHPSCITER_G(tool)->zendCompileFile(file_name);
+                zend_op_array* op_array = PHPSCITER_G(zend)->zendCompileFile(file_name);
                 if(op_array)
                 {
-                    context = PHPSCITER_G(tool)->zendExecute(op_array);
+                    context = PHPSCITER_G(zend)->zendExecute();
                 }
 
                 if(!context.empty())

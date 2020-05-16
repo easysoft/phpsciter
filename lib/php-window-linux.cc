@@ -13,7 +13,44 @@
 | Author: Chitao Gao  <neeke@php.net>                                  |
 +----------------------------------------------------------------------+
 */
+#ifdef WINDOWS
+#include "php_window.h"
+#include <windows.h>
+#include <stdlib.h>
+#include <malloc.h>
+#include <memory.h>
+#include <tchar.h>
 
+#include "sciter-x-window.hpp"
+
+void SciterWindowInit()
+{
+
+}
+
+void SciterSetWindowTitle(HWINDOW hw, char* title)
+{
+    //gtk_window_set_title(GTK_WINDOW(hw), title);
+}
+
+void SciterShowWindow(HWINDOW hw)
+{
+    ShowWindow(hw, SW_NORMAL);
+}
+
+int SciterApplicationRun(HWINDOW hw)
+{
+    MSG msg;
+    while (GetMessage(&msg, NULL, 0, 0))
+    {
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
+    return (int) msg.wParam;
+}
+
+
+#elif __unix__
 #include <stdlib.h>
 #include <gtk/gtk.h>
 #include <cairo.h>
@@ -46,3 +83,5 @@ int SciterApplicationRun(HWINDOW hw)
     gtk_main();
     return 0;
 }
+
+#endif

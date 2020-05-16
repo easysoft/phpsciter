@@ -14,11 +14,21 @@
   +----------------------------------------------------------------------+
 */
 
-#ifndef PHP_PHPSCITER_H
-#define PHP_PHPSCITER_H
+#ifndef SCITER_COMMON
+#define SCITER_COMMON
 
-#include <sciter-x-api.h>
+//c
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <fcntl.h>
 
+//c++
+#include <iostream>
+#include <vector>
+#include <memory>
+
+//zend
 extern "C"
 {
 #ifdef HAVE_CONFIG_H
@@ -36,6 +46,15 @@ extern "C"
 # include "TSRM.h"
 #endif
 }
+#ifndef PHP_VERSION_ID
+#include "php_version.h"
+#endif
+#include <php.h>
+
+//sciter-sdk
+#include <zend_types.h>
+#include <zend_compile.h>
+#include <sciter-x-api.h>
 
 #include "php_window.h"
 extern zend_module_entry phpsciter_module_entry;
@@ -65,7 +84,24 @@ extern zend_module_entry phpsciter_module_entry;
 #define PHP_PHPSCITER_API
 #endif
 
+
+#include "sciter-nocopy.h"
+#include "sciter-util.h"
+#include "sciter-pipe.h"
+#include "sciter-thread.h"
+#include "php_sciter.h"
+#include "phpsciter_application.h"
+#include "sciter-zend-request.h"
+#include "sciter-zend-api.h"
+#include "sciter-op_rarray-life.h"
 #include "phpsciter_global.h"
+
+
+
+enum {
+    CUSTOMER_ERROR = 1001,
+};
+
 
 PHP_MINIT_FUNCTION(phpsciter);
 PHP_MSHUTDOWN_FUNCTION(phpsciter);

@@ -17,7 +17,7 @@
 #ifndef PHP_SCITER_H
 #define PHP_SCITER_H
 
-#include "php_phpsciter.h"
+#include "sciter-common.h"
 
 int strlen16(char16_t* strarg);
 LPCWSTR ForwardToWSTR(char* quote);
