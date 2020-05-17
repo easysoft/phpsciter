@@ -221,7 +221,7 @@ bool phpsciter::ZendSciterRequest::onRequest(LPSCN_LOAD_DATA load_data) {
     return true;
 }
 
-const std::string& phpsciter::ZendSciterRequest::onComplete() {
+std::string phpsciter::ZendSciterRequest::onComplete() {
     zval* storage_data;
     zval* request_data;
     map<std::string,std::string> request_info;
@@ -322,7 +322,7 @@ const std::string& phpsciter::ZendSciterRequest::onComplete() {
 #endif
     }
 
-    return request_storage.request_uri;
+    return request_storage.request_real_uri;
 }
 
 void phpsciter::ZendSciterRequest::onClose()

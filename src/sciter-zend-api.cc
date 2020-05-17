@@ -76,12 +76,13 @@ void consumeThreadMain(std::shared_ptr<phpsciter::Pipe> pipe)
 #elif defined(__unix__)
     size_t read_bytes;
 #endif
-    char buf[BUFSIZ];
-    std::weak_ptr<phpsciter::Pipe> w_pipe(pipe);
-    string eof;
     size_t buff_len;
 
-    string& buffer = PHPSCITER_G(zend)->getBuffer();
+    char buf[BUFSIZ];
+    std::weak_ptr<phpsciter::Pipe> w_pipe(pipe);
+    std::string eof;
+
+    std::string& buffer = PHPSCITER_G(zend)->getBuffer();
     if(w_pipe.lock())
     {
         errno = 0;
@@ -98,10 +99,9 @@ void consumeThreadMain(std::shared_ptr<phpsciter::Pipe> pipe)
                     continue;
                 }
             }else{
-                buf[size] = '\0';
-                buff_len = buffer.length();
                 buffer.append(buf);
-                if(buff_len >= FINISH_EOF_LEN)
+                buff_len = buffer.length();
+                if(buff_len >= FINISH_EOF_LEN-1)
                 {
                     eof = buffer.substr(buffer.length()-FINISH_EOF_LEN+1,buffer.length());
 
@@ -109,6 +109,8 @@ void consumeThreadMain(std::shared_ptr<phpsciter::Pipe> pipe)
                     {
                         break;
                     }
+                }else{
+                    continue;
                 }
                 continue;
             }

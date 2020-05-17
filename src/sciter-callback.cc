@@ -75,6 +75,12 @@ UINT SC_CALLBACK SciterViewCallback(LPSCITER_CALLBACK_NOTIFICATION pns, LPVOID c
                 PHPSCITER_G(request)->initRequest(file_name);
                 PHPSCITER_G(request)->onRequest(pc);
                 resource_dir = PHPSCITER_G(request)->onComplete();
+                if(resource_dir.empty())
+                {
+                    zend_error(E_WARNING,"%s is not found",file_name);
+                    PHPSCITER_G(request)->onClose();
+                    return LOAD_OK;
+                }
                 PHPSCITER_G(request)->onClose();
                 file_name = (char *)resource_dir.c_str();
 
