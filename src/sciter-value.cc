@@ -13,7 +13,7 @@
   | Author: Chitao Gao  <neeke@php.net>                                  |
   +----------------------------------------------------------------------+
 */
-#include "php_sciter.h"
+#include "sciter-common.h"
 
 zval **CallBackGetValueTmp;
 

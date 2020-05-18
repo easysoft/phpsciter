@@ -104,12 +104,12 @@ extern zend_module_entry phpsciter_module_entry;
 #include "sciter-pipe.h"
 #include "sciter-thread.h"
 #include "php_sciter.h"
-#include "phpsciter_application.h"
 #include "sciter-zend-request.h"
 #include "sciter-zend-api.h"
-#include "sciter-op_rarray-life.h"
 #include "phpsciter_global.h"
+#include "sciter-op_rarray-life.h"
 #include "sciter-customer-log.h"
+#include "phpsciter_application.h"
 
 
 enum {

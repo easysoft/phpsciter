@@ -5,7 +5,6 @@
 #ifndef PHPSCITER_PHPSCITER_UTIL_H
 #define PHPSCITER_PHPSCITER_UTIL_H
 
-#include "sciter-common.h"
 
 namespace phpsciter {
 

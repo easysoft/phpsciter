@@ -5,8 +5,6 @@
 #ifndef PHPSCITER_SCITER_OP_RARRAY_LIFE_H
 #define PHPSCITER_SCITER_OP_RARRAY_LIFE_H
 
-#include "sciter-common.h"
-#include "phpsciter_global.h"
 
 namespace phpsciter{
 

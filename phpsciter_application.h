@@ -18,7 +18,6 @@
 #define PHPSCITER_PHPSCITER_APPLICATIOON_H
 
 #include "sciter-common.h"
-#include <fcntl.h>
 //
 // Created by root on 20-3-7.
 //

@@ -5,7 +5,6 @@
 #ifndef PHPSCITER_SCITER_PIPE_H
 #define PHPSCITER_SCITER_PIPE_H
 
-#include "sciter-common.h"
 
 namespace phpsciter {
 
