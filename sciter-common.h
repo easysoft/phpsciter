@@ -17,11 +17,13 @@
 #ifndef SCITER_COMMON
 #define SCITER_COMMON
 
+#ifdef __unix__
 //c
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
+#endif
 
 //c++
 #include <iostream>
