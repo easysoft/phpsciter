@@ -251,7 +251,6 @@ PHP_METHOD(phpsciter, ifDefined)
 
 static void inline checkFileExist(const std::string& resource_path)
 {
-    //检查是否是一个文件
     if(resource_path.length() > PHPSCITER_FILE_HLEN) {
         if (PHPSCITER_G(tool)->isFile(resource_path.c_str() + PHPSCITER_FILE_HLEN) == FAILURE) {
             zend_error(E_WARNING, PHPSCITER_G(tool)->getError());
@@ -337,7 +336,6 @@ PHP_METHOD(phpsciter, run)
             loadFile = PHPSCITER_ZEND_READ_PROPERTY(phpsciter_ce, instance,
                                                     ZEND_STRL(PHPSCITER_PROPERTY_LOAD_FILE));
             file_name_len = spprintf(&file_name, 0, "%s%s", Z_STRVAL_P(resource_path), Z_STRVAL_P(loadFile));
-            //检查是否是一个文件
             file_path.append(file_name);
             checkFileExist(file_path);
             PHPSCITER_G(cureent_op_array) = PHPSCITER_G(zend)->zendCompileFile((file_name));

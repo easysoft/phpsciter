@@ -64,13 +64,32 @@ bool phpsciter::Pipe::redirectIn(int in)
     return true;
 }
 
-bool phpsciter::Pipe::finish()
+size_t phpsciter::Pipe::finish()
 {
     size_t n = FINISH_EOF_LEN;
     const void *vptr = FINISH_EOF;
-    size_t          nleft = FINISH_EOF_LEN;  //writen函数还需要写的字节数
+    size_t          nleft = FINISH_EOF_LEN;
+    const char*    ptr = (char*)vptr;
+
+#ifdef WINDOWS
+    DWORD nwrite = 0;
+
+    while (nleft > 0)
+    {
+        if ((WriteFile(hWrite, vptr, nleft ,&nwrite, nullptr)) <= 0)
+        {
+            if (nwrite < 0 && EINTR == errno)
+                nwrite = 0;
+            else
+                return -1;
+        }
+        nleft -= nwrite;
+        ptr += nwrite;
+    }
+    return nwrite;
+#elif defined(__unix__)
+
     ssize_t        nwrite = 0; //write函数本次向fd写的字节数
-    const char*    ptr = (char*)vptr; //指向缓冲区的指针
 
     while (nleft > 0)
     {
@@ -84,7 +103,8 @@ bool phpsciter::Pipe::finish()
         nleft -= nwrite;
         ptr += nwrite;
     }
-    return n;
+    return nwrite;
+#endif
 }
 
 

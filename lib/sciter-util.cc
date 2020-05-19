@@ -12,7 +12,7 @@ int phpsciter::Util::isFile(const char *name) {
 
 
     memset(file_name, PATH_MAX, 0);
-    //这是一个绝对路径
+    //Absolute Path
     strcpy(file_name,name);
     res = stat(file_name,&file_stat);
     if (res == SUCCESS) {
@@ -114,11 +114,17 @@ time_t phpsciter::Util::getUnixTime()
 
 void phpsciter::Util::getTimeString(char* time_format)
 {
+#ifdef WINDOWS
+    time_t now_time = getUnixTime();
+    struct tm *ptr;
+    ptr=localtime(&now_time);
+    strcpy(time_format,asctime(ptr));
+#elif defined(__unix__)
     if(!time_format)
     {
         return;
     }
     time_t now_time = getUnixTime();
-    //ctime_r 是一个线程安全的函数
     ctime_r(&now_time,time_format);
+#endif
 }

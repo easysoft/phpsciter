@@ -17,6 +17,8 @@
 #ifndef SCITER_COMMON
 #define SCITER_COMMON
 
+#include <sciter-x-api.h>
+
 #ifdef __unix__
 //c
 #include <sys/types.h>
@@ -24,14 +26,6 @@
 #include <unistd.h>
 #include <fcntl.h>
 #endif
-
-//c++
-#include <iostream>
-#include <vector>
-#include <memory>
-#include <memory>
-#include <map>
-#include <string>
 
 #ifdef WINDOWS
 #define uint UINT
@@ -49,12 +43,15 @@ extern "C"
 #endif
 
 #include <locale.h>
-#include "php.h"
-#include "php_ini.h"
-#include "Zend/zend_API.h"
-#include "ext/standard/info.h"
-#include "zend_exceptions.h"
-#include "php7_wrapper.h"
+#include <php.h>
+#include <php_ini.h>
+#include <Zend/zend_API.h>
+#include <ext/standard/info.h>
+#include <zend_exceptions.h>
+#include <php7_wrapper.h>
+#include <zend_types.h>
+#include <zend_compile.h>
+
 #ifdef ZTS
 # include "TSRM.h"
 #endif
@@ -62,11 +59,15 @@ extern "C"
 #ifndef PHP_VERSION_ID
 #include "php_version.h"
 #endif
-#include <php.h>
 
-//sciter-sdk
-#include <zend_types.h>
-#include <zend_compile.h>
+//c++
+#include <iostream>
+#include <vector>
+#include <memory>
+#include <memory>
+#include <map>
+#include <string>
+
 #include <sciter-x-api.h>
 #include <include/sciter-x.h>
 

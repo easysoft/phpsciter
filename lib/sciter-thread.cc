@@ -14,11 +14,11 @@ phpsciter::Thread::Thread(phpsciter::Thread::ThreadMain mainFun, const std::stri
 }
 
 #ifdef WINDOWS
-DWORD WINAPI phpsciter::Thread::run(LPVOID arg)
+DWORD WINAPI phpsciter::Thread::run(LPVOID obj)
 {
     Thread* data = static_cast<Thread*>(obj);
     data->tMain(data->tPipe);
-    return nullptr;
+    return 0;
 }
 #elif defined(__unix__)
 void* phpsciter::Thread::run(void* obj)

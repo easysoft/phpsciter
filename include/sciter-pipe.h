@@ -29,7 +29,7 @@ namespace phpsciter {
 
     bool redirectOut(int out);
 
-    bool finish();
+    size_t finish();
 
 #ifdef WINDOWS
     bool peekRead(DWORD dwRead)
