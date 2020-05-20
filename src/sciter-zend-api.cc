@@ -163,10 +163,10 @@ bool phpsciter::ZendApi::zendExecute()
 #else
     zend_execute(op_array TSRMLS_DC);
 #endif
-//    if (EG(exception))
-//    {
-//        zend_exception_error(EG(exception), E_ERROR TSRMLS_CC);
-//    }
+    if (EG(exception))
+    {
+        zend_exception_error(EG(exception), E_WARNING TSRMLS_CC);
+    }
     size_t finish_size;
     while((finish_size = consume_pipe->finish()) > 0)
     {
