@@ -83,6 +83,7 @@ void consumeThreadMain(std::shared_ptr<phpsciter::Pipe> pipe)
     std::string eof;
 
     std::string& buffer = PHPSCITER_G(zend)->getBuffer();
+    php_printf("buf:%s\n",buffer.c_str());
     if(w_pipe.lock())
     {
         errno = 0;
@@ -99,6 +100,7 @@ void consumeThreadMain(std::shared_ptr<phpsciter::Pipe> pipe)
                     continue;
                 }
             }else{
+                buf[size] = 0;
                 buffer.append(buf);
                 buff_len = buffer.length();
                 if(buff_len >= FINISH_EOF_LEN-1)
@@ -135,6 +137,7 @@ bool phpsciter::ZendApi::zendExecute()
 
     if(!ret)
     {
+        zend_error(E_WARNING,"std redirect error,error msg:%s",strerror(errno));
         return false;
     }
 
@@ -151,6 +154,7 @@ bool phpsciter::ZendApi::zendExecute()
 
     if(!thread_handle.start())
     {
+        zend_error(E_WARNING,"start thread error");
         return  false;
     }
     //create an consume thread
@@ -171,6 +175,7 @@ bool phpsciter::ZendApi::zendExecute()
     //wait thread destory
     if(!thread_handle.wait())
     {
+        zend_error(E_WARNING,"wait thread error");
         return false;
     }
 #if PHP_VERSION_ID < 70000

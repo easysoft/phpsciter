@@ -8,7 +8,7 @@
 
 namespace phpsciter {
 
-    class Pipe :public NoCopy{
+    class Pipe {
     public:
         Pipe();
         ~Pipe()

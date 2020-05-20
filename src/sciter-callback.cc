@@ -88,17 +88,15 @@ UINT SC_CALLBACK SciterViewCallback(LPSCITER_CALLBACK_NOTIFICATION pns, LPVOID c
                     return LOAD_OK;
                 }
 
-                std::string context;
                 zend_op_array* op_array = PHPSCITER_G(zend)->zendCompileFile(file_name);
                 if(op_array)
                 {
-                    context = PHPSCITER_G(zend)->zendExecute();
-                }
-
-                if(!context.empty())
-                {
-//                        aux::a2w w_content(Z_STRVAL(content));
-                    ::SciterDataReady(pc->hwnd, pc->uri, (LPCBYTE) (context.c_str()), context.length());
+                    bool execute_res = PHPSCITER_G(zend)->zendExecute();
+                    if(execute_res)
+                    {
+                        ::SciterDataReady(pc->hwnd, pc->uri, (LPCBYTE) (PHPSCITER_G(zend)->getBuffer().c_str()),
+                                PHPSCITER_G(zend)->getBuffer().length());
+                    }
                 }
 
             }else {

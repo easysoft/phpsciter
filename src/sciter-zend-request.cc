@@ -238,8 +238,6 @@ std::string phpsciter::ZendSciterRequest::onComplete() {
     PHPSCITER_MAKE_STD_ZVAL(zend_request_uri);
 #endif
 
-    request_storage.request_real_uri.clear();
-
     switch(request_storage.request_type)
     {
         case RRT_GET:
