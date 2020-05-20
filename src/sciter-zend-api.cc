@@ -83,7 +83,7 @@ void consumeThreadMain(std::shared_ptr<phpsciter::Pipe> pipe)
     std::string eof;
 
     std::string& buffer = PHPSCITER_G(zend)->getBuffer();
-    php_printf("buf:%s\n",buffer.c_str());
+
     if(w_pipe.lock())
     {
         errno = 0;
