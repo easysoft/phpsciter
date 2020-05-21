@@ -6,6 +6,7 @@
 #define PHPSCITER_SCITER_THREAD_H
 
 
+
 namespace phpsciter{
 
     class Thread :public NoCopy{
@@ -39,6 +40,11 @@ namespace phpsciter{
                 pthread_detach(pthread_id);
             }
         }
+
+        static int tid()
+        {
+            return static_cast<pid_t>(::syscall(SYS_gettid));
+        }
 #endif
 
         bool start();
@@ -53,7 +59,7 @@ namespace phpsciter{
 #ifdef WINDOWS
                 tName = ::GetCurrentThreadId();
 #elif defined(__unix__)
-                tName = pthread_self();
+                tName = tid();
 #endif
             }
             return  true;

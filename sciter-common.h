@@ -25,6 +25,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <syscall.h>
+
 #endif
 
 #ifdef WINDOWS

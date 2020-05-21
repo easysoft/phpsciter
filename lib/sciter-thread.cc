@@ -3,7 +3,7 @@
 //
 #include "sciter-common.h"
 
-phpsciter::Thread::Thread(phpsciter::Thread::ThreadMain mainFun, const std::string &name)
+phpsciter::Thread::Thread(phpsciter::Thread::ThreadMain mainFun, const std::string& name)
  : tMain(std::move(mainFun)),
  tName(name),
  pthread_id(0),
