@@ -18,12 +18,18 @@ namespace phpsciter {
         {
             if(oldIn > 0 && srcIn > 0)
             {
-                dup2(oldIn, srcIn);
+                if(dup2(oldIn, srcIn) != -1)
+                {
+                    close(oldIn);
+                }
             }
 
             if(oldOut > 0 && srcOut > 0)
             {
-                dup2(oldOut, srcOut);
+                if(dup2(oldOut, srcOut) != -1)
+                {
+                    close(oldOut);
+                }
             }
 
 #ifdef WINDOWS
