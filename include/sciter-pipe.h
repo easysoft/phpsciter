@@ -16,12 +16,12 @@ namespace phpsciter {
 
         ~Pipe()
         {
-            if(oldIn>0 && srcIn>0)
+            if(oldIn > 0 && srcIn > 0)
             {
                 dup2(oldIn, srcIn);
             }
 
-            if(oldOut && srcOut)
+            if(oldOut > 0 && srcOut > 0)
             {
                 dup2(oldOut, srcOut);
             }
