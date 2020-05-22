@@ -13,6 +13,7 @@
 | Author: Chitao Gao  <neeke@php.net>                                  |
 +----------------------------------------------------------------------+
 */
+#include <sciter-x-api.h>
 #ifdef WINDOWS
 #include "php_window.h"
 #include <windows.h>

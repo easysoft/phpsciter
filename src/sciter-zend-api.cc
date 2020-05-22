@@ -88,7 +88,7 @@ void consumeThreadMain(std::shared_ptr<phpsciter::Pipe> pipe)
     {
         errno = 0;
 
-        while ((size = pipe->read( buf, BUFSIZ, &read_bytes))) {
+        while ((size = pipe->read( buf, BUFSIZ-1, &read_bytes))) {
             if(size < 0)
             {
                 if (errno == EINTR) {

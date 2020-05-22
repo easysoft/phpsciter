@@ -25,17 +25,29 @@ phpsciter::Pipe::Pipe()
 #endif
 }
 
+phpsciter::Pipe::Pipe(const phpsciter::Pipe& src_pipe)
+{
+    setOldIn(src_pipe.getOldIn());
+    setOldOut(src_pipe.getOldOut());
+    setSrcIn(src_pipe.getSrcIn());
+    setSrcOut(src_pipe.getSrcOut());
+    setReadHandle(src_pipe.getReadHandle());
+    setWriteHandle(src_pipe.getWriteHandle());
+}
+
 bool phpsciter::Pipe::redirectIn(int in)
 {
     int res;
 
-    srcIn = in;
+    setSrcIn(srcIn);
 
-    oldIn = dup(in);
-    if(oldIn < 0)
+    int copy_in = dup(in);
+    if(copy_in < 0)
     {
         return  false;
     }
+
+    setOldIn(copy_in);
 
 #ifdef __unix__
     res = dup2(hWrite, in);
@@ -112,13 +124,15 @@ bool phpsciter::Pipe::redirectOut(int out)
 {
     int res;
 
-    srcOut = out;
+    setSrcOut(out);
 
-    oldOut = dup(out);
-    if(oldOut < 0)
+    int copy_out = dup(out);
+    if(copy_out < 0)
     {
         return  false;
     }
+
+    setOldOut(copy_out);
 
 #ifdef __unix__
     res = dup2(hWrite, out);

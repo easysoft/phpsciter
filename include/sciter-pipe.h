@@ -11,10 +11,20 @@ namespace phpsciter {
     class Pipe {
     public:
         Pipe();
+
+        Pipe(const Pipe& src_pipe);
+
         ~Pipe()
         {
-            dup2(oldIn, srcIn);
-            dup2(oldOut, srcOut);
+            if(oldIn>0 && srcIn>0)
+            {
+                dup2(oldIn, srcIn);
+            }
+
+            if(oldOut && srcOut)
+            {
+                dup2(oldOut, srcOut);
+            }
 
 #ifdef WINDOWS
             CloseHandle(hRead);
@@ -25,37 +35,117 @@ namespace phpsciter {
 #endif
         }
 
-    bool redirectIn(int in);
+        bool redirectIn(int in);
 
-    bool redirectOut(int out);
+        bool redirectOut(int out);
 
-    size_t finish();
+        size_t finish();
 
-#ifdef WINDOWS
-    bool peekRead(DWORD dwRead)
-    {
-        DWORD dwAvail = 0;
-        return (PeekNamedPipe(hRead, NULL, NULL, &dwRead, &dwAvail, NULL) || dwAvail <= 0);
-    }
+    #ifdef WINDOWS
+        bool peekRead(DWORD dwRead)
+        {
+            DWORD dwAvail = 0;
+            return (PeekNamedPipe(hRead, NULL, NULL, &dwRead, &dwAvail, NULL) || dwAvail <= 0);
+        }
 
-    bool read(char* buf, size_t buf_size, DWORD* dwRead)
-    {
-        return ReadFile(hRead, buf, buf_size, dwRead, nullptr);
-    }
+        bool read(char* buf, size_t buf_size, DWORD* dwRead)
+        {
+            return ReadFile(hRead, buf, buf_size, dwRead, nullptr);
+        }
 
-#elif defined(__unix__)
-    bool setNoBlockIn()
-    {
-        inFlags = fcntl(hRead, F_GETFL, 0);
-        return fcntl(hRead, F_SETFL, inFlags | O_NONBLOCK);
-    }
+        HANDLE getReadHandle() const
+        {
+            return hRead;
+        }
 
-    size_t read(char* buf,size_t buf_size,size_t* read_size)
-    {
-        *read_size = ::read(hRead, buf, BUFSIZ);
-        return *read_size;
-    }
-#endif
+        HANDLE getWriteHandle() const
+        {
+            return hWrite;
+        }
+
+        bool setReadHandle(HANDLE read)
+        {
+            return hRead = read;
+        }
+
+        bool setWriteHandle(HANDLE write)
+        {
+            return hWrite = write;
+        }
+
+    #elif defined(__unix__)
+        bool setNoBlockIn()
+        {
+            inFlags = fcntl(hRead, F_GETFL, 0);
+            return fcntl(hRead, F_SETFL, inFlags | O_NONBLOCK);
+        }
+
+        size_t read(char* buf,size_t buf_size,size_t* read_size)
+        {
+            *read_size = ::read(hRead, buf, BUFSIZ);
+            return *read_size;
+        }
+
+        int getReadHandle() const
+        {
+            return hRead;
+        }
+
+        int getWriteHandle() const
+        {
+            return hWrite;
+        }
+
+        bool setReadHandle(int read)
+        {
+            return hRead = read;
+        }
+
+        bool setWriteHandle(int write)
+        {
+            return hWrite = write;
+        }
+    #endif
+
+        bool setOldIn(int in)
+        {
+            return oldIn = in;
+        }
+
+        int getOldIn() const
+        {
+            return oldIn;
+        }
+
+        bool setOldOut(int out)
+        {
+            return oldOut = out;
+        }
+
+        int getOldOut() const
+        {
+            return oldOut;
+        }
+
+        bool setSrcIn(int in)
+        {
+            return srcIn = in;
+        }
+
+        int getSrcIn() const
+        {
+            return srcIn;
+        }
+
+        bool setSrcOut(int out)
+        {
+            return srcOut = out;
+        }
+
+        int getSrcOut() const
+        {
+            return srcOut;
+        }
 
     private:
 #ifdef WINDOWS
@@ -67,11 +157,11 @@ namespace phpsciter {
         int hRead;
         int hWrite;
 #endif
-        int oldIn;
-        int oldOut;
-        int srcIn;
-        int srcOut;
-        int inFlags;
+        int oldIn = -1;
+        int oldOut = -1;
+        int srcIn = -1;
+        int srcOut = -1;
+        int inFlags = -1;
     };
 }
 #endif //PHPSCITER_SCITER_PIPE_H

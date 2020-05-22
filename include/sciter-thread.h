@@ -29,6 +29,9 @@ namespace phpsciter{
         ~Thread()
         {
             assert(endState);
+            if(threadHandle){
+                CloseHandle(threadHandle);
+            }
         }
 #elif defined(__unix__)
         static void* run(void* arg);
