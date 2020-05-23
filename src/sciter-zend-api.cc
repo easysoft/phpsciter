@@ -70,11 +70,12 @@ zend_op_array* phpsciter::ZendApi::zendCompileFile(const char* file_name)
 
 void consumeThreadMain(std::shared_ptr<phpsciter::Pipe> pipe)
 {
-    ssize_t size;
 #ifdef WINDOWS
-    DWORD read_bytes;
+    DWORD read_bytes = 0;
+    DWORD size = 0;
 #elif defined(__unix__)
-    size_t read_bytes;
+    size_t read_bytes = 0;
+    size_t size = 0;
 #endif
     size_t buff_len;
 

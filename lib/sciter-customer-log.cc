@@ -9,7 +9,7 @@
 
 phpsciter::CustomerLog::CustomerLog(const char* dir)
 {
-    logFd = open(dir,O_RDWR|O_CREAT|O_APPEND,S_IRWXU);
+    logFd = open(dir,O_RDWR|O_CREAT|O_APPEND);
     if(logFd == -1)
     {
         cout<<"[CServiceLog::CServiceLog]:open log "<<dir<<" failed;errno"<<errno<<";errormsg:"<<strerror(errno)<<";file:"<<__FILE__<<";line:"<<__LINE__;
@@ -28,7 +28,7 @@ bool phpsciter::CustomerLog::addLog(const char* name,const char* log,const char*
 {
     ssize_t res;
     char buf[BUFSIZ];
-    bzero(buf,sizeof(buf));
+    memset(buf, sizeof(buf), 0);
     char time_buf[26];
     PHPSCITER_G(tool)->getTimeString(time_buf);
     int time_len = strlen(time_buf);

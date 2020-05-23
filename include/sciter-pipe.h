@@ -54,9 +54,14 @@ namespace phpsciter {
             return (PeekNamedPipe(hRead, NULL, NULL, &dwRead, &dwAvail, NULL) || dwAvail <= 0);
         }
 
-        bool read(char* buf, size_t buf_size, DWORD* dwRead)
+        DWORD read(char* buf, size_t buf_size, DWORD* dwRead)
         {
-            return ReadFile(hRead, buf, buf_size, dwRead, nullptr);
+            if(ReadFile(hRead, buf, buf_size, dwRead, nullptr))
+            {
+                return *dwRead;
+            }else{
+                return 0;
+            }
         }
 
         HANDLE getReadHandle() const

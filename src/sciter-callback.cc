@@ -69,7 +69,7 @@ UINT SC_CALLBACK SciterViewCallback(LPSCITER_CALLBACK_NOTIFICATION pns, LPVOID c
         {
             LPSCN_LOAD_DATA pc = LPSCN_LOAD_DATA(pns);
             aux::wchars wu = aux::chars_of(pc->uri);
-            if(wu.like(WSTR("file:///*")) && (wu.like(WSTR("file:///*.php")) || wu.like(WSTR("file:///*.php?*")))) {
+            if(wu.like(WSTR("file://*")) && (wu.like(WSTR("file://*.php")) || wu.like(WSTR("file://*.php?*")))) {
                 std::string resource_dir = PHPSCITER_G(tool)->U16toString(pc->uri);
                 char* file_name = (char*)resource_dir.c_str() + 7;
                 PHPSCITER_G(request)->initRequest(file_name);

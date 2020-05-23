@@ -35,7 +35,7 @@ bool phpsciter::Thread::start()
     tJoinStateStart = true;
 
 #ifdef WINDOWS
-    threadHandle = CreateThread(nullptr, 0, &Thread::run, 0, 0, &pthread_id);
+    threadHandle = CreateThread(nullptr, 0, &Thread::run, (LPVOID)this, 0, &pthread_id);
     if(!threadHandle)
     {
         zend_error(E_WARNING,strerror(errno));
