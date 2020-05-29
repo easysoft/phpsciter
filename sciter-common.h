@@ -35,6 +35,11 @@
 #ifndef PATH_MAX
 #define PATH_MAX MAX_PATH
 #endif
+
+//visual studio x86 error
+#ifdef PHP_WIN32
+#define _STATIC_ASSERT(expr) typedef char __static_assert_t[ (expr)?(expr):1 ]
+#endif
 #endif
 
 //zend

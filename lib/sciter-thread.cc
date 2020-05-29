@@ -30,7 +30,7 @@ void* phpsciter::Thread::run(void* obj)
 #endif
 bool phpsciter::Thread::start()
 {
-    assert(!tState);
+    assert(!tStartState);
 
     tJoinStateStart = true;
 
