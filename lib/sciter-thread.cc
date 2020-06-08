@@ -41,6 +41,7 @@ bool phpsciter::Thread::start()
         zend_error(E_WARNING,strerror(errno));
         return false;
     }
+    tStartState = true;
 #elif defined(__unix__)
     if(pthread_create(&pthread_id, nullptr, &Thread::run, (void*)this))
     {
@@ -53,14 +54,15 @@ bool phpsciter::Thread::start()
 
 bool phpsciter::Thread::wait()
 {
-    assert(tStartState);
-    assert(!tJoinStateStart);
-    tJoinStateStart = true;
+
 #ifdef WINDOWS
+    assert(tStartState);
     int res = WaitForSingleObject(threadHandle, INFINITE);
     endState = true;
     return true;
 #elif defined(__unix__)
+    assert(tJoinStateStart);
+    tJoinStateStart = true;
     if(pthread_join(pthread_id, nullptr) == SUCCESS)
     {
         return true;

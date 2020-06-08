@@ -74,6 +74,7 @@ if test "$PHP_PHPsciter" != "no"; then
     phpsciter_application.cc \
     phpsciter_global.cc \
     src/sciter-zend-request.cc \
+    src/sciter-op_array-life.cc \
     src/sciter-zend-api.cc \
     lib/php-window-linux.cc \
     lib/sciter-pipe.cc \

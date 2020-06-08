@@ -322,6 +322,7 @@ PHP_METHOD(phpsciter, run)
             SciterLoadFile(hw, LPCWSTR(file_name_as_wstr.c_str()));
         } break;
         case LOAD_PHP: {
+            //PHPSCITER_G(storage_symbol_table) = zend_array_dup(&EG(symbol_table));
             bool ret = PHPSCITER_G(zend)->zendExecute();
             if(!ret)
             {
@@ -330,7 +331,6 @@ PHP_METHOD(phpsciter, run)
             }
             SciterLoadHtml(hw, (byte *) PHPSCITER_G(zend)->getBuffer().c_str(), strlen(PHPSCITER_G(zend)->getBuffer().c_str()),
                            LPCWSTR(resource_path_as_wstr.c_str()));
-            PHPSCITER_G(cureent_op_array) = nullptr;
         } break;
         case LOAD_PHP_FILE: {
             loadFile = PHPSCITER_ZEND_READ_PROPERTY(phpsciter_ce, instance,
@@ -339,6 +339,7 @@ PHP_METHOD(phpsciter, run)
             file_path.append(file_name);
             checkFileExist(file_path);
             PHPSCITER_G(cureent_op_array) = PHPSCITER_G(zend)->zendCompileFile((file_name));
+            //PHPSCITER_G(storage_symbol_table) = zend_array_dup(&EG(symbol_table));
             bool ret = PHPSCITER_G(zend)->zendExecute();
             if(!ret)
             {
@@ -347,7 +348,6 @@ PHP_METHOD(phpsciter, run)
             }
             SciterLoadHtml(hw, (byte *) PHPSCITER_G(zend)->getBuffer().c_str(), strlen(PHPSCITER_G(zend)->getBuffer().c_str()),
                            LPCWSTR(resource_path_as_wstr.c_str()));
-            PHPSCITER_G(cureent_op_array) = nullptr;
         } break;
         default:
             RETURN_FALSE;

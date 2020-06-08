@@ -13,6 +13,13 @@
 <?php echo "就安静安静啊"; ?>
 
 <?php
+$b =2 ;
+$c =3;
+$d = 4;
+$e = 5;
+var_dump($oSciter);
+include "test3.php";
+
  ?>
 
 <form action="form.php?id=3" method="get">

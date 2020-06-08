@@ -77,6 +77,7 @@ bool phpsciter::ZendSciterRequest::initRequest(const std::string& request_uri) {
 
     }else{
 #if PHP_VERSION_ID >= 70000
+        array_init(&array);
         get_data = zend_hash_str_add(&EG(symbol_table),ZEND_GET,ZEND_GET_LEN,&array);
 #else
         MAKE_STD_ZVAL(array);
@@ -96,6 +97,7 @@ bool phpsciter::ZendSciterRequest::initRequest(const std::string& request_uri) {
 #endif
     }else{
 #if PHP_VERSION_ID >= 70000
+        array_init(&array);
         post_data = zend_hash_str_add(&EG(symbol_table),ZEND_POST,ZEND_POST_LEN,&array);
 #else
         MAKE_STD_ZVAL(array);
@@ -115,6 +117,7 @@ bool phpsciter::ZendSciterRequest::initRequest(const std::string& request_uri) {
 #endif
     }else{
 #if PHP_VERSION_ID >= 70000
+        array_init(&array);
         request_data = zend_hash_str_add(&EG(symbol_table),ZEND_REQUEST,ZEND_REQUEST_LEN,&array);
 #else
         MAKE_STD_ZVAL(array);
@@ -126,6 +129,7 @@ bool phpsciter::ZendSciterRequest::initRequest(const std::string& request_uri) {
     if(!server_data)
     {
 #if PHP_VERSION_ID >= 70000
+        array_init(&array);
         server_data = zend_hash_str_add(&EG(symbol_table),ZEND_SERVER,ZEND_SERVER_LEN,&array);;
 #else
         MAKE_STD_ZVAL(array);

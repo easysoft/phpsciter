@@ -160,6 +160,10 @@ bool phpsciter::ZendApi::zendExecute()
     }
     //create an consume thread
 #if PHP_VERSION_ID >= 70000
+    zend_execute_data *execute_data;
+    if (EG(exception) != NULL) {
+        return false;
+    }
     zend_execute(PHPSCITER_G(cureent_op_array),&result);
 #else
     zend_execute(op_array TSRMLS_DC);
@@ -173,7 +177,7 @@ bool phpsciter::ZendApi::zendExecute()
     {
         break;
     }
-    //wait thread destory
+    //wait thread destroy
     if(!thread_handle.wait())
     {
         zend_error(E_WARNING,"wait thread error");

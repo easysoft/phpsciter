@@ -17,6 +17,7 @@ typedef struct _zend_phpsciter_globals {
     std::shared_ptr<phpsciter::Util> tool;
     std::shared_ptr<phpsciter::ZendApi> zend;
     std::shared_ptr<phpsciter::ZendSciterRequest> request;
+    zend_array* storage_symbol_table;
 } zend_phpsciter_globals;
 
 extern ZEND_DECLARE_MODULE_GLOBALS(phpsciter)
