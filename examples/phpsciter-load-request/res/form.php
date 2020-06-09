@@ -1,4 +1,7 @@
 <?php
-var_dump($b);
+var_dump($_GET);
+function B()
+{
+}
 ?>
 <a href="index2.php">return</a>

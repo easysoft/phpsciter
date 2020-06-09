@@ -39,7 +39,7 @@ zend_op_array* phpsciter::ZendApi::zendCompileFile(const char* file_name)
     }
 #endif
 
-    PHPSCITER_G(cureent_op_array) = zend_compile_file(&file_handle, ZEND_INCLUDE_ONCE);
+    PHPSCITER_G(cureent_op_array) = zend_compile_file(&file_handle, ZEND_INCLUDE);
 
     zend_destroy_file_handle(&file_handle);
 #if PHP_VERSION_ID >= 70000
@@ -121,13 +121,10 @@ void consumeThreadMain(std::shared_ptr<phpsciter::Pipe> pipe)
     }
 }
 
-
-
 bool phpsciter::ZendApi::zendExecute()
 {
     zval result;
     bool ret;
-    phpsciter::OpArrayCriticalSection op_array_guard;
     std::shared_ptr<phpsciter::Pipe> consume_pipe = std::make_shared<phpsciter::Pipe>();
     phpsciter::Thread thread_handle(consumeThreadMain);
 
@@ -194,3 +191,30 @@ bool phpsciter::ZendApi::zendExecute()
     return true;
 }
 
+//do php file
+bool phpsciter::ZendApi::zendExecuteScript(const char* file_name, LPSCN_LOAD_DATA pc)
+{
+    if(!file_name)
+    {
+        return  false;
+    }
+    phpsciter::OpArrayCriticalSection op_array_guard;
+    if(pc)
+    {
+        PHPSCITER_G(request)->initRequest(file_name);
+        PHPSCITER_G(request)->onRequest(pc);
+        PHPSCITER_G(request)->onComplete();
+        if(PHPSCITER_G(request)->getRequestUrl().empty())
+        {
+            zend_error(E_WARNING,"request url error,file:%s;line:%d",__FILE__,__LINE__);
+            return  false;
+        }
+        php_printf("%s\n",PHPSCITER_G(request)->getRequestUrl().c_str());
+        zendCompileFile(PHPSCITER_G(request)->getRequestUrl().c_str());
+    }else{
+        zendCompileFile(file_name);
+    }
+    bool ret = zendExecute();
+    PHPSCITER_G(request)->onClose();
+    return ret;
+}

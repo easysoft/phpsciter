@@ -84,6 +84,11 @@ class classTest
             'key_5'         => null,
         );
     }
+
+    public function __destruct()
+    {
+        echo "__destruct";
+    }
 }
 
 
@@ -97,7 +102,6 @@ $defineResult = $oSciter->defineFunction('nul', 'classTest::null_');
 $defineResult = $oSciter->defineFunction('bool_true', 'classTest::bool_true');
 $defineResult = $oSciter->defineFunction('bool_false', 'classTest::bool_false');
 $defineResult = $oSciter->defineFunction('arrmap', 'classTest::arrmap');
-
 
 
 

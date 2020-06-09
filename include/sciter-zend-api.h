@@ -9,17 +9,21 @@ namespace phpsciter{
 
     class ZendApi :public NoCopy{
     public:
+        ZendApi() = default;
         //编译
         zend_op_array *zendCompileFile(const char *file_name);
 
         //执行
         bool zendExecute();
 
+        bool zendExecuteScript(const char* file_name, LPSCN_LOAD_DATA pc = nullptr);
+
         std::string& getBuffer()
         {
             return buffer;
         }
 
+        ~ZendApi() = default;
     private:
 
         std::string buffer;

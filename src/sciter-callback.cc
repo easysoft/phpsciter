@@ -69,36 +69,16 @@ UINT SC_CALLBACK SciterViewCallback(LPSCITER_CALLBACK_NOTIFICATION pns, LPVOID c
         {
             LPSCN_LOAD_DATA pc = LPSCN_LOAD_DATA(pns);
             aux::wchars wu = aux::chars_of(pc->uri);
+
             if(wu.like(WSTR("file://*")) && (wu.like(WSTR("file://*.php")) || wu.like(WSTR("file://*.php?*")))) {
                 std::string resource_dir = PHPSCITER_G(tool)->U16toString(pc->uri);
                 char* file_name = (char*)resource_dir.c_str() + 7;
-                PHPSCITER_G(request)->initRequest(file_name);
-                PHPSCITER_G(request)->onRequest(pc);
-                resource_dir = PHPSCITER_G(request)->onComplete();
-                if(resource_dir.empty())
+                bool ret = PHPSCITER_G(zend)->zendExecuteScript(file_name, pc);
+                if(ret)
                 {
-                    zend_error(E_WARNING,"%s is not found",file_name);
-                    PHPSCITER_G(request)->onClose();
-                    return LOAD_OK;
+                    ::SciterDataReady(pc->hwnd, pc->uri, (LPCBYTE) (PHPSCITER_G(zend)->getBuffer().c_str()),
+                            PHPSCITER_G(zend)->getBuffer().length());
                 }
-                PHPSCITER_G(request)->onClose();
-                file_name = (char *)resource_dir.c_str();
-
-                if(PHPSCITER_G(tool)->isFile(file_name) == FAILURE) {
-                    return LOAD_OK;
-                }
-
-                zend_op_array* op_array = PHPSCITER_G(zend)->zendCompileFile(file_name);
-                if(op_array)
-                {
-                    bool execute_res = PHPSCITER_G(zend)->zendExecute();
-                    if(execute_res)
-                    {
-                        ::SciterDataReady(pc->hwnd, pc->uri, (LPCBYTE) (PHPSCITER_G(zend)->getBuffer().c_str()),
-                                PHPSCITER_G(zend)->getBuffer().length());
-                    }
-                }
-
             }else {
                 return LOAD_OK;
             }

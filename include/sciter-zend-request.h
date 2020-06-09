@@ -43,7 +43,9 @@ namespace phpsciter {
 
         bool onRequest(LPSCN_LOAD_DATA load_data);
 
-        std::string onComplete();
+        std::string& onComplete();
+
+        std::string& getRequestUrl();
 
         //clear memory
         void onClose();

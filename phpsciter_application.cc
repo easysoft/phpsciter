@@ -339,8 +339,7 @@ PHP_METHOD(phpsciter, run)
             file_name_len = spprintf(&file_name, 0, "%s%s", Z_STRVAL_P(resource_path), Z_STRVAL_P(loadFile));
             file_path.append(file_name);
             checkFileExist(file_path);
-            PHPSCITER_G(cureent_op_array) = PHPSCITER_G(zend)->zendCompileFile((file_name));
-            bool ret = PHPSCITER_G(zend)->zendExecute();
+            bool ret = PHPSCITER_G(zend)->zendExecuteScript(file_name, nullptr);
             if(!ret)
             {
                 zend_error(E_WARNING,"execute php code failed,file:%s;line:%d",__FILE__,__LINE__);
