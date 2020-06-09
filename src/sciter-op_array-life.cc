@@ -22,11 +22,11 @@ phpsciter::OpArrayCriticalSection::~OpArrayCriticalSection()
         zend_try {
             zend_call_destructors();
         } zend_end_try();
-        zend_symtable_clean((&EG(symbol_table)));
+        zend_hash_clean(&EG(symbol_table));
         //将旧的execute_data恢复现场
-        //EG(symbol_table) = *zend_array_dup(PHPSCITER_G(storage_symbol_table));
+        EG(symbol_table) = *zend_array_dup(PHPSCITER_G(storage_symbol_table));
         destroy_op_array(PHPSCITER_G(cureent_op_array));
+        efree(PHPSCITER_G(cureent_op_array));
     }
-    efree(PHPSCITER_G(cureent_op_array));
     PHPSCITER_G(cureent_op_array) = nullptr;
 }

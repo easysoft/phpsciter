@@ -118,6 +118,7 @@ extern zend_module_entry phpsciter_module_entry;
 #include "sciter-zend-api.h"
 #include "phpsciter_global.h"
 #include "sciter-op_array-life.h"
+#include "sciter-symbol-table-guard.h"
 #include "sciter-customer-log.h"
 #include "phpsciter_application.h"
 

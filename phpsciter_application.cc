@@ -272,6 +272,7 @@ PHP_METHOD(phpsciter, run)
     int file_name_len = 0;
     std::string file_path;
     int res;
+    phpsciter::ZendSymbolTableGuard symbol_table_guard;
 
 //    if (!PHPSCITER_G(loadHtml) && !PHPSCITER_G(loadFile))
 //    {
@@ -322,7 +323,7 @@ PHP_METHOD(phpsciter, run)
             SciterLoadFile(hw, LPCWSTR(file_name_as_wstr.c_str()));
         } break;
         case LOAD_PHP: {
-            //PHPSCITER_G(storage_symbol_table) = zend_array_dup(&EG(symbol_table));
+
             bool ret = PHPSCITER_G(zend)->zendExecute();
             if(!ret)
             {
@@ -339,7 +340,6 @@ PHP_METHOD(phpsciter, run)
             file_path.append(file_name);
             checkFileExist(file_path);
             PHPSCITER_G(cureent_op_array) = PHPSCITER_G(zend)->zendCompileFile((file_name));
-            //PHPSCITER_G(storage_symbol_table) = zend_array_dup(&EG(symbol_table));
             bool ret = PHPSCITER_G(zend)->zendExecute();
             if(!ret)
             {

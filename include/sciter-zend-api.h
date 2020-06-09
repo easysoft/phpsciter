@@ -5,9 +5,8 @@
 #ifndef PHPSCITER_SCITER_ZEND_API_H
 #define PHPSCITER_SCITER_ZEND_API_H
 
-
-
 namespace phpsciter{
+
     class ZendApi :public NoCopy{
     public:
         //编译
