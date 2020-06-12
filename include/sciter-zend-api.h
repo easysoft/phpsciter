@@ -11,7 +11,7 @@ namespace phpsciter{
     public:
         ZendApi() = default;
         //编译
-        zend_op_array *zendCompileFile(const char *file_name);
+        static zend_op_array *zendCompileFile(zend_file_handle* file_handle, int type);
 
         //执行
         bool zendExecute();
@@ -23,10 +23,13 @@ namespace phpsciter{
             return buffer;
         }
 
-        ~ZendApi() = default;
+        ~ZendApi()
+        {
+            std::cout<<"buffer:"<<buffer<<std::endl;
+        }
     private:
 
-        std::string buffer;
+        std::string buffer = "";
 
 #if PHP_VERSION_ID < 70000
 

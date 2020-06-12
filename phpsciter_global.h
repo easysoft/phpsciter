@@ -12,13 +12,13 @@ typedef struct _zend_phpsciter_globals {
     zend_bool loadHtml;
     char *resource_base_path = nullptr;
     char *default_title = nullptr;
-    zval *load_hook_name;
     zend_op_array *cureent_op_array = nullptr;
     std::shared_ptr<phpsciter::Util> tool;
     std::shared_ptr<phpsciter::ZendApi> zend;
     std::shared_ptr<phpsciter::ZendSciterRequest> request;
-    zend_array* storage_symbol_table;
-    zend_array* storage_function_table;
+    std::map<const char*, zend_op_array*> op_array_pool;
+    ZEND_API zend_op_array *(*origin_zend_compile_file)(zend_file_handle *file_handle, int type);
+    ZEND_API zend_op_array *(*phpsciter_compile_file)(zend_file_handle *file_handle, int type);
 } zend_phpsciter_globals;
 
 extern ZEND_DECLARE_MODULE_GLOBALS(phpsciter)

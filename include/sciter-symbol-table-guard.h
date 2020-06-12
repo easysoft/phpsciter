@@ -11,15 +11,12 @@ namespace phpsciter{
     public:
         ZendSymbolTableGuard()
         {
-            PHPSCITER_G(storage_symbol_table) = zend_array_dup(&EG(symbol_table));
-            PHPSCITER_G(storage_function_table) = zend_array_dup(EG(function_table));
+
         }
 
         ~ZendSymbolTableGuard()
         {
-            zend_array_destroy(PHPSCITER_G(storage_symbol_table));
-            zend_array_destroy(PHPSCITER_G(storage_function_table));
-            PHPSCITER_G(storage_symbol_table) = nullptr;
+
         }
     };
 }

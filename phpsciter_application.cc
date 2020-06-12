@@ -305,6 +305,10 @@ PHP_METHOD(phpsciter, run)
     aux::a2w resource_path_as_wstr(Z_STRVAL_P(resource_path));
     SciterSetHomeURL(hw,LPCWSTR(resource_path_as_wstr.c_str()));
 
+    //replace zend vm hook
+    PHPSCITER_G(origin_zend_compile_file) = zend_compile_file;
+    PHPSCITER_G(phpsciter_compile_file) = phpsciter::ZendApi::zendCompileFile;
+
     switch (PHPSCITER_G(loadModal))
     {
         case LOAD_HTML: {

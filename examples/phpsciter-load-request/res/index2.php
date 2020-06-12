@@ -10,19 +10,6 @@
     </style>
 </head>
 <body>
-<?php echo "就安静安静啊"; ?>
-
-<?php
-$b =2 ;
-$c =3;
-$d = 4;
-$e = 5;
-function C()
-{
-}
-include "test3.php";
-
- ?>
 
 <form action="form.php?id=3" method="get">
     <label>First name:</label><input|text(first) required title="Must not be empty">

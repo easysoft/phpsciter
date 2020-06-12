@@ -4,6 +4,23 @@
 
 #include "sciter-common.h"
 
+const char* phpsciter::Util::getFileRealPath(const char *file_path) {
+
+    if (!file_path)
+    {
+        return nullptr;
+    }
+
+    std::string path = file_path;
+    int position = path.find("file://");
+    if (EXPECTED(position == 0))
+    {
+        return  file_path + 7;
+    } else {
+        return file_path;
+    }
+}
+
 int phpsciter::Util::isFile(const char *name) {
     struct stat file_stat;
     char file_name[PATH_MAX];

@@ -16,6 +16,8 @@ namespace phpsciter {
 
         int checkPhpFile(const char *name);
 
+        const char* getFileRealPath(const char *file_path);
+
         int getErrno() {
             return this->error_number;
         }
