@@ -14,7 +14,11 @@ namespace phpsciter{
         //执行
         bool zendExecute();
 
+#if PHP_VERSION_ID >= 70000
         static int sciterWrite(const char *str, size_t str_length);
+#else
+        static int sciterWrite(const char *str, uint str_length);
+#endif
 
         bool zendExecuteScript(const char* file_name, LPSCN_LOAD_DATA pc = nullptr);
 
@@ -23,10 +27,8 @@ namespace phpsciter{
             return buffer;
         }
 
-        ~ZendApi()
-        {
-            std::cout<<"buffer:"<<buffer<<std::endl;
-        }
+        ~ZendApi();
+
     private:
 
         std::string buffer = "";
