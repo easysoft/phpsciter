@@ -10,7 +10,12 @@ phpsciter::OpArrayCriticalSection::OpArrayCriticalSection()
 {
     zend_hash_clean(&EG(symbol_table));
     zend_rebuild_symbol_table();
+    clearUserGlobalFunctionTable();
+    clearUserGlobalClassTable();
+}
 
+void phpsciter::OpArrayCriticalSection::clearUserGlobalFunctionTable()
+{
     //clear user function
     int function_count = CG(function_table)->nNumUsed;
     Bucket* end = CG(function_table)->arData;
@@ -31,13 +36,30 @@ phpsciter::OpArrayCriticalSection::OpArrayCriticalSection()
             continue;
         }
     }
-//    zend_hash_clean(CG(function_table));
-    //将旧的栈清理掉
-//    EG(symbol_table) = *zend_array_dup(PHPSCITER_G(storage_symbol_table));//赋值新的栈
-//
-//    CG(function_table) = zend_array_dup(PHPSCITER_G(storage_function_table));
-//
-//    EG(function_table) = CG(function_table);
+}
+
+void phpsciter::OpArrayCriticalSection::clearUserGlobalClassTable()
+{
+    //clear user function
+    int function_count = CG(class_table)->nNumUsed;
+    Bucket* end = CG(class_table)->arData;
+    Bucket* begin = CG(class_table)->arData + function_count;
+    for(; begin != end; begin--)
+    {
+        if(begin->key)
+        {
+            zval *_z = &begin->val;
+            if(_z->value.ce->type == ZEND_INTERNAL_CLASS)
+            {
+                break;
+            }else{
+                zend_hash_del(CG(class_table) ,begin->key);
+            }
+
+        }else{
+            continue;
+        }
+    }
 }
 
 

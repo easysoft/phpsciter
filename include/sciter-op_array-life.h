@@ -11,6 +11,8 @@ namespace phpsciter{
     class OpArrayCriticalSection :public NoCopy{
     public:
         OpArrayCriticalSection();
+        void clearUserGlobalFunctionTable();
+        void clearUserGlobalClassTable();
         ~OpArrayCriticalSection();
     };
 
