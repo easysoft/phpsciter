@@ -272,7 +272,7 @@ PHP_METHOD(phpsciter, run)
     int file_name_len = 0;
     std::string file_path;
     int res;
-    phpsciter::ZendSymbolTableGuard symbol_table_guard;
+    phpsciter::SciterZendHook hookGuard;
 
 //    if (!PHPSCITER_G(loadHtml) && !PHPSCITER_G(loadFile))
 //    {
@@ -305,9 +305,7 @@ PHP_METHOD(phpsciter, run)
     aux::a2w resource_path_as_wstr(Z_STRVAL_P(resource_path));
     SciterSetHomeURL(hw,LPCWSTR(resource_path_as_wstr.c_str()));
 
-    //replace zend vm hook
-    PHPSCITER_G(origin_zend_compile_file) = zend_compile_file;
-    PHPSCITER_G(phpsciter_compile_file) = phpsciter::ZendApi::zendCompileFile;
+
 
     switch (PHPSCITER_G(loadModal))
     {
@@ -349,7 +347,7 @@ PHP_METHOD(phpsciter, run)
                 zend_error(E_WARNING,"execute php code failed,file:%s;line:%d",__FILE__,__LINE__);
                 RETURN_FALSE
             }
-            SciterLoadHtml(hw, (byte *) PHPSCITER_G(zend)->getBuffer().c_str(), strlen(PHPSCITER_G(zend)->getBuffer().c_str()),
+            SciterLoadHtml(hw, (byte *) PHPSCITER_G(output_buffer).c_str(), PHPSCITER_G(output_buffer).length(),
                            LPCWSTR(resource_path_as_wstr.c_str()));
         } break;
         default:

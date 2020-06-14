@@ -4,9 +4,7 @@
 
 #ifndef PHPSCITER_SCITER_ZEND_API_H
 #define PHPSCITER_SCITER_ZEND_API_H
-
 namespace phpsciter{
-
     class ZendApi :public NoCopy{
     public:
         ZendApi() = default;
@@ -15,6 +13,8 @@ namespace phpsciter{
 
         //执行
         bool zendExecute();
+
+        static int sciterWrite(const char *str, size_t str_length);
 
         bool zendExecuteScript(const char* file_name, LPSCN_LOAD_DATA pc = nullptr);
 

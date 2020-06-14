@@ -111,14 +111,13 @@ extern zend_module_entry phpsciter_module_entry;
 
 #include "sciter-nocopy.h"
 #include "sciter-util.h"
-#include "sciter-pipe.h"
-#include "sciter-thread.h"
 #include "php_sciter.h"
 #include "sciter-zend-request.h"
 #include "sciter-zend-api.h"
 #include "phpsciter_global.h"
+#include "sciter-zend-hook.h"
 #include "sciter-op_array-life.h"
-#include "sciter-symbol-table-guard.h"
+#include "sciter-zend-hook.h"
 #include "sciter-customer-log.h"
 #include "phpsciter_application.h"
 

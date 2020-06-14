@@ -1,3 +1,21 @@
+<?php
+$a = 1;
+static $sssss = 1;
+static $static_b = 1;
+class A{
+}
+function A()
+{
+}
+
+function B()
+{
+}
+
+function C()
+{
+}
+?>
 <html>
 <head>
     <title>Test</title>

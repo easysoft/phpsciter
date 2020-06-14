@@ -64,7 +64,7 @@ if test "$PHP_PHPsciter" != "no"; then
         PHP_ADD_LIBRARY(pango-1.0, 1, PHPSCITER_SHARED_LIBADD)
         PHP_ADD_LIBRARY(cairo, 1, PHPSCITER_SHARED_LIBADD)
         PHP_ADD_LIBRARY(gobject-2.0, 1, PHPSCITER_SHARED_LIBADD)
-        PHP_ADD_LIBRARY_WITH_PATH(sciter-gtk-64, ./lib, PHPSCITER_SHARED_LIBADD)
+        PHP_ADD_LIBRARY(sciter-gtk-64, 1, PHPSCITER_SHARED_LIBADD)
       ;;
   esac
 
@@ -77,8 +77,6 @@ if test "$PHP_PHPsciter" != "no"; then
     src/sciter-op_array-life.cc \
     src/sciter-zend-api.cc \
     lib/php-window-linux.cc \
-    lib/sciter-pipe.cc \
-    lib/sciter-thread.cc \
     lib/sciter-util.cc"
 
   PHP_ADD_INCLUDE(./include)

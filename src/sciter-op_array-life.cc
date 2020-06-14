@@ -8,7 +8,30 @@
 
 phpsciter::OpArrayCriticalSection::OpArrayCriticalSection()
 {
+    zend_hash_clean(&EG(symbol_table));
     zend_rebuild_symbol_table();
+
+    //clear user function
+    int function_count = CG(function_table)->nNumUsed;
+    Bucket* end = CG(function_table)->arData;
+    Bucket* begin = CG(function_table)->arData + function_count;
+    for(; begin != end; begin--)
+    {
+        if(begin->key)
+        {
+            zval *_z = &begin->val;
+            if(_z->value.func->type == ZEND_INTERNAL_FUNCTION)
+            {
+                break;
+            }else{
+                zend_hash_del(CG(function_table) ,begin->key);
+            }
+
+        }else{
+            continue;
+        }
+    }
+//    zend_hash_clean(CG(function_table));
     //将旧的栈清理掉
 //    EG(symbol_table) = *zend_array_dup(PHPSCITER_G(storage_symbol_table));//赋值新的栈
 //
@@ -35,8 +58,8 @@ phpsciter::OpArrayCriticalSection::~OpArrayCriticalSection()
 //        {
 //            zend_hash_clean(EG(function_table));
 //        }
-        //destroy_op_array(PHPSCITER_G(cureent_op_array));
-        //efree(PHPSCITER_G(cureent_op_array));
+        destroy_op_array(PHPSCITER_G(cureent_op_array));
+        efree(PHPSCITER_G(cureent_op_array));
     }
     PHPSCITER_G(cureent_op_array) = nullptr;
 }

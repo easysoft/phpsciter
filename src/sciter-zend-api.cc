@@ -26,134 +26,54 @@ zend_op_array* phpsciter::ZendApi::zendCompileFile(zend_file_handle *file_handle
         return nullptr;
     }
 
-    const char* search_key = ZSTR_VAL(file_handle->opened_path);
-    std::map<const char* ,zend_op_array*>::iterator iterator;
-    iterator = PHPSCITER_G(op_array_pool).find(search_key);
-    if (iterator != PHPSCITER_G(op_array_pool).end())
-    {
-        return  PHPSCITER_G(op_array_pool)[search_key];
-    }
+//    if(!file_handle->opened_path)
+//        file_handle->opened_path = zend_string_init(file_handle->filename, strlen(file_handle->filename), 0);
 
-    zend_op_array* op_array = zend_compile_file(file_handle, type);
+//    php_printf("dir:%s\n",ZSTR_VAL(file_handle->opened_path));
+//    string search_key = ZSTR_VAL(file_handle->opened_path);
+//    std::map<string,zend_op_array*>::iterator iterator;
+//    std::cout<<search_key<<std::endl;
+//    if(PHPSCITER_G(op_array_pool).size() > 0) {
+//        for(iterator=PHPSCITER_G(op_array_pool).begin(); iterator!=PHPSCITER_G(op_array_pool).end(); iterator++)
+//            cout<<"key:"<<iterator->first <<endl;
+//        int is_count = PHPSCITER_G(op_array_pool).count(search_key);
+//        if (is_count) {
+//            PHPSCITER_G(cureent_op_array) = PHPSCITER_G(op_array_pool)[search_key];
+//            zend_destroy_file_handle(file_handle);
+//            return PHPSCITER_G(op_array_pool)[search_key];
+//        }
+//    }
 
-#if PHP_VERSION_ID >= 70000
-    if(file_handle->opened_path)
-        zend_string_release(file_handle->opened_path);
-#endif
-    if(op_array)
-    {
-#if PHP_VERSION_ID < 70000
-
-        zval *result = NULL;
-
-        //copy by yaf
-        //http://pecl.php.net/package/yaf
-        storeOldExecuteInfo();
-        EG(return_value_ptr_ptr) = &result;
-        EG(active_op_array) 	 = op_array;
-
-#if ((PHP_MAJOR_VERSION == 5) && (PHP_MINOR_VERSION > 2)) || (PHP_MAJOR_VERSION > 5)
-        if (!EG(active_symbol_table)) {
-            zend_rebuild_symbol_table(TSRMLS_C);
-        }
-#endif
-#endif
-        PHPSCITER_G(op_array_pool)[search_key] = op_array;
-        PHPSCITER_G(cureent_op_array) = op_array;
-    }
-
-    zend_destroy_file_handle(file_handle);
+    zend_op_array* op_array = PHPSCITER_G(origin_zend_compile_file)(file_handle, type);
+//    zend_op_array* op_array = zend_compile_file(file_handle, type);
 
     return op_array;
 }
 
-void consumeThreadMain(std::shared_ptr<phpsciter::Pipe> pipe)
+int phpsciter::ZendApi::sciterWrite(const char *str, size_t str_length)
 {
-#ifdef WINDOWS
-    DWORD read_bytes = 0;
-    DWORD size = 0;
-#elif defined(__unix__)
-    size_t read_bytes = 0;
-    size_t size = 0;
-#endif
-    size_t buff_len;
-
-    char buf[BUFSIZ];
-    std::weak_ptr<phpsciter::Pipe> w_pipe(pipe);
-    std::string eof;
-
-    std::string zend_buffer = PHPSCITER_G(zend)->getBuffer();
-
-    if(w_pipe.lock())
-    {
-        errno = 0;
-
-        while ((size = pipe->read( buf, BUFSIZ-1, &read_bytes))) {
-            if(size < 0)
-            {
-                if (errno == EINTR) {
-                    continue;
-                }
-
-                if(errno == EAGAIN)
-                {
-                    continue;
-                }
-            }else{
-                buf[size] = 0;
-                zend_buffer.append(buf);
-                buff_len = zend_buffer.length();
-                if(buff_len >= FINISH_EOF_LEN-1)
-                {
-                    eof = zend_buffer.substr(zend_buffer.length()-FINISH_EOF_LEN+1,zend_buffer.length());
-
-                    if(eof == FINISH_EOF)
-                    {
-                        break;
-                    }
-                }else{
-                    continue;
-                }
-                continue;
-            }
-        }
-    }
+    PHPSCITER_G(output_buffer).append(str);
+    return str_length;
 }
 
 bool phpsciter::ZendApi::zendExecute()
 {
     zval result;
     bool ret;
-    std::shared_ptr<phpsciter::Pipe> consume_pipe = std::make_shared<phpsciter::Pipe>();
-    phpsciter::Thread thread_handle(consumeThreadMain);
-
-
-    thread_handle.setPipe(consume_pipe);
-    ret = consume_pipe->redirectOut(STDOUT_FILENO);
-
-    if(!ret)
-    {
-        zend_error(E_WARNING,"std redirect error,error msg:%s",strerror(errno));
-        return false;
-    }
-
-#ifdef __unix__
-//    consume_pipe->setNoBlockIn();
-#endif
 
     if(!PHPSCITER_G(cureent_op_array))
     {
         zend_error(E_WARNING,"compile file error");
-        zend_bailout();
+//        zend_bailout();
         return false;
     }
 
-    if(!thread_handle.start())
-    {
-        zend_error(E_WARNING,"start thread error");
-        return  false;
-    }
     //create an consume thread
+    if(!PHPSCITER_G(output_buffer).empty())
+    {
+        PHPSCITER_G(output_buffer).clear();
+    }
+
 #if PHP_VERSION_ID >= 70000
     zend_execute_data *execute_data;
     if (EG(exception) != NULL) {
@@ -166,17 +86,6 @@ bool phpsciter::ZendApi::zendExecute()
     if (EG(exception))
     {
         zend_exception_error(EG(exception), E_WARNING TSRMLS_CC);
-    }
-    size_t finish_size;
-    while((finish_size = consume_pipe->finish()) > 0)
-    {
-        break;
-    }
-    //wait thread destroy
-    if(!thread_handle.wait())
-    {
-        zend_error(E_WARNING,"wait thread error");
-        return false;
     }
 #if PHP_VERSION_ID < 70000
     if (!EG(exception)) {
@@ -202,15 +111,6 @@ bool phpsciter::ZendApi::zendExecuteScript(const char* file_name, LPSCN_LOAD_DAT
 
     memset(&file_handle, sizeof(zend_file_handle), 0);
 
-
-#if PHP_VERSION_ID >= 70000
-    if(!file_handle.opened_path)
-        file_handle.opened_path = zend_string_init(file_name, strlen(file_name), 0);
-#else
-    if (!file_handle.opened_path) {
-        file_handle.opened_path = estrdup(file_name);
-    }
-#endif
     if(pc)
     {
         PHPSCITER_G(request)->initRequest(file_name);
@@ -230,13 +130,49 @@ bool phpsciter::ZendApi::zendExecuteScript(const char* file_name, LPSCN_LOAD_DAT
         return  false;
     }
 
+#if PHP_VERSION_ID >= 70000
+    if(!file_handle.opened_path)
+        file_handle.opened_path = zend_string_init(file_name, strlen(file_name), 0);
+#else
+    if (!file_handle.opened_path) {
+        file_handle.opened_path = estrdup(file_name);
+    }
+#endif
+
     if(zend_stream_open(file_name, &file_handle) != SUCCESS)
     {
         zend_error(E_WARNING,"open php file failed");
         return false;
     }
 
-    zendCompileFile(&file_handle, ZEND_INCLUDE);
+    zend_op_array* op_array = zend_compile_file(&file_handle, ZEND_INCLUDE);
+
+#if PHP_VERSION_ID >= 70000
+    if(file_handle.opened_path)
+        zend_string_release(file_handle.opened_path);
+#endif
+    if(op_array)
+    {
+#if PHP_VERSION_ID < 70000
+
+        zval *result = NULL;
+
+        //copy by yaf
+        //http://pecl.php.net/package/yaf
+        storeOldExecuteInfo();
+        EG(return_value_ptr_ptr) = &result;
+        EG(active_op_array) 	 = op_array;
+
+#if ((PHP_MAJOR_VERSION == 5) && (PHP_MINOR_VERSION > 2)) || (PHP_MAJOR_VERSION > 5)
+        if (!EG(active_symbol_table)) {
+            zend_rebuild_symbol_table(TSRMLS_C);
+        }
+#endif
+#endif
+//        PHPSCITER_G(op_array_pool)[search_key] = op_array;
+        PHPSCITER_G(cureent_op_array) = op_array;
+    }
+    zend_destroy_file_handle(&file_handle);
     bool ret = zendExecute();
     PHPSCITER_G(request)->onClose();
     return ret;

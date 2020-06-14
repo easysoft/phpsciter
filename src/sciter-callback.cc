@@ -76,8 +76,8 @@ UINT SC_CALLBACK SciterViewCallback(LPSCITER_CALLBACK_NOTIFICATION pns, LPVOID c
                 bool ret = PHPSCITER_G(zend)->zendExecuteScript(file_name, pc);
                 if(ret)
                 {
-                    ::SciterDataReady(pc->hwnd, pc->uri, (LPCBYTE) (PHPSCITER_G(zend)->getBuffer().c_str()),
-                            PHPSCITER_G(zend)->getBuffer().length());
+                    ::SciterDataReady(pc->hwnd, pc->uri, (LPCBYTE) (PHPSCITER_G(output_buffer).c_str()),
+                                      PHPSCITER_G(output_buffer).length());
                 }
             }else {
                 return LOAD_OK;
