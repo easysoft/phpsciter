@@ -26,24 +26,6 @@ zend_op_array* phpsciter::ZendApi::zendCompileFile(zend_file_handle *file_handle
         return nullptr;
     }
 
-//    if(!file_handle->opened_path)
-//        file_handle->opened_path = zend_string_init(file_handle->filename, strlen(file_handle->filename), 0);
-
-//    php_printf("dir:%s\n",ZSTR_VAL(file_handle->opened_path));
-//    string search_key = ZSTR_VAL(file_handle->opened_path);
-//    std::map<string,zend_op_array*>::iterator iterator;
-//    std::cout<<search_key<<std::endl;
-//    if(PHPSCITER_G(op_array_pool).size() > 0) {
-//        for(iterator=PHPSCITER_G(op_array_pool).begin(); iterator!=PHPSCITER_G(op_array_pool).end(); iterator++)
-//            cout<<"key:"<<iterator->first <<endl;
-//        int is_count = PHPSCITER_G(op_array_pool).count(search_key);
-//        if (is_count) {
-//            PHPSCITER_G(cureent_op_array) = PHPSCITER_G(op_array_pool)[search_key];
-//            zend_destroy_file_handle(file_handle);
-//            return PHPSCITER_G(op_array_pool)[search_key];
-//        }
-//    }
-
     zend_op_array* op_array = PHPSCITER_G(origin_zend_compile_file)(file_handle, type);
 //    zend_op_array* op_array = zend_compile_file(file_handle, type);
 
