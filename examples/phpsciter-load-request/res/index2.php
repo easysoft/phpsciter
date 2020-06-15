@@ -2,7 +2,12 @@
 $a = 1;
 static $sssss = 1;
 static $static_b = 1;
-
+class A{
+}
+function A()
+{
+}
+define("TEST","test");
 ?>
 <html>
 <head>

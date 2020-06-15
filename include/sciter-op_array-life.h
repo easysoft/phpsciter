@@ -13,6 +13,8 @@ namespace phpsciter{
         OpArrayCriticalSection();
         void clearUserGlobalFunctionTable();
         void clearUserGlobalClassTable();
+        void cleanNonPersistentConstants();
+
         ~OpArrayCriticalSection();
     };
 

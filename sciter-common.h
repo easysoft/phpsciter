@@ -58,6 +58,7 @@ extern "C"
 #include <php7_wrapper.h>
 #include <zend_types.h>
 #include <zend_compile.h>
+#include <php_variables.h>
 
 #ifdef ZTS
 # include "TSRM.h"

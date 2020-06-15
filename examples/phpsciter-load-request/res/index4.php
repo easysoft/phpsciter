@@ -1,13 +1,7 @@
 <?php
-
-function D()
+function A()
 {
 }
 
-function E()
-{
-}
-
-function F()
-{
+class A{
 }

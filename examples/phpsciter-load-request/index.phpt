@@ -9,7 +9,11 @@ $oSciter->setWindowTitle('hello');
 $oSciter->loadFile('index2.php');
 
 
+function A()
+{
+}
 
+define("TEST","test");
 $r = $oSciter->run();
 var_dump($r);
 ?>
