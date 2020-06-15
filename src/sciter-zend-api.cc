@@ -178,5 +178,6 @@ bool phpsciter::ZendApi::zendExecuteScript(const char* file_name, LPSCN_LOAD_DAT
 
 phpsciter::ZendApi::~ZendApi()
 {
-    std::cout<<"buffer:"<<PHPSCITER_G(output_buffer)<<std::endl;
+    if(!PHPSCITER_G(output_buffer).empty())
+        std::cout<<"buffer:"<<PHPSCITER_G(output_buffer)<<std::endl;
 }

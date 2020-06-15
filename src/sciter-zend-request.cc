@@ -13,7 +13,10 @@ bool phpsciter::ZendSciterRequest::initRequest(const std::string& request_uri) {
         zend_is_auto_global(request_str);
         zend_string_release(request_str);
 #else
-        zend_is_auto_global(ZEND_STRL(ZEND_REQUEST));
+        if (PG(auto_globals_jit)) {
+            zend_is_auto_global(ZEND_STRL(ZEND_REQUEST));
+            zend_is_auto_global(ZEND_SERVER, sizeof(ZEND_SERVER)-1 TSRMLS_CC);
+        }
 #endif
     }
 
@@ -133,8 +136,12 @@ bool phpsciter::ZendSciterRequest::initRequest(const std::string& request_uri) {
         server_data = zend_hash_str_add(&EG(symbol_table),ZEND_SERVER,ZEND_SERVER_LEN,&array);;
 #else
         MAKE_STD_ZVAL(array);
-        array_init(array);
-        zend_hash_add(&EG(symbol_table), ZEND_SERVER, strlen(ZEND_SERVER)+1, (void *)array, sizeof(zval*), (void**)&server_data);
+//        array_init(array);
+        zval_dtor(array);
+        *array = *PG(http_globals)[TRACK_VARS_SERVER];
+        INIT_PZVAL(array);
+        zval_copy_ctor(array);
+        res = zend_hash_add(&EG(symbol_table), ZEND_SERVER, strlen(ZEND_SERVER)+1, (void *)&array, sizeof(zval*), (void**)&server_data);
 #endif
     }
 

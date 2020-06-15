@@ -8,21 +8,7 @@ $oSciter->setWindowFrame(100, 100, 100, 100);
 $oSciter->setWindowTitle('hello');
 $oSciter->loadFile('index2.php');
 
-function A()
-{
-}
 
-function B()
-{
-}
-
-function C()
-{
-}
-
-function D()
-{
-}
 
 $r = $oSciter->run();
 var_dump($r);
