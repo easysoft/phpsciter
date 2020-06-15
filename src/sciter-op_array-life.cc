@@ -20,25 +20,16 @@ void phpsciter::OpArrayCriticalSection::clearUserGlobalFunctionTable()
 {
     //clear user function
 #if PHP_VERSION_ID >= 70000
-    int function_count = CG(function_table)->nNumUsed;
-    Bucket* end = CG(function_table)->arData;
-    Bucket* begin = CG(function_table)->arData + function_count;
-    for(; begin != end; begin--)
-    {
-        if(begin->key)
-        {
-            zval *_z = &begin->val;
-            if(_z->value.func->type == ZEND_INTERNAL_FUNCTION)
+    zend_function *fptr;
+    ZEND_HASH_REVERSE_FOREACH(CG(function_table), 0);
+            fptr = (zend_function *)Z_PTR_P(_z);
+            if(fptr->common.type == ZEND_INTERNAL_FUNCTION)
             {
                 break;
             }else{
-                zend_hash_del(CG(function_table) ,begin->key);
+                zend_hash_del(EG(function_table) ,_p->key);
             }
-
-        }else{
-            continue;
-        }
-    }
+    ZEND_HASH_FOREACH_END();
 #else
     HashPosition iterator;
     zend_function *fptr;
@@ -78,18 +69,26 @@ void phpsciter::OpArrayCriticalSection::cleanNonPersistentConstants()
     ZEND_HASH_FOREACH_END();
 #else
     HashPosition iterator;
-    zend_function *fptr;
-    zend_hash_internal_pointer_end_ex(CG(function_table), &iterator);
-    while (zend_hash_get_current_data_ex(CG(function_table), (void **) &fptr, &iterator) == SUCCESS) {
-        if (fptr->common.type == ZEND_INTERNAL_FUNCTION) {
+    zend_constant *constants;
+    zend_hash_internal_pointer_end_ex(EG(zend_constants), &iterator);
+    while (zend_hash_get_current_data_ex(EG(zend_constants), (void **) &constants, &iterator) == SUCCESS) {
+
+        if(!iterator->arKey)
+        {
+            continue;
+        }
+
+        if(!constants->name)
+        {
+            continue;
+        }
+
+        if(constants->module_number != PHP_USER_CONSTANT)
+        {
             break;
-        }else if(fptr->common.type == ZEND_USER_FUNCTION){
-            if(!iterator->arKey)
-            {
-                continue;
-            }
-            const char* function_name = iterator->arKey;
-            zend_hash_del(CG(function_table), function_name, strlen(function_name) + 1);
+        }else{
+            const char* constants_key = iterator->arKey;
+            zend_hash_del(EG(zend_constants),  constants_key, strlen(constants_key) + 1);
         }
         zend_hash_move_backwards_ex(CG(function_table), &iterator);
     }
@@ -100,28 +99,19 @@ void phpsciter::OpArrayCriticalSection::clearUserGlobalClassTable()
 {
     //clear user class table
 #if PHP_VERSION_ID >= 70000
-    int class_table_count = CG(class_table)->nNumUsed;
-    Bucket* end = CG(class_table)->arData;
-    Bucket* begin = CG(class_table)->arData + class_table_count;
-    for(; begin != end; begin--)
-    {
-        if(begin->key)
-        {
-            zval *_z = &begin->val;
-            if(_z->value.ce->type == ZEND_INTERNAL_CLASS)
+
+    zend_class_entry* ce;
+    ZEND_HASH_REVERSE_FOREACH(CG(class_table), 0);
+            ce = (zend_class_entry*)Z_PTR_P(_z);
+            if(ce->type == ZEND_INTERNAL_CLASS)
             {
                 break;
             }else{
-                zend_hash_del(CG(class_table) ,begin->key);
+                zend_hash_del(EG(class_table) ,_p->key);
             }
-
-        }else{
-            continue;
-        }
-    }
+    ZEND_HASH_FOREACH_END();
 
 #else
-
     HashPosition iterator;
     zend_class_entry **pce;
     zend_hash_internal_pointer_end_ex(CG(class_table), &iterator);
@@ -150,9 +140,11 @@ phpsciter::OpArrayCriticalSection::~OpArrayCriticalSection()
 //        if (PG(modules_activated)) zend_try {
 //            php_call_shutdown_functions();
 //        } zend_end_try();
+#if PHP_VERSION_ID >= 70000
         zend_try {
             zend_call_destructors();
         } zend_end_try();
+#endif
         destroy_op_array(PHPSCITER_G(current_op_array));
         efree(PHPSCITER_G(current_op_array));
     }
