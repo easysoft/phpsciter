@@ -11,10 +11,10 @@ namespace phpsciter{
     public:
         SciterZendHook()
         {
-//            PHPSCITER_G(origin_zend_compile_file) = zend_compile_file;
-//            PHPSCITER_G(phpsciter_compile_file) = phpsciter::ZendApi::zendCompileFile;
+            PHPSCITER_G(origin_zend_compile_file) = zend_compile_file;
+            PHPSCITER_G(phpsciter_compile_file) = phpsciter::ZendApi::zendCompileFile;
             PHPSCITER_G(write_function) = zend_write;
-//            zend_compile_file = PHPSCITER_G(phpsciter_compile_file);
+            zend_compile_file = PHPSCITER_G(phpsciter_compile_file);
             zend_write = phpsciter::ZendApi::sciterWrite;
         }
 
