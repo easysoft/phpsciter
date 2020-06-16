@@ -136,11 +136,12 @@ phpsciter::OpArrayCriticalSection::~OpArrayCriticalSection()
 {
     if(PHPSCITER_G(current_op_array))
     {
+#if PHP_VERSION_ID >= 70000
         /* 1. Call all possible shutdown functions registered with register_shutdown_function() */
 //        if (PG(modules_activated)) zend_try {
 //            php_call_shutdown_functions();
 //        } zend_end_try();
-#if PHP_VERSION_ID >= 70000
+
         zend_try {
             zend_call_destructors();
         } zend_end_try();

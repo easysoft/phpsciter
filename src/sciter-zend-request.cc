@@ -133,6 +133,7 @@ bool phpsciter::ZendSciterRequest::initRequest(const std::string& request_uri) {
     {
 #if PHP_VERSION_ID >= 70000
         array_init(&array);
+        array = PG(http_globals)[TRACK_VARS_SERVER];
         server_data = zend_hash_str_add(&EG(symbol_table),ZEND_SERVER,ZEND_SERVER_LEN,&array);;
 #else
         MAKE_STD_ZVAL(array);
