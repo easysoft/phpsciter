@@ -11,10 +11,10 @@ namespace phpsciter{
     class OpArrayCriticalSection :public NoCopy{
     public:
         OpArrayCriticalSection();
+        void zend_clear_symbol_table();
         void clearUserGlobalFunctionTable();
         void clearUserGlobalClassTable();
         void cleanNonPersistentConstants();
-
         ~OpArrayCriticalSection();
     };
 
