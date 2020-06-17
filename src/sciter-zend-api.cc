@@ -53,12 +53,6 @@ bool phpsciter::ZendApi::zendExecute()
         return false;
     }
 
-    //create an consume thread
-    if(!PHPSCITER_G(output_buffer).empty())
-    {
-        PHPSCITER_G(output_buffer).clear();
-    }
-
 #if PHP_VERSION_ID >= 70000
     zval result;
     if (EG(exception) != NULL) {

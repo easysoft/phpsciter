@@ -2,7 +2,7 @@
 class A{
     public function __destruct()
     {
-        echo "__destruct\n";
+        echo ("__destruct1");
     }
 }
 $first = new A();
@@ -13,7 +13,7 @@ var_dump($static_var);
 var_dump($tem_data);
 
 register_shutdown_function(function () {
-    echo "function shutdown\n";
+    echo("function shutdown1");
 });
 
 ?>

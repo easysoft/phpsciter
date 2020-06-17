@@ -3,7 +3,7 @@
 class A{
     public function __destruct()
     {
-        echo "__destruct\n";
+        echo ("__destruct2");
     }
 }
 
@@ -18,7 +18,7 @@ function test()
 }
 
 register_shutdown_function(function () {
-    echo "function shutdown\n";
+    echo("function shutdown2\n") ;
 });
 ?>
 <a href="index_second.php">return1</a>
