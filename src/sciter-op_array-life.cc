@@ -7,7 +7,6 @@
 phpsciter::OpArrayCriticalSection::OpArrayCriticalSection()
 {
     zend_hash_clean(&EG(symbol_table));
-    zend_rebuild_symbol_table();
     //clear user function table
     clearUserGlobalFunctionTable();
     //clear user global class table

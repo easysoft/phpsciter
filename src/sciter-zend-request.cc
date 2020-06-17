@@ -3,7 +3,7 @@
 //
 #include "sciter-common.h"
 /**
- * 初始化_GET _POST _REQUEST的运行时变量
+ * init _GET _POST _REQUEST run_time var
  */
 bool phpsciter::ZendSciterRequest::initRequest(const std::string& request_uri) {
     //initialize $_GET $_POST  $_REQUEST $_SERVER
@@ -80,8 +80,9 @@ bool phpsciter::ZendSciterRequest::initRequest(const std::string& request_uri) {
 
     }else{
 #if PHP_VERSION_ID >= 70000
-        array_init(&array);
-        get_data = zend_hash_str_add(&EG(symbol_table),ZEND_GET,ZEND_GET_LEN,&array);
+        zval empty_get_data;
+        array_init(&empty_get_data);
+        get_data = zend_hash_str_add(&EG(symbol_table),ZEND_GET,ZEND_GET_LEN,&empty_get_data);
 #else
         MAKE_STD_ZVAL(array);
         array_init(array);
@@ -100,8 +101,9 @@ bool phpsciter::ZendSciterRequest::initRequest(const std::string& request_uri) {
 #endif
     }else{
 #if PHP_VERSION_ID >= 70000
-        array_init(&array);
-        post_data = zend_hash_str_add(&EG(symbol_table),ZEND_POST,ZEND_POST_LEN,&array);
+        zval empty_post_data;
+        array_init(&empty_post_data);
+        post_data = zend_hash_str_add(&EG(symbol_table),ZEND_POST,ZEND_POST_LEN,&empty_post_data);
 #else
         MAKE_STD_ZVAL(array);
         array_init(array);
@@ -120,8 +122,9 @@ bool phpsciter::ZendSciterRequest::initRequest(const std::string& request_uri) {
 #endif
     }else{
 #if PHP_VERSION_ID >= 70000
-        array_init(&array);
-        request_data = zend_hash_str_add(&EG(symbol_table),ZEND_REQUEST,ZEND_REQUEST_LEN,&array);
+        zval empty_request_data;
+        array_init(&empty_request_data);
+        request_data = zend_hash_str_add(&EG(symbol_table),ZEND_REQUEST,ZEND_REQUEST_LEN,&empty_request_data);
 #else
         MAKE_STD_ZVAL(array);
         array_init(array);
@@ -132,9 +135,10 @@ bool phpsciter::ZendSciterRequest::initRequest(const std::string& request_uri) {
     if(!server_data)
     {
 #if PHP_VERSION_ID >= 70000
-        array_init(&array);
+        zval empty_server_data;
+        array_init(&empty_server_data);
         array = PG(http_globals)[TRACK_VARS_SERVER];
-        server_data = zend_hash_str_add(&EG(symbol_table),ZEND_SERVER,ZEND_SERVER_LEN,&array);;
+        server_data = zend_hash_str_add(&EG(symbol_table),ZEND_SERVER,ZEND_SERVER_LEN,&empty_server_data);;
 #else
         MAKE_STD_ZVAL(array);
 //        array_init(array);
