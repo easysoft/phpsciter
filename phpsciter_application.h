@@ -32,6 +32,7 @@ PHP_METHOD(phpsciter, getPHPSciterVersion);
 PHP_METHOD(phpsciter, setResourcePath);
 PHP_METHOD(phpsciter, setWindowFrame);
 PHP_METHOD(phpsciter, setWindowTitle);
+PHP_METHOD(phpsciter, setOption);
 PHP_METHOD(phpsciter, loadFile);
 PHP_METHOD(phpsciter, loadPHP);
 PHP_METHOD(phpsciter, loadHtml);

@@ -26,6 +26,7 @@ const zend_function_entry phpsciter_methods[] =
         PHP_ME(phpsciter, loadFile, phpsciter_loadFile_arginfo, ZEND_ACC_PUBLIC)
         PHP_ME(phpsciter, loadPHP, phpsciter_loadPHP_arginfo, ZEND_ACC_PUBLIC)
         PHP_ME(phpsciter, loadHtml, phpsciter_loadHtml_arginfo, ZEND_ACC_PUBLIC)
+        PHP_ME(phpsciter, setOption, nullptr, ZEND_ACC_PUBLIC)
 
         PHP_ME(phpsciter, defineFunction, phpsciter_defineFunction_arginfo, ZEND_ACC_PUBLIC)
         PHP_ME(phpsciter, ifDefined, phpsciter_ifDefined_arginfo, ZEND_ACC_PUBLIC)
@@ -267,6 +268,7 @@ PHP_METHOD(phpsciter, run)
     zval *instance;
     zval *frame_top,*frame_left,*frame_right,*frame_bottom;
     zval *title,*loadFile,*loadHtml,*resource_path;
+    zval *option,*option_value;
 
     char* file_name = NULL;
     int file_name_len = 0;
@@ -316,6 +318,14 @@ PHP_METHOD(phpsciter, run)
     aux::a2w resource_path_as_wstr(Z_STRVAL_P(resource_path));
     SciterSetHomeURL(hw,LPCWSTR(resource_path_as_wstr.c_str()));
 
+    option = PHPSCITER_ZEND_READ_PROPERTY(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_OPTION));
+    option_value = PHPSCITER_ZEND_READ_PROPERTY(phpsciter_ce, instance, ZEND_STRL(PHPSCITER_PROPERTY_OPTION_VALUE));
+
+    //set option
+    if(Z_TYPE(*option) == IS_LONG && Z_TYPE(*option_value) == IS_LONG)
+    {
+        SciterSetOption(hw, Z_LVAL(*option), Z_LVAL(*option_value));
+    }
 
 
     switch (PHPSCITER_G(loadModal))
@@ -510,6 +520,26 @@ PHP_METHOD(phpsciter,loadFile)
     RETURN_TRUE;
 }
 
+PHP_METHOD(phpsciter,setOption)
+{
+#if PHP_VERSION_ID>= 70000
+    zend_long option = 0;
+    zend_long option_value = 0;
+#else
+    long option = 0;
+    long value = 0;
+#endif
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ll", &option, &option_value))
+    {
+        RETURN_FALSE;
+    }
+
+    PHPSCITER_ZEND_UPDATE_PROPERTY_LONG(phpsciter_ce, getThis(), ZEND_STRL(PHPSCITER_PROPERTY_OPTION), option_value);
+    PHPSCITER_ZEND_UPDATE_PROPERTY_LONG(phpsciter_ce, getThis(), ZEND_STRL(PHPSCITER_PROPERTY_OPTION_VALUE), option_value);
+
+    RETURN_TRUE;
+}
+
 PHP_METHOD(phpsciter,loadHtml)
 {
     zval *instance;
@@ -586,11 +616,33 @@ void load_phpsciter_application()
     zend_declare_class_constant_long(phpsciter_ce, ZEND_STRL(PHPSCITER_SW_ENABLE_DEBUG), SW_ENABLE_DEBUG);
     zend_declare_class_constant_long(phpsciter_ce, ZEND_STRL(PHPSCITER_SW_OWNS_VM), SW_OWNS_VM);
 
+    //option
+    zend_declare_class_constant_long(phpsciter_ce, ZEND_STRL(PHPSCITER_SMOOTH_SCROLL), SCITER_SMOOTH_SCROLL);
+    zend_declare_class_constant_long(phpsciter_ce, ZEND_STRL(PHPSCITER_CONNECTION_TIMEOUT), SCITER_CONNECTION_TIMEOUT);
+    zend_declare_class_constant_long(phpsciter_ce, ZEND_STRL(PHPSCITER_HTTPS_ERROR), SCITER_HTTPS_ERROR);
+    zend_declare_class_constant_long(phpsciter_ce, ZEND_STRL(PHPSCITER_FONT_SMOOTHING), SCITER_FONT_SMOOTHING);
+    zend_declare_class_constant_long(phpsciter_ce, ZEND_STRL(PHPSCITER_TRANSPARENT_WINDOW), SCITER_TRANSPARENT_WINDOW);
+    zend_declare_class_constant_long(phpsciter_ce, ZEND_STRL(PHPSCITER_SET_GPU_BLACKLIST), SCITER_SET_GPU_BLACKLIST);
+    zend_declare_class_constant_long(phpsciter_ce, ZEND_STRL(PHPSCITER_SET_SCRIPT_RUNTIME_FEATURES), SCITER_SET_SCRIPT_RUNTIME_FEATURES);
+    zend_declare_class_constant_long(phpsciter_ce, ZEND_STRL(PHPSCITER_SET_GFX_LAYER), SCITER_SET_GFX_LAYER);
+    zend_declare_class_constant_long(phpsciter_ce, ZEND_STRL(PHPSCITER_SET_DEBUG_MODE), SCITER_SET_DEBUG_MODE);
+    zend_declare_class_constant_long(phpsciter_ce, ZEND_STRL(PHPSCITER_SET_UX_THEMING), SCITER_SET_UX_THEMING);
+    zend_declare_class_constant_long(phpsciter_ce, ZEND_STRL(PHPSCITER_ALPHA_WINDOW), SCITER_ALPHA_WINDOW);
+    zend_declare_class_constant_long(phpsciter_ce, ZEND_STRL(PHPSCITER_SET_INIT_SCRIPT), SCITER_SET_INIT_SCRIPT);
+    zend_declare_class_constant_long(phpsciter_ce, ZEND_STRL(PHPSCITER_SET_MAIN_WINDOW), SCITER_SET_MAIN_WINDOW);
+    zend_declare_class_constant_long(phpsciter_ce, ZEND_STRL(PHPSCITER_SET_MAX_HTTP_DATA_LENGTH), SCITER_SET_MAX_HTTP_DATA_LENGTH);
+
+    //option value
+    zend_declare_class_constant_long(phpsciter_ce, ZEND_STRL(PHPSCITER_ALLOW_FILE_IO), ALLOW_FILE_IO);
+    zend_declare_class_constant_long(phpsciter_ce, ZEND_STRL(PHPSCITER_ALLOW_SOCKET_IO), ALLOW_SOCKET_IO);
+    zend_declare_class_constant_long(phpsciter_ce, ZEND_STRL(PHPSCITER_ALLOW_EVAL), ALLOW_EVAL);
+    zend_declare_class_constant_long(phpsciter_ce, ZEND_STRL(PHPSCITER_ALLOW_SYSINFO), ALLOW_SYSINFO);
+
+    zend_declare_property_null(phpsciter_ce, ZEND_STRL(PHPSCITER_PROPERTY_OPTION), ZEND_ACC_PRIVATE TSRMLS_CC);
+    zend_declare_property_null(phpsciter_ce, ZEND_STRL(PHPSCITER_PROPERTY_OPTION_VALUE), ZEND_ACC_PRIVATE TSRMLS_CC);
     zend_declare_property_null(phpsciter_ce, ZEND_STRL(PHPSCITER_PROPERTY_RESOURCE_PATH), ZEND_ACC_PROTECTED TSRMLS_CC);
     zend_declare_property_long(phpsciter_ce, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_TOP),0, ZEND_ACC_PROTECTED TSRMLS_CC);
     zend_declare_property_long(phpsciter_ce, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_LEFT),0, ZEND_ACC_PROTECTED TSRMLS_CC);
     zend_declare_property_long(phpsciter_ce, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_RIGHT),0, ZEND_ACC_PROTECTED TSRMLS_CC);
     zend_declare_property_long(phpsciter_ce, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_BOTTOM),0, ZEND_ACC_PROTECTED TSRMLS_CC);
-
-    //initialize static_members_table
 }
