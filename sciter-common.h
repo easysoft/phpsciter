@@ -98,6 +98,19 @@ extern zend_module_entry phpsciter_module_entry;
 #define PHPSCITER_PROPERTY_TITLE                "title"
 #define PHPSCITER_PROPERTY_LOAD_FILE            "load_file"
 #define PHPSCITER_PROPERTY_LOAD_HTML            "load_html"
+
+#define PHPSCITER_SW_CHILD                "SW_CHILD"
+#define PHPSCITER_SW_TITLEBAR                "SW_TITLEBAR"
+#define PHPSCITER_SW_RESIZEABLE                "SW_RESIZEABLE"
+#define PHPSCITER_SW_TOOL                "SW_TOOL"
+#define PHPSCITER_SW_CONTROLS                "SW_CONTROLS"
+#define PHPSCITER_SW_GLASSY                "SW_GLASSY"
+#define PHPSCITER_SW_ALPHA                "SW_ALPHA"
+#define PHPSCITER_SW_MAIN                "SW_MAIN"
+#define PHPSCITER_SW_POPUP                "SW_POPUP"
+#define PHPSCITER_SW_ENABLE_DEBUG                "SW_ENABLE_DEBUG"
+#define PHPSCITER_SW_OWNS_VM                "SW_OWNS_VM"
+
 #define PHPSCITER_FILE_HLEN 7
 #define FINISH_EOF "\r\n\r\n\r\n\r\n"
 #define FINISH_EOF_LEN sizeof("\r\n\r\n\r\n\r\n")

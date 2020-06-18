@@ -272,6 +272,17 @@ PHP_METHOD(phpsciter, run)
     int file_name_len = 0;
     std::string file_path;
     int res;
+#if PHP_VERSION_ID>= 70000
+    zend_long creationFlags = SW_MAIN;
+#else
+    long creationFlags = SW_MAIN;
+#endif
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|l", &creationFlags))
+    {
+        RETURN_FALSE;
+    }
+
+
     phpsciter::SciterZendHook hookGuard;
 
 //    if (!PHPSCITER_G(loadHtml) && !PHPSCITER_G(loadFile))
@@ -297,9 +308,10 @@ PHP_METHOD(phpsciter, run)
 
     SciterWindowInit();
 
-    HWINDOW hw = SciterCreateWindow(SW_RESIZEABLE | SW_MAIN | SW_TOOL | SW_ENABLE_DEBUG, &frame, 0,0,0);
+    HWINDOW hw = SciterCreateWindow(creationFlags, &frame, 0,0,0);
 
     SciterSetCallback(hw, &SciterViewCallback, NULL);
+    SciterSetOption(hw, SCITER_SET_DEBUG_MODE, TRUE);
     SciterSetWindowTitle(hw,Z_STRVAL_P(title));
 
     aux::a2w resource_path_as_wstr(Z_STRVAL_P(resource_path));
@@ -419,9 +431,9 @@ PHP_METHOD(phpsciter,setWindowFrame)
     zend_long frame_right = 1;
     zend_long frame_bottom = 0;
 #else
-    long frame_top = 0;
-    long frame_left = 0;
-    long frame_right = 0;
+    long frame_top = 1;
+    long frame_left = 1;
+    long frame_right = 1;
     long frame_bottom = 0;
 #endif
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llll", &frame_top, &frame_left, &frame_right,
@@ -563,6 +575,17 @@ void load_phpsciter_application()
     zend_declare_class_constant_stringl(phpsciter_ce,ZEND_STRL(PHPSCITER_PROPERTY_TITLE),ZEND_STRL("phpsciter") TSRMLS_CC);
 
     //zend_declare_property_null(phpsciter_ce, ZEND_STRL(PHPSCITER_NAME), ZEND_ACC_STATIC | ZEND_ACC_PROTECTED TSRMLS_CC);
+    zend_declare_class_constant_long(phpsciter_ce, ZEND_STRL(PHPSCITER_SW_CHILD), SW_CHILD);
+    zend_declare_class_constant_long(phpsciter_ce, ZEND_STRL(PHPSCITER_SW_TITLEBAR), SW_TITLEBAR);
+    zend_declare_class_constant_long(phpsciter_ce, ZEND_STRL(PHPSCITER_SW_RESIZEABLE), SW_RESIZEABLE);
+    zend_declare_class_constant_long(phpsciter_ce, ZEND_STRL(PHPSCITER_SW_TOOL), SW_TOOL);
+    zend_declare_class_constant_long(phpsciter_ce, ZEND_STRL(PHPSCITER_SW_CONTROLS), SW_CONTROLS);
+    zend_declare_class_constant_long(phpsciter_ce, ZEND_STRL(PHPSCITER_SW_GLASSY), SW_GLASSY);
+    zend_declare_class_constant_long(phpsciter_ce, ZEND_STRL(PHPSCITER_SW_ALPHA), SW_ALPHA);
+    zend_declare_class_constant_long(phpsciter_ce, ZEND_STRL(PHPSCITER_SW_MAIN), SW_MAIN);
+    zend_declare_class_constant_long(phpsciter_ce, ZEND_STRL(PHPSCITER_SW_POPUP), SW_POPUP);
+    zend_declare_class_constant_long(phpsciter_ce, ZEND_STRL(PHPSCITER_SW_ENABLE_DEBUG), SW_ENABLE_DEBUG);
+    zend_declare_class_constant_long(phpsciter_ce, ZEND_STRL(PHPSCITER_SW_OWNS_VM), SW_OWNS_VM);
 
     zend_declare_property_null(phpsciter_ce, ZEND_STRL(PHPSCITER_PROPERTY_RESOURCE_PATH), ZEND_ACC_PROTECTED TSRMLS_CC);
     zend_declare_property_long(phpsciter_ce, ZEND_STRL(PHPSCITER_PROPERTY_FRAME_TOP),0, ZEND_ACC_PROTECTED TSRMLS_CC);
