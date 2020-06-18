@@ -178,7 +178,7 @@ static int zval_call_destructor(zval **zv TSRMLS_DC) /* {{{ */
 }
 
 //php5 callable __destruct and shutdown function
-static void callDestructAndShutDownFunction()
+static void call_destructors_and_shutdown_functions()
 {
     /* 1. Call all possible shutdown functions registered with register_shutdown_function() */
     if (BG(user_shutdown_function_names)) {
@@ -228,7 +228,7 @@ phpsciter::OpArrayCriticalSection::~OpArrayCriticalSection()
             zend_call_destructors();
         } zend_end_try();
 
-        php_free_shutdown_functions();
+        call_destructors_and_shutdown_functions();
 #else
         callDestructAndShutDownFunction();
 #endif
