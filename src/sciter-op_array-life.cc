@@ -228,9 +228,9 @@ phpsciter::OpArrayCriticalSection::~OpArrayCriticalSection()
             zend_call_destructors();
         } zend_end_try();
 
-        call_destructors_and_shutdown_functions();
+        php_free_shutdown_functions();
 #else
-        callDestructAndShutDownFunction();
+        call_destructors_and_shutdown_functions();
 #endif
         destroy_op_array(PHPSCITER_G(current_op_array));
         efree(PHPSCITER_G(current_op_array));
