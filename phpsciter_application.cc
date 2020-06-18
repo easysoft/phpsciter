@@ -311,7 +311,6 @@ PHP_METHOD(phpsciter, run)
     HWINDOW hw = SciterCreateWindow(creationFlags, &frame, 0,0,0);
 
     SciterSetCallback(hw, &SciterViewCallback, NULL);
-    SciterSetOption(hw, SCITER_SET_DEBUG_MODE, TRUE);
     SciterSetWindowTitle(hw,Z_STRVAL_P(title));
 
     aux::a2w resource_path_as_wstr(Z_STRVAL_P(resource_path));
