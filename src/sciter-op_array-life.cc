@@ -21,6 +21,7 @@ phpsciter::OpArrayCriticalSection::OpArrayCriticalSection()
     cleanNonPersistentConstants();
 }
 
+//clear user function table
 void phpsciter::OpArrayCriticalSection::clearUserGlobalFunctionTable()
 {
     //clear user function
@@ -55,6 +56,7 @@ void phpsciter::OpArrayCriticalSection::clearUserGlobalFunctionTable()
 #endif
 }
 
+//clear non persistent constants
 void phpsciter::OpArrayCriticalSection::cleanNonPersistentConstants()
 {
 #if PHP_VERSION_ID >= 70000
@@ -100,6 +102,7 @@ void phpsciter::OpArrayCriticalSection::cleanNonPersistentConstants()
 #endif
 }
 
+//clear user global class table
 void phpsciter::OpArrayCriticalSection::clearUserGlobalClassTable()
 {
     //clear user class table
@@ -136,6 +139,79 @@ void phpsciter::OpArrayCriticalSection::clearUserGlobalClassTable()
 #endif
 }
 
+#if PHP_VERSION_ID < 70000
+static int user_shutdown_function_call(php_shutdown_function_entry *shutdown_function_entry TSRMLS_DC) /* {{{ */
+{
+    zval retval;
+    char *function_name;
+
+    if (!zend_is_callable(shutdown_function_entry->arguments[0], 0, &function_name TSRMLS_CC)) {
+        php_error(E_WARNING, "(Registered shutdown functions) Unable to call %s() - function does not exist", function_name);
+        if (function_name) {
+            efree(function_name);
+        }
+        return 0;
+    }
+    if (function_name) {
+        efree(function_name);
+    }
+
+    if (call_user_function(EG(function_table), NULL,
+                           shutdown_function_entry->arguments[0],
+                           &retval,
+                           shutdown_function_entry->arg_count - 1,
+                           shutdown_function_entry->arguments + 1
+                           TSRMLS_CC ) == SUCCESS)
+    {
+        zval_dtor(&retval);
+    }
+    return 0;
+}
+
+static int zval_call_destructor(zval **zv TSRMLS_DC) /* {{{ */
+{
+    if (Z_TYPE_PP(zv) == IS_OBJECT && Z_REFCOUNT_PP(zv) == 1) {
+        return ZEND_HASH_APPLY_REMOVE;
+    } else {
+        return ZEND_HASH_APPLY_KEEP;
+    }
+}
+
+//php5 callable __destruct and shutdown function
+static void callDestructAndShutDownFunction()
+{
+    /* 1. Call all possible shutdown functions registered with register_shutdown_function() */
+    if (BG(user_shutdown_function_names)) {
+        zend_try {
+                    zend_hash_apply(BG(user_shutdown_function_names), (apply_func_t) user_shutdown_function_call TSRMLS_CC);
+                }
+        zend_end_try();
+        if (BG(user_shutdown_function_names))
+        zend_try {
+            zend_hash_destroy(BG(user_shutdown_function_names));
+            FREE_HASHTABLE(BG(user_shutdown_function_names));
+            BG(user_shutdown_function_names) = NULL;
+        } zend_catch {
+            /* maybe shutdown method call exit, we just ignore it */
+            FREE_HASHTABLE(BG(user_shutdown_function_names));
+            BG(user_shutdown_function_names) = NULL;
+        } zend_end_try();
+    }
+
+    //call destructors
+    zend_try {
+        int symbols;
+        do {
+            symbols = zend_hash_num_elements(&EG(symbol_table));
+            zend_hash_reverse_apply(&EG(symbol_table), (apply_func_t) zval_call_destructor TSRMLS_CC);
+        } while (symbols != zend_hash_num_elements(&EG(symbol_table)));
+        zend_objects_store_call_destructors(&EG(objects_store) TSRMLS_CC);
+    } zend_catch {
+        /* if we couldn't destruct cleanly, mark all objects as destructed anyway */
+        zend_objects_store_mark_destructed(&EG(objects_store) TSRMLS_CC);
+    } zend_end_try();
+}
+#endif
 
 phpsciter::OpArrayCriticalSection::~OpArrayCriticalSection()
 {
@@ -153,8 +229,8 @@ phpsciter::OpArrayCriticalSection::~OpArrayCriticalSection()
         } zend_end_try();
 
         php_free_shutdown_functions();
-
-
+#else
+        callDestructAndShutDownFunction();
 #endif
         destroy_op_array(PHPSCITER_G(current_op_array));
         efree(PHPSCITER_G(current_op_array));
