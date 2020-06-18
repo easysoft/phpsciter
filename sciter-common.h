@@ -64,6 +64,7 @@ extern "C"
 # include "TSRM.h"
 #endif
 #include <ext/standard/basic_functions.h>
+#include <php_main.h>
 }
 #ifndef PHP_VERSION_ID
 #include "php_version.h"

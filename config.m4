@@ -72,7 +72,6 @@ if test "$PHP_PHPsciter" != "no"; then
     src/sciter-value.cc \
     phpsciter.cc \
     phpsciter_application.cc \
-    phpsciter_global.cc \
     src/sciter-zend-request.cc \
     src/sciter-op_array-life.cc \
     src/sciter-zend-api.cc \

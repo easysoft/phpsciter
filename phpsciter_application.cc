@@ -527,7 +527,7 @@ PHP_METHOD(phpsciter,setOption)
     zend_long option_value = 0;
 #else
     long option = 0;
-    long value = 0;
+    long option_value = 0;
 #endif
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ll", &option, &option_value))
     {
