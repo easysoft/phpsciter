@@ -136,8 +136,6 @@ extern zend_module_entry phpsciter_module_entry;
 #define PHPSCITER_ALLOW_SYSINFO                 "ALLOW_SYSINFO"
 
 #define PHPSCITER_FILE_HLEN 7
-#define FINISH_EOF "\r\n\r\n\r\n\r\n"
-#define FINISH_EOF_LEN sizeof("\r\n\r\n\r\n\r\n")
 
 #ifdef PHP_WIN32
 #define PHP_PHPSCITER_API __declspec(dllexport)
