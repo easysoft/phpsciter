@@ -28,8 +28,8 @@ const zend_function_entry phpsciter_methods[] =
         PHP_ME(phpsciter, loadHtml, phpsciter_loadHtml_arginfo, ZEND_ACC_PUBLIC)
         PHP_ME(phpsciter, setOption, nullptr, ZEND_ACC_PUBLIC)
 
-        PHP_ME(phpsciter, defineFunction, phpsciter_defineFunction_arginfo, ZEND_ACC_PUBLIC)
-        PHP_ME(phpsciter, ifDefined, phpsciter_ifDefined_arginfo, ZEND_ACC_PUBLIC)
+        PHP_ME(phpsciter, defineFunction, phpsciter_defineFunction_arginfo, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+        PHP_ME(phpsciter, ifDefined, phpsciter_ifDefined_arginfo, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
 
         {
             NULL, NULL, NULL
