@@ -124,7 +124,8 @@ BOOL SciterExecuteFunction(HELEMENT he, SCRIPTING_METHOD_PARAMS* p)
 
 #if PHP_VERSION_ID >= 70000
             args_count = p->argc;
-            zval *args = new zval[args_count];
+            zval args[args_count];
+            memset(&args, 0, sizeof(args));
             zval *retval = NULL;
             zval retval_copy;
 

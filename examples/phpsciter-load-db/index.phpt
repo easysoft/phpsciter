@@ -5,43 +5,22 @@ phpsciter load mysql
 
 //include_once 'resource/mysql_pdo.php';
 
-class TestSciter
-{
-    static public function getDataFromMySQL($limit)
-    {
-//        $sMysqlPdo = mysql_pdo::instance();
-//        $data      = $sMysqlPdo->testQuery($limit);
-//        var_dump($data);
-
-        $data = array(
-            array(
-                'user_id'      => 1,
-                'user_company' => 'aaa',
-            ), array(
-                'user_id'      => 2,
-                'user_company' => 'bbb',
-            ),
-        );
-//
-//        $data = array('user_id','aaaa','user_company','cccc','dddd');
-
-        return $data;
-    }
-}
 
 $oSciter = new PHPSciter();
 $oSciter->setResourcePath('file://' . __DIR__ . '/html/');
 $oSciter->setWindowFrame(100, 100, 100 + 500 + 1, 100 + 500 + 1);
 $oSciter->setWindowTitle('hello');
-$oSciter->loadFile('index.html');
-
-$defineResult = $oSciter->defineFunction('get_list', 'TestSciter::getDataFromMySQL');
-
-var_dump($defineResult);
-var_dump($oSciter->ifDefined('get_list'));
+$oSciter->loadFile('index.php');
 
 
-$oSciter->run();
+
+$oSciter->setOption(PHPSciter::SCITER_SET_SCRIPT_RUNTIME_FEATURES,
+PHPSciter::ALLOW_FILE_IO | PHPSciter::ALLOW_SOCKET_IO | PHPSciter::ALLOW_EVAL |
+                               PHPSciter::ALLOW_SYSINFO);
+
+
+$oSciter->run(PHPSciter::SW_TITLEBAR | PHPSciter::SW_RESIZEABLE | PHPSciter::SW_MAIN | PHPSciter::SW_ENABLE_DEBUG
+|PHPSciter::SW_CONTROLS);
 ?>
 --EXPECT--
 true

@@ -114,12 +114,13 @@ bool phpsciter::ZendApi::zendExecuteScript(const char* file_name, LPSCN_LOAD_DAT
     }
 
 #if PHP_VERSION_ID >= 70000
-    if(!file_handle.opened_path)
-        file_handle.opened_path = zend_string_init(file_name, strlen(file_name), 0);
 
     if (SUCCESS != zend_stream_open(file_name, &file_handle)) {
         return  false;
     }
+
+    if(!file_handle.opened_path)
+        file_handle.opened_path = zend_string_init(file_name, strlen(file_name), 0);
 //    zend_stream_init_filename(&file_handle, file_name);
 #else
     file_handle.filename = file_name;

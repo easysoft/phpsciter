@@ -376,6 +376,11 @@ PHP_METHOD(phpsciter, run)
             break;
     }
 
+    if(!PHPSCITER_G(output_buffer).empty())
+    {
+        PHPSCITER_G(output_buffer).clear();
+    }
+
     if (SCDOM_OK != SciterWindowAttachEventHandler(hw, ElementEventProcImplementeation, NULL, HANDLE_ALL))
     {
             RETURN_FALSE;
@@ -534,7 +539,7 @@ PHP_METHOD(phpsciter,setOption)
         RETURN_FALSE;
     }
 
-    PHPSCITER_ZEND_UPDATE_PROPERTY_LONG(phpsciter_ce, getThis(), ZEND_STRL(PHPSCITER_PROPERTY_OPTION), option_value);
+    PHPSCITER_ZEND_UPDATE_PROPERTY_LONG(phpsciter_ce, getThis(), ZEND_STRL(PHPSCITER_PROPERTY_OPTION), option);
     PHPSCITER_ZEND_UPDATE_PROPERTY_LONG(phpsciter_ce, getThis(), ZEND_STRL(PHPSCITER_PROPERTY_OPTION_VALUE), option_value);
 
     RETURN_TRUE;
