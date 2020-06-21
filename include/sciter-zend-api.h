@@ -8,8 +8,6 @@ namespace phpsciter{
     class ZendApi :public NoCopy{
     public:
         ZendApi() = default;
-        //编译
-        static zend_op_array *zendCompileFile(zend_file_handle* file_handle, int type);
 
         //执行
         bool zendExecute();

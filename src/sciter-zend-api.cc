@@ -19,18 +19,6 @@
 */
 //yaf_loader_import
 #include "sciter-common.h"
-zend_op_array* phpsciter::ZendApi::zendCompileFile(zend_file_handle *file_handle, int type)
-{
-    if (!file_handle)
-    {
-        return nullptr;
-    }
-
-    zend_op_array* op_array = PHPSCITER_G(origin_zend_compile_file)(file_handle, type);
-//    zend_op_array* op_array = zend_compile_file(file_handle, type);
-
-    return op_array;
-}
 
 #if PHP_VERSION_ID >= 70000
 int phpsciter::ZendApi::sciterWrite(const char *str, size_t str_length)

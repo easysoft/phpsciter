@@ -7,9 +7,15 @@ if (PHP_PHPSCITER == "yes") {
 
     if (CHECK_HEADER_ADD_INCLUDE("sciter-x-api.h", "CFLAGS_SEASLOG", configure_module_dirname + "\\include;" + PHP_EXTRA_INCLUDES)) {
 
-        phpsciter_source_file="callback.cpp \
-            tool.cpp \
-            value.cpp"
+        phpsciter_source_file="src/sciter-callback.cc \
+                                  src/sciter-value.cc \
+                                  phpsciter.cc \
+                                  phpsciter_application.cc \
+                                  src/sciter-zend-request.cc \
+                                  src/sciter-op_array-life.cc \
+                                  src/sciter-zend-api.cc \
+                                  lib/php-window-linux.cc \
+                                  lib/sciter-util.cc"
 
         phpsciter_lib_file="php-window.cpp"
 
