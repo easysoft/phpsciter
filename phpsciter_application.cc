@@ -221,6 +221,7 @@ PHP_METHOD(phpsciter, defineFunction)
     functionRegister(event_name, function_name);
 
     efree(func_name);
+    zval_ptr_dtor(function_name);
 
     RETURN_TRUE;
 }
