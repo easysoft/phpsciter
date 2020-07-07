@@ -215,10 +215,10 @@ PHP_METHOD(phpsciter, defineFunction)
             RETURN_FALSE;
     }
 
-    zval function_name;
-    PHPSCITER_ZVAL_STRINGL(&function_name , Z_STRVAL_P(callback), Z_STRLEN_P(callback));
-    functionRegister(event_name, &function_name);
-
+    zval* function_name;
+    PHPSCITER_MAKE_STD_ZVAL(function_name);
+    PHPSCITER_ZVAL_STRINGL(function_name , Z_STRVAL_P(callback), Z_STRLEN_P(callback));
+    functionRegister(event_name, function_name);
     efree(func_name);
     RETURN_TRUE;
 }

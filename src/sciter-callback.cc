@@ -369,5 +369,19 @@ BOOL SC_CALLBACK  ElementEventProcImplementeation(LPVOID tag, HELEMENT he, UINT 
 
 BOOL clearCallBack()
 {
+#if PHP_VERSION_ID >= 70000
     zend_symtable_clean(&callbacks);
+#else
+    HashPosition iterator;
+    zval **tmp;
+    zend_hash_internal_pointer_end_ex(&callbacks, &iterator);
+    while (zend_hash_get_current_data_ex(&callbacks, (void **) &tmp, &iterator) == SUCCESS) {
+        if(!iterator->arKey)
+        {
+            continue;
+        }
+        PHPSCITER_ZVAL_DTOR(*tmp);
+        zend_hash_move_backwards_ex(&callbacks, &iterator);
+    }
+#endif
 }
