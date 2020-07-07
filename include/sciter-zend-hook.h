@@ -22,6 +22,7 @@ namespace phpsciter{
         {
 //            zend_compile_file = PHPSCITER_G(origin_zend_compile_file);
             zend_write = PHPSCITER_G(write_function);
+            clearCallBack();
         }
     };
 }

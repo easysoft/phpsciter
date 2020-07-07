@@ -19,6 +19,7 @@ phpsciter::OpArrayCriticalSection::OpArrayCriticalSection()
     clearUserGlobalClassTable();
     //clear non persistent constants
     cleanNonPersistentConstants();
+    clearCallBack();
 }
 
 //clear user function table

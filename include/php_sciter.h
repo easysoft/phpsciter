@@ -38,5 +38,6 @@ BOOL initFunctions();
 BOOL SciterExecuteFunction(HELEMENT he, SCRIPTING_METHOD_PARAMS* p);
 BOOL functionRegister(zend_string *event_name, zval *callback);
 BOOL checkRegisted(zend_string *event_name);
+BOOL clearCallBack();
 static void (*_zend_execute_ex) (zend_execute_data *execute_data);
 #endif

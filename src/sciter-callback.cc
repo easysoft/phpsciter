@@ -27,7 +27,10 @@ BOOL initFunctions()
 BOOL functionRegister(zend_string *event_name, zval *callback)
 {
 #if PHP_VERSION_ID >= 70000
-    zend_hash_add(&callbacks,event_name,callback);
+    if(!zend_hash_add(&callbacks,event_name,callback))
+    {
+        return  false;
+    }
 #else
     int res;
     res = zend_hash_add(&callbacks, event_name, strlen(event_name)+1,
@@ -364,3 +367,8 @@ BOOL SC_CALLBACK  ElementEventProcImplementeation(LPVOID tag, HELEMENT he, UINT 
 }
 
 
+BOOL clearCallBack()
+{
+    std::cout<<"clear callback"<<std::endl;
+    zend_symtable_clean(&callbacks);
+}
