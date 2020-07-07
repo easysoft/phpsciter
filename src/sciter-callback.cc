@@ -369,6 +369,5 @@ BOOL SC_CALLBACK  ElementEventProcImplementeation(LPVOID tag, HELEMENT he, UINT 
 
 BOOL clearCallBack()
 {
-    std::cout<<"clear callback"<<std::endl;
     zend_symtable_clean(&callbacks);
 }
