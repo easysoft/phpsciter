@@ -94,7 +94,7 @@ BOOL SC_CALLBACK KeyValueCallbackElement(LPVOID param, const VALUE* pkey, const 
     default:
         break;
     }
-
+    zval_dtor(&zval_key_tmp);
     return true;
 }
 
@@ -172,6 +172,7 @@ UINT SetPHPValue(const VALUE* val, zval *item)
                     ValueNthElementValue(val, j, &val_tmp);
                     SetPHPValue((const VALUE *)&val_tmp,&zval_val_tmp);
                     PHPSCITER_ADD_INDEX_ZVAL(item,j,&zval_val_tmp);
+                    zval_dtor(&zval_val_tmp);
                 }
 
                 break;
