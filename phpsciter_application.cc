@@ -368,6 +368,10 @@ PHP_METHOD(phpsciter, run)
             }
             SciterLoadHtml(hw, (byte *) PHPSCITER_G(output_buffer).c_str(), PHPSCITER_G(output_buffer).length(),
                            LPCWSTR(resource_path_as_wstr.c_str()));
+            if(!PHPSCITER_G(output_buffer).empty())
+            {
+                PHPSCITER_G(output_buffer).clear();
+            }
             efree(file_name);
         } break;
         default:
