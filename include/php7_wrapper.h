@@ -88,19 +88,6 @@ static zend_string *TS_S_L(char *s)
 #define PHPSCITER_ZEND_CALL_METHOD_WITH_2_PARAMS(obj, ptr, what, method, retval, name, cb)     zend_call_method_with_2_params(*obj,ptr,what,method,*retval,name,cb)
 
 #define PHPSCITER_PHP_MAX_PARAMS_NUM 20
-static inline int PHPSCITER_CALL_USER_FUNCTION_EX(HashTable *function_table, zval** object_pp, zval *function_name, zval **retval_ptr_ptr, uint32_t param_count, zval *params, int no_separation, HashTable* ymbol_table)
-{
-    zval real_params[PHPSCITER_PHP_MAX_PARAMS_NUM];
-    int i = 0;
-    for (; i < (int)param_count; i++)
-    {
-        real_params[i] = params[i];
-    }
-    zval phpng_retval;
-    *retval_ptr_ptr = &phpng_retval;
-    zval *object_p = (object_pp == NULL) ? NULL : *object_pp;
-    return call_user_function_ex(function_table, object_p, function_name, &phpng_retval, param_count, params, no_separation, NULL);
-}
 
 #define PHPSCITER_MAKE_STD_ZVAL(p) zval _stack_zval_##p; p = &(_stack_zval_##p)
 #define PHPSCITER_ALLOC_INIT_ZVAL(p) do{p = (zval *)emalloc(sizeof(zval)); bzero(p, sizeof(zval));}while(0)
@@ -121,6 +108,18 @@ static inline int PHPSCITER_CALL_USER_FUNCTION_EX(HashTable *function_table, zva
 #define ZEND_COOKIE "_COOKIE"
 #define ZEND_COOKIE_LEN sizeof(ZEND_COOKIE)-1
 
+static inline int PHPSCITER_CALL_USER_FUNCTION_EX(HashTable *function_table, zval** object_pp, zval *function_name, zval **retval_ptr_ptr, uint32_t param_count, zval *params, int no_separation, HashTable* ymbol_table)
+{
+    zval real_params[PHPSCITER_PHP_MAX_PARAMS_NUM];
+    int i = 0;
+    for (; i < (int)param_count; i++)
+    {
+        real_params[i] = params[i];
+    }
+    PHPSCITER_ALLOC_INIT_ZVAL(*retval_ptr_ptr);
+    zval *object_p = (object_pp == NULL) ? NULL : *object_pp;
+    return call_user_function_ex(function_table, object_p, function_name, *retval_ptr_ptr, param_count, params, no_separation, NULL);
+}
 #else
 
 #define zend_string char

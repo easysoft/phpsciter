@@ -144,8 +144,10 @@ UINT SetPHPValue(const VALUE* val, zval *item)
     }
     case T_STRING:
     {
-        PHPSCITER_ZVAL_STRING(item,(char *)getSciterString(val));
+        char* tmp_str = (char *)getSciterString(val);
+        PHPSCITER_ZVAL_STRING(item, tmp_str);
         convert_to_string(item);
+        efree(tmp_str);
 //        saveLog(Z_STRVAL_P(item));
         break;
     }

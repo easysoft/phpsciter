@@ -97,6 +97,41 @@ UINT SC_CALLBACK SciterViewCallback(LPSCITER_CALLBACK_NOTIFICATION pns, LPVOID c
     return 0;
 }
 
+struct ArgsGuard{
+public:
+    ArgsGuard(SCRIPTING_METHOD_PARAMS* params, zval** args)
+    {
+        int i = 0;
+        const VALUE* p2;
+        UINT ok;
+        sciter_params = params;
+        zval* storage = (zval*)ecalloc(params->argc, sizeof(zval));
+        for (i = 0; i < (int)sciter_params->argc; i++)
+        {
+            p2 = sciter_params->argv + i;
+            ok = SetPHPValue(p2, &(storage[i]));
+        }
+        zval_args = storage;
+        *args = storage;
+    }
+
+    ~ArgsGuard()
+    {
+        int i = 0;
+        zval* tmp;
+        for (i = 0; i < (int)sciter_params->argc; i++)
+        {
+            tmp = &zval_args[i];
+            zval_ptr_dtor_str(tmp);
+        }
+        efree(zval_args);
+    }
+
+private:
+    SCRIPTING_METHOD_PARAMS* sciter_params;
+    zval* zval_args;
+};
+
 /**
 *Sciter and php function proxy
 */
@@ -127,24 +162,21 @@ BOOL SciterExecuteFunction(HELEMENT he, SCRIPTING_METHOD_PARAMS* p)
 
 #if PHP_VERSION_ID >= 70000
             args_count = p->argc;
-            zval args[args_count];
-            memset(&args, 0, sizeof(args));
-            zval *retval = NULL;
+            zval* args;
+            zval *retval = nullptr;
             zval retval_copy;
 
-            const VALUE* p2;
             UINT ok;
-            int i = 0;
-            for (i = 0; i < (int)p->argc; i++)
-            {
-                p2 = p->argv + i;
+            ArgsGuard guard(p ,&args);
 
-                ok = SetPHPValue(p2, &args[i]);
-            }
             if (PHPSCITER_CALL_USER_FUNCTION_EX(EG(function_table), NULL, callback, &retval, p->argc, args, 0,
                     NULL TSRMLS_CC) == FAILURE)
             {
                 php_printf("executeFunction error -> \n");
+                if(retval){
+                    zval_ptr_dtor_str(retval);
+                    efree(retval);
+                }
                 return false;
             }
 
@@ -157,6 +189,9 @@ BOOL SciterExecuteFunction(HELEMENT he, SCRIPTING_METHOD_PARAMS* p)
             {
                 ZVAL_COPY(&retval_copy,retval);
                 ok = SetSciterValue(&p->result, &retval_copy);
+                zval_ptr_dtor_str(retval);
+                efree(retval);
+                return  true;
             }
 
 #else
