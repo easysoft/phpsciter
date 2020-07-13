@@ -81,6 +81,10 @@ UINT SC_CALLBACK SciterViewCallback(LPSCITER_CALLBACK_NOTIFICATION pns, LPVOID c
                 {
                     ::SciterDataReady(pc->hwnd, pc->uri, (LPCBYTE) (PHPSCITER_G(output_buffer).c_str()),
                                       PHPSCITER_G(output_buffer).length());
+                    if(!PHPSCITER_G(output_buffer).empty())
+                    {
+                        PHPSCITER_G(output_buffer).clear();
+                    }
                 }
             }else {
                 return LOAD_OK;
