@@ -76,6 +76,7 @@ BOOL SC_CALLBACK KeyValueCallbackElement(LPVOID param, const VALUE* pkey, const 
     case T_FLOAT:
     case T_STRING:
         SetPHPValue(pval, &zval_val_tmp);
+        zval_dtor(&zval_val_tmp);
         break;
     case T_OBJECT: //TODO Support nested array incoming
     default:
@@ -181,7 +182,7 @@ UINT SetPHPValue(const VALUE* val, zval *item)
             case UT_OBJECT_OBJECT:
             {
                 CallBackGetValueTmp = &item;
-                ValueEnumElements(val,KeyValueCallbackElement,NULL);
+                ValueEnumElements(val,KeyValueCallbackElement, nullptr);
                 break;
             }
             default:
@@ -310,7 +311,6 @@ UINT SetSciterValue(VALUE *result, zval *entry)
             VALUE val = NewValue();
             str_key = nullptr;
             zend_hash_get_current_key_ex(ht, &str_key, &str_len, &num_key, 0, &iterator);
-            php_printf("%s\n",str_key);
             if(str_key)
             {
                 aux::a2w str_key_as_wstr(PHPSCITER_ZSTR_VAL(str_key));

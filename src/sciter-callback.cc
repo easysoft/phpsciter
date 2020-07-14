@@ -119,6 +119,22 @@ public:
         zval_args = storage;
         *args = storage;
     }
+
+    ~ArgsGuard()
+    {
+        int i = 0;
+        zval* tmp;
+        for (i = 0; i < (int)sciter_params->argc; i++)
+        {
+            tmp = &zval_args[i];
+            zval_dtor(tmp);
+        }
+        efree(zval_args);
+    }
+
+private:
+    SCRIPTING_METHOD_PARAMS* sciter_params;
+    zval* zval_args;
 #else
     ArgsGuard(SCRIPTING_METHOD_PARAMS* params, zval*** &args)
     {
@@ -134,7 +150,6 @@ public:
         }
         zval_args = args;
     }
-#endif
 
     ~ArgsGuard()
     {
@@ -142,9 +157,10 @@ public:
         FREE_CALLBACK_ARGS(zval_args, 0, sciter_params->argc);
     }
 
-private:
+    private:
     SCRIPTING_METHOD_PARAMS* sciter_params;
     zval*** zval_args;
+#endif
 };
 
 /**
@@ -206,31 +222,14 @@ BOOL SciterExecuteFunction(HELEMENT he, SCRIPTING_METHOD_PARAMS* p)
             zend_string_release(event_name);
             return  true;
 #else
-            args_count = p->argc;
-//            zval **args[args_count];
             zval ***args = nullptr;
             ArgsGuard guard(p, args);
             zval *retval = nullptr;
             zval* retval_copy;
             zval* zv;
             zval *unit;
-            int i = 0;
-            const VALUE* p2;
             UINT ok;
 
-//            for (i = 0; i < args_count; i++)
-//            {
-//                MAKE_STD_ZVAL(zv);
-//                args[i] = &zv;
-//            }
-//
-//
-//            for (i = 0; i < (int)p->argc; i++)
-//            {
-//                p2 = p->argv + i;
-//
-//                ok = SetPHPValue(p2, *args[i]);
-//            }
             if (PHPSCITER_CALL_USER_FUNCTION_EX(EG(function_table), nullptr, *callback, &retval, p->argc, args, 0,
                                                 nullptr TSRMLS_CC) == FAILURE)
             {
