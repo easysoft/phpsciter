@@ -273,7 +273,6 @@ UINT SetSciterValue(VALUE *result, zval *entry)
         HashTable   *ht;
         zend_ulong num_key;
         zend_string *str_key;
-        zval *entry_tmp;
 
         ht = Z_ARRVAL_P(entry);
         zend_long num_in = PHPSCITER_ARRAY_COUNT(ht);
@@ -281,6 +280,7 @@ UINT SetSciterValue(VALUE *result, zval *entry)
         if (num_in > 0)
         {
 #if PHP_VERSION_ID >= 70000
+        zval *entry_tmp;
         ZEND_HASH_FOREACH_KEY_VAL(ht, num_key, str_key, entry_tmp)
         {
             VALUE key = NewValue();
@@ -301,9 +301,28 @@ UINT SetSciterValue(VALUE *result, zval *entry)
         }
         ZEND_HASH_FOREACH_END();
 #else
+        HashPosition iterator;
+        zval **tmp;
+        uint str_len;
+        zend_hash_internal_pointer_reset_ex(ht, &iterator);
+        while (zend_hash_get_current_data_ex(ht, (void **) &tmp, &iterator) == SUCCESS) {
+            VALUE key = NewValue();
+            VALUE val = NewValue();
+            str_key = nullptr;
+            zend_hash_get_current_key_ex(ht, &str_key, &str_len, &num_key, 0, &iterator);
+            php_printf("%s\n",str_key);
+            if(str_key)
+            {
+                aux::a2w str_key_as_wstr(PHPSCITER_ZSTR_VAL(str_key));
+                ValueStringDataSet(&key,LPCWSTR(str_key_as_wstr.c_str()), UINT(str_key_as_wstr.length()), T_STRING);
+            }else{
+                ValueIntDataSet(&key,(INT)num_key,T_INT,0);
+            }
 
-            Bucket ** _p = ht->arBuckets;
-
+            ok = SetSciterValue(&val, *tmp);
+            ValueSetValueToKey(result,&key,&val);
+            zend_hash_move_forward_ex(ht, &iterator);
+        }
 #endif
         }
         break;
