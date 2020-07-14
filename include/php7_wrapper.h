@@ -229,4 +229,26 @@ typedef int32_t zend_off_t;
 #define ZEND_COOKIE "_COOKIE"
 #define ZEND_COOKIE_LEN strlen(ZEND_COOKIE)
 
+#ifndef ALLOC_CALLBACK_ARGS
+#define ALLOC_CALLBACK_ARGS(a, b, c)\
+if (c) {\
+	a = (zval ***)safe_emalloc(c, sizeof(zval **), 0);\
+	for (i = b; i < c; i++) {\
+		a[i] = (zval**)emalloc(sizeof(zval *));\
+		MAKE_STD_ZVAL(*a[i]);\
+	}\
+}
+#endif
+
+#ifndef FREE_CALLBACK_ARGS
+#define FREE_CALLBACK_ARGS(a, b, c)\
+if (a) {\
+	for (i=b; i < c; i++) {\
+		zval_ptr_dtor(a[i]);\
+		efree(a[i]);\
+	}\
+	efree(a);\
+}
+#endif
+
 #endif
