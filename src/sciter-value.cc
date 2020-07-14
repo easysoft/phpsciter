@@ -76,7 +76,9 @@ BOOL SC_CALLBACK KeyValueCallbackElement(LPVOID param, const VALUE* pkey, const 
     case T_FLOAT:
     case T_STRING:
         SetPHPValue(pval, &zval_val_tmp);
+#if PHP_VERSION_ID < 70000
         zval_dtor(&zval_val_tmp);
+#endif
         break;
     case T_OBJECT: //TODO Support nested array incoming
     default:
@@ -173,7 +175,9 @@ UINT SetPHPValue(const VALUE* val, zval *item)
                     ValueNthElementValue(val, j, &val_tmp);
                     SetPHPValue((const VALUE *)&val_tmp,&zval_val_tmp);
                     PHPSCITER_ADD_INDEX_ZVAL(item,j,&zval_val_tmp);
+#if PHP_VERSION_ID < 70000
                     zval_dtor(&zval_val_tmp);
+#endif
                 }
 
                 break;
