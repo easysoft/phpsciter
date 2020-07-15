@@ -435,4 +435,5 @@ BOOL clearCallBack()
         zend_hash_move_backwards_ex(&callbacks, &iterator);
     }
 #endif
+    return TRUE;
 }
