@@ -13,6 +13,13 @@ PHP_ARG_ENABLE(phpsciter, whether to enable phpsciter support,
 Make sure that the comment is aligned:
 [  --enable-phpsciter           Enable phpsciter support]) dnl指定了PHP扩展模块的工作方式
 
+AC_ARG_ENABLE(debug, AS_HELP_STRING([--enable-debug], [enable DEBUG mode(default=no)]),
+              [],
+              [enable_debug=no])
+AS_IF([test "x$enable_debug" = "xyes"], [CXXFLAGS="-g2 -O0 -DDEBUG -Wall"],
+    [test "x$enable_debug" = "xno"], [CXXFLAGS="-O2 -Wall"],
+    [])
+
 if test "$PHP_PHPsciter" != "no"; then
   dnl Write more examples of tests here...
 
