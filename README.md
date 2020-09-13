@@ -46,7 +46,7 @@ phpize
 make
 make install
 
-php examples/callback/index.php
+php examples/phpsciter-callback/index.php
 ```
 
 #### Mac OS
