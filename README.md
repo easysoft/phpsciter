@@ -24,12 +24,6 @@ QQ: 546025324
     The runtime libraries lives in `bin` `bin.gtk` `bin.osx` with suffix like `dll` `so` or `dylib`
 
     * Windows: simply copying `bin\64\sciter.dll` to `c:\windows\system32` is just enough
-    * Linux: 
-      - `cd sciter-sdk/bin.gtk/`
-      - `echo $PWD >> libsciter.conf`
-      - `sudo cp libsciter.conf /etc/ld.so.conf.d/`
-      - `sudo ldconfig`
-      - `ldconfig -p | grep sciter` should print libsciter-gtk-64.so location
     * OSX:
       - `cd sciter-sdk/bin.osx/`
       - `export DYLD_LIBRARY_PATH=$PWD`
