@@ -36,12 +36,13 @@ enum VALUE_TYPE
     T_FUNCTION = 11,   // named tuple , like array but with name tag
     T_BYTES = 12,      // sequence of bytes - e.g. image data
     T_OBJECT = 13,     // scripting object proxy (TISCRIPT/SCITER)
-    T_DOM_OBJECT = 14,  // DOM object, use get_object_data to get HELEMENT 
-    //T_RESOURCE = 15,  // 15 - other thing derived from tool::resource
+    //T_DOM_OBJECT = 14,  // DOM object, use get_object_data to get HELEMENT 
+    T_RESOURCE = 15,  // 15 - other thing derived from tool::resource
     //T_RANGE = 16,     // 16 - N..M, integer range.
     T_DURATION = 17,   // double, seconds
     T_ANGLE = 18,      // double, radians
     T_COLOR = 19,      // [unsigned] INT, ABGR
+    T_ASSET = 21,      // sciter::om::iasset* add_ref'ed pointer
 
 
 };
@@ -83,6 +84,10 @@ enum VALUE_UNIT_TYPE_OBJECT
     UT_OBJECT_NATIVE = 3,   // type T_OBJECT of native Type with data slot (LPVOID)
     UT_OBJECT_FUNCTION = 4, // type T_OBJECT of type Function
     UT_OBJECT_ERROR = 5,    // type T_OBJECT of type Error
+};
+
+enum VALUE_UNIT_UNDEFINED {
+  UT_NOTHING = 1 // T_UNDEFINED && UT_NOTHING -  'nothing' a.k.a. 'void' value in script 
 };
 
 // Sciter or TIScript specific

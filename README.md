@@ -37,9 +37,7 @@ QQ: 546025324
 #### Ubuntu 16.04
 ```
 apt-get install build-essential pkg-config
-apt-get install gnome-devel gnome-devel-docs --fix-missing
-apt-get install glade libglade2-dev
-apt-get install glade-gnome
+apt install libgtk-3-dev
 
 git clone https://github.com/easysoft/phpsciter.git
 cd phpsciter

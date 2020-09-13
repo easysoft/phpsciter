@@ -38,7 +38,7 @@ namespace sciter
     archive():har(0) {}
     // open archive blob:
     bool open( LPCBYTE data, UINT data_length ) { close(); har = SAPI()->SciterOpenArchive(data,data_length); return har != 0; }
-    bool open( aux::bytes data ) { return open( data.start, data.length ); }
+    bool open( aux::bytes data ) { return open( data.start, UINT(data.length) ); }
     void close() { if(har) SAPI()->SciterCloseArchive(har); har = 0; }
     // get archive item:
     aux::bytes get( LPCWSTR path ) {
@@ -138,9 +138,11 @@ namespace sciter
             ::SciterDataReady(pnmld->hwnd, pnmld->uri, pb, cb);
           else {
 #ifdef _DEBUG
+#ifdef CPP11
             auto console = debug_output::instance();
             if (console)
               console->printf("LOAD FAILURE:%S\n", pnmld->uri);
+#endif
 #endif
             return LOAD_DISCARD;
           }
@@ -148,12 +150,14 @@ namespace sciter
           // try to get them from archive first
           aux::bytes adata = archive::instance().get(wu.start+11);
           if (adata.length)
-            ::SciterDataReady(pnmld->hwnd, pnmld->uri, adata.start, adata.length);
+            ::SciterDataReady(pnmld->hwnd, pnmld->uri, adata.start, UINT(adata.length));
           else {
 #ifdef _DEBUG
+#ifdef CPP11
             auto console = debug_output::instance();
             if (console)
               console->printf("LOAD FAILURE:%S\n", pnmld->uri);
+#endif
 #endif
             return LOAD_DISCARD;
           }
@@ -207,12 +211,6 @@ namespace sciter
         return re;
       }
       HELEMENT get_root() { return root(); }
-
-      HVM get_vm() 
-      { 
-        return SciterGetVM(static_cast< BASE* >(this)->get_hwnd());
-      }
-
 
       // call scripting function defined in the global namespace
       SCITER_VALUE  call_function(LPCSTR name, UINT argc, SCITER_VALUE* argv )
@@ -289,7 +287,12 @@ namespace sciter
     if(wcsncmp(uri,L"//",2) == 0)
       uri += 2;
 
-    WCHAR achURL[MAX_PATH]; wcsncpy(achURL, uri, MAX_PATH);
+    WCHAR achURL[MAX_PATH]; 
+#if defined(_MSC_VER)    
+    wcsncpy_s(achURL, uri, MAX_PATH);
+#else
+    wcsncpy(achURL, uri, MAX_PATH);
+#endif
 
     LPWSTR pszName = achURL;
 
@@ -304,14 +307,14 @@ namespace sciter
     bool  isHtml = false;
     if( pszExt == 0 || _wcsicmp(pszExt,L"HTML") == 0 || _wcsicmp(pszExt,L"HTM") == 0)
     {
-      hrsrc = ::FindResourceW(hinst, pszName, MAKEINTRESOURCEW(23));
+      hrsrc = ::FindResourceW(hinst, pszName, RT_HTML);
       isHtml = true;
     }
     else
       hrsrc = ::FindResourceW(hinst, pszName, pszExt);
 
     if (!hrsrc)
-      return false; // resource not found here - proceed with default loader
+      return false; // resource not found here - proceed with the default loader
 
     // Load specified resource and check if ok
 

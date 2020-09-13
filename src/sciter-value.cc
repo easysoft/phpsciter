@@ -22,7 +22,7 @@ char *getSciterString(const VALUE *p)
     char *cstr = NULL;
 
     aux::wchars wc;
-    if(ValueStringData(p, (LPCWSTR*) &wc.start,&wc.length) == HV_OK)
+    if(ValueStringData(p, (LPCWSTR*) &wc.start, (UINT*)&wc.length) == HV_OK)
     {
         aux::w2utf str(aux::make_string(wc));
         spprintf(&cstr, 0, "%s",str.c_str());

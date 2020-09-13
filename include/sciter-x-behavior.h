@@ -23,6 +23,7 @@
 #include "sciter-x-dom.h"
 #include "sciter-x-value.h"
 #include "sciter-x-graphics.h"
+#include "sciter-om.h"
 
 #pragma pack(push,8)
 
@@ -44,10 +45,12 @@
                                                  a.k.a. notifications from intrinsic behaviors */
       HANDLE_METHOD_CALL           = 0x0200, /**< behavior specific methods */
       HANDLE_SCRIPTING_METHOD_CALL = 0x0400, /**< behavior specific methods */
-      HANDLE_TISCRIPT_METHOD_CALL  = 0x0800, /**< behavior specific methods using direct tiscript::value's */
+      //HANDLE_TISCRIPT_METHOD_CALL  = 0x0800, /**< behavior specific methods using direct tiscript::value's */
 
       HANDLE_EXCHANGE              = 0x1000, /**< system drag-n-drop */
       HANDLE_GESTURE               = 0x2000, /**< touch input events */
+
+      HANDLE_SOM                   = 0x8000, /**< som_asset_t request */
 
       HANDLE_ALL                   = 0xFFFF, /*< all of them */
 
@@ -100,6 +103,24 @@ typedef BOOL SC_CALLBACK SciterBehaviorFactory( LPCSTR, HELEMENT, LPElementEvent
   struct INITIALIZATION_PARAMS
   {
     UINT cmd; // INITIALIZATION_EVENTS
+  };
+
+  enum SOM_EVENTS
+  {
+    SOM_GET_PASSPORT = 0,
+    SOM_GET_ASSET = 1
+  };
+
+  struct SOM_PARAMS
+  {
+    UINT cmd; // SOM_EVENTS
+    union {
+      som_passport_t* passport;
+      som_asset_t*    asset;
+    } data;
+#ifdef __cplusplus
+    SOM_PARAMS() : data() {}
+#endif
   };
 
   enum DRAGGING_TYPE
@@ -198,6 +219,21 @@ typedef BOOL SC_CALLBACK SciterBehaviorFactory( LPCSTR, HELEMENT, LPElementEvent
       FOCUS_GOT = 2,            /**< target element got focus */
       FOCUS_LOST = 3,           /**< target element lost focus */
       FOCUS_REQUEST = 4,        /**< bubbling event/request, gets sent on child-parent chain to accept/reject focus to be set on the child (target) */
+      FOCUS_ADVANCE_REQUEST = 5,/**< bubbling event/request, gets sent on child-parent chain to advance focus */
+  };
+
+  enum FOCUS_CMD_TYPE {
+      FOCUS_RQ_NEXT,
+      FOCUS_RQ_PREV,
+      FOCUS_RQ_HOME,
+      FOCUS_RQ_END,
+      FOCUS_RQ_LEFT,
+      FOCUS_RQ_RIGHT,
+      FOCUS_RQ_UP,
+      FOCUS_RQ_DOWN,  // all these - by key
+      FOCUS_RQ_FIRST, // these two - by_code
+      FOCUS_RQ_LAST,  //
+      FOCUS_RQ_END_REACHED = 0x8000
   };
 
   /** #HANDLE_FOCUS params */
@@ -206,7 +242,7 @@ typedef BOOL SC_CALLBACK SciterBehaviorFactory( LPCSTR, HELEMENT, LPElementEvent
       UINT      cmd;            /**< #FOCUS_EVENTS */
       HELEMENT  target;         /**< target element, for #FOCUS_LOST it is a handle of new focus element
                                      and for #FOCUS_GOT it is a handle of old focus element, can be NULL */
-      BOOL      by_mouse_click; /**< true if focus is being set by mouse click */
+      UINT      cause;          /**< focus cause params or FOCUS_CMD_TYPE for FOCUS_ADVANCE_REQUEST */
       BOOL      cancel;         /**< in #FOCUS_REQUEST and #FOCUS_LOST phase setting this field to true will cancel transfer focus from old element to the new one. */
   };
 
@@ -567,14 +603,6 @@ typedef BOOL SC_CALLBACK SciterBehaviorFactory( LPCSTR, HELEMENT, LPElementEvent
       SCITER_VALUE        result; ///< return value
   } SCRIPTING_METHOD_PARAMS;
 
-  typedef struct TISCRIPT_METHOD_PARAMS
-  {
-      tiscript_VM*   vm;
-      tiscript_value tag;    ///< method id (symbol)
-      tiscript_value result; ///< return value
-      // parameters are accessible through tiscript::args.
-  } TISCRIPT_METHOD_PARAMS;
-
   // GET_VALUE/SET_VALUE methods params
   struct VALUE_PARAMS 
   {
@@ -625,7 +653,11 @@ typedef BOOL SC_CALLBACK SciterBehaviorFactory( LPCSTR, HELEMENT, LPElementEvent
     // event handler can be attached to the element as a "behavior" (see below)
     // or by sciter::dom::element::attach( event_handler* eh )
 
+#ifdef CPP11
+    struct event_handler : public sciter::om::asset<event_handler>
+#else
     struct event_handler
+#endif
     {
       event_handler() // EVENT_GROUPS flags
       {
@@ -640,6 +672,12 @@ typedef BOOL SC_CALLBACK SciterBehaviorFactory( LPCSTR, HELEMENT, LPElementEvent
          event_groups = HANDLE_ALL;
          return true;
       }
+
+      // lifecycle of the event handler is determined by owner element, so:
+      virtual long asset_add_ref() { return 0; }
+      virtual long asset_release() { return 0; }
+
+      virtual som_passport_t* asset_get_passport() const { return nullptr; }
 
       // handlers with extended interface
       // by default they are calling old set of handlers (for compatibility with legacy code)
@@ -725,11 +763,6 @@ typedef BOOL SC_CALLBACK SciterBehaviorFactory( LPCSTR, HELEMENT, LPElementEvent
           return on_script_call(he, params.name, params.argc, params.argv, params.result);
         }
 
-      virtual bool handle_scripting_call(HELEMENT he, TISCRIPT_METHOD_PARAMS& params )
-        {
-          return on_script_call(he, params.vm, params.tag, params.result);
-        }
-
 
       //
       // alternative set of event handlers (aka old set).
@@ -752,10 +785,6 @@ typedef BOOL SC_CALLBACK SciterBehaviorFactory( LPCSTR, HELEMENT, LPElementEvent
       // will end up with on_script_call(he, "my-method" , 2, argv, retval );
       // where argv[0] will be 1 and argv[1] will be "one".
       virtual bool on_script_call(HELEMENT he, LPCSTR name, UINT argc, const SCITER_VALUE* argv, SCITER_VALUE& retval) { return false; }
-
-      // Calls from TIScript. Override this if you want your own methods accessible directly from tiscript engine.
-      // Use tiscript::args to access parameters.
-      virtual bool on_script_call(HELEMENT he, tiscript_VM* pvm, tiscript_value tag, tiscript_value& retval) { return false; }
 
       // notification events from builtin behaviors - synthesized events: BUTTON_CLICK, VALUE_CHANGED
       // see enum BEHAVIOR_EVENTS
@@ -780,12 +809,28 @@ typedef BOOL SC_CALLBACK SciterBehaviorFactory( LPCSTR, HELEMENT, LPElementEvent
             case HANDLE_INITIALIZATION:
               {
                 INITIALIZATION_PARAMS *p = (INITIALIZATION_PARAMS *)prms;
-                if(p->cmd == BEHAVIOR_DETACH)
+                if (p->cmd == BEHAVIOR_DETACH) {
                   pThis->detached(he);
-                else if(p->cmd == BEHAVIOR_ATTACH)
+                }
+                else if (p->cmd == BEHAVIOR_ATTACH) {
                   pThis->attached(he);
+                }
                 return true;
               }
+            case HANDLE_SOM:
+              {
+#ifdef CPP11
+                SOM_PARAMS *p = (SOM_PARAMS *)prms;
+                if (p->cmd == SOM_GET_PASSPORT)
+                  p->data.passport = pThis->asset_get_passport();
+                else if (p->cmd == SOM_GET_ASSET)
+                  p->data.asset = static_cast<som_asset_t*>(pThis); // note: no add_ref
+                return true;
+#else           
+                return false;
+#endif   
+              }
+
             case HANDLE_MOUSE: {  MOUSE_PARAMS *p = (MOUSE_PARAMS *)prms; return pThis->handle_mouse( he, *p );  }
             case HANDLE_KEY:   {  KEY_PARAMS *p = (KEY_PARAMS *)prms; return pThis->handle_key( he, *p ); }
             case HANDLE_FOCUS: {  FOCUS_PARAMS *p = (FOCUS_PARAMS *)prms; return pThis->handle_focus( he, *p ); }
@@ -798,8 +843,7 @@ typedef BOOL SC_CALLBACK SciterBehaviorFactory( LPCSTR, HELEMENT, LPElementEvent
             case HANDLE_SIZE:  {  pThis->handle_size(he); return false; }
             // call using sciter::value's (from CSSS!)
             case HANDLE_SCRIPTING_METHOD_CALL: { SCRIPTING_METHOD_PARAMS* p = (SCRIPTING_METHOD_PARAMS *)prms; return pThis->handle_scripting_call(he, *p ); }
-            // call using tiscript::value's (from the script)
-            case HANDLE_TISCRIPT_METHOD_CALL: { TISCRIPT_METHOD_PARAMS* p = (TISCRIPT_METHOD_PARAMS *)prms; return pThis->handle_scripting_call(he, *p ); }
+            //OBSOLETE: case HANDLE_TISCRIPT_METHOD_CALL: { TISCRIPT_METHOD_PARAMS* p = (TISCRIPT_METHOD_PARAMS *)prms; return pThis->handle_scripting_call(he, *p ); }
 			      case HANDLE_GESTURE :  { GESTURE_PARAMS *p = (GESTURE_PARAMS *)prms; return pThis->handle_gesture(he, *p ); }
             case HANDLE_EXCHANGE: { EXCHANGE_PARAMS *p = (EXCHANGE_PARAMS *)prms; return pThis->handle_exchange(he, *p); }
 			      default:

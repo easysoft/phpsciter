@@ -331,7 +331,7 @@ PHP_METHOD(phpsciter, run)
         case LOAD_HTML: {
             loadHtml = PHPSCITER_ZEND_READ_PROPERTY(phpsciter_ce, instance,
                                                     ZEND_STRL(PHPSCITER_PROPERTY_LOAD_HTML));
-            SciterLoadHtml(hw, (byte *) Z_STRVAL_P(loadHtml), Z_STRLEN_P(loadHtml),
+            SciterLoadHtml(hw, (LPCBYTE) Z_STRVAL_P(loadHtml), Z_STRLEN_P(loadHtml),
                            LPCWSTR(resource_path_as_wstr.c_str()));
         } break;
         case LOAD_HTML_FILE: {
@@ -351,7 +351,7 @@ PHP_METHOD(phpsciter, run)
                 zend_error(E_WARNING,"execute php code failed,file:%s;line:%d",__FILE__,__LINE__);
                 RETURN_FALSE
             }
-            SciterLoadHtml(hw, (byte *) PHPSCITER_G(zend)->getBuffer().c_str(), strlen(PHPSCITER_G(zend)->getBuffer().c_str()),
+            SciterLoadHtml(hw, (LPCBYTE) PHPSCITER_G(zend)->getBuffer().c_str(), strlen(PHPSCITER_G(zend)->getBuffer().c_str()),
                            LPCWSTR(resource_path_as_wstr.c_str()));
         } break;
         case LOAD_PHP_FILE: {
@@ -366,7 +366,7 @@ PHP_METHOD(phpsciter, run)
                 zend_error(E_WARNING,"execute php code failed,file:%s;line:%d",__FILE__,__LINE__);
                 RETURN_FALSE
             }
-            SciterLoadHtml(hw, (byte *) PHPSCITER_G(output_buffer).c_str(), PHPSCITER_G(output_buffer).length(),
+            SciterLoadHtml(hw, (LPCBYTE) PHPSCITER_G(output_buffer).c_str(), PHPSCITER_G(output_buffer).length(),
                            LPCWSTR(resource_path_as_wstr.c_str()));
             if(!PHPSCITER_G(output_buffer).empty())
             {

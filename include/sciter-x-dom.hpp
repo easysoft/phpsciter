@@ -18,7 +18,6 @@
 #pragma warning(disable:4786) //identifier was truncated...
 #pragma warning(disable:4100) //unreferenced formal parameter
 
-#include "tiscript.hpp"
 #include "sciter-x-dom.h"
 #include <algorithm>
 #include <vector>
@@ -38,22 +37,6 @@ namespace dom
   /**Is called for every element that match criteria specified when calling to #sciter::dom::element::select() function.*/
     virtual bool on_element(HELEMENT he) = 0;
   };
-
-  inline VOID SC_CALLBACK _LPCBYTE2ASTRING( LPCBYTE bytes, UINT num_bytes, LPVOID param )
-  {
-      sciter::astring* s = (sciter::astring*)param;
-      *s = sciter::astring((const char*)bytes,num_bytes);
-  }
-  inline VOID SC_CALLBACK _LPCWSTR2STRING( LPCWSTR str, UINT str_length, LPVOID param )
-  {
-      sciter::string* s = (sciter::string*)param;
-      *s = sciter::string(str,str_length);
-  }
-  inline VOID SC_CALLBACK _LPCSTR2ASTRING( LPCSTR str, UINT str_length, LPVOID param )
-  {
-      sciter::astring* s = (sciter::astring*)param;
-      *s = sciter::astring(str,str_length);
-  }
 
   class element;
 
@@ -628,6 +611,7 @@ namespace dom
       SciterCombineURL(he,inOutURL,bufferSize);
     }
 
+#ifdef CPP11
     sciter::string combine_url(const sciter::string& relative_url) const
     {
       WCHAR buffer[4096] = {0};
@@ -638,6 +622,7 @@ namespace dom
       SciterCombineURL(he,buffer,4096);
       return sciter::string(buffer);
     }
+#endif
 
   /**Set inner or outer html of the element.
     * \param html \b const \b unsigned \b char*, UTF-8 encoded string containing html text
@@ -719,6 +704,7 @@ namespace dom
       //assert(find_first.hfound);
     }
 
+#ifdef CPP11
     std::vector<sciter::dom::element> 
       find_all(const char* selector, ...) const
     {
@@ -734,6 +720,7 @@ namespace dom
       this->find_all(&cb, selector);
       return cb.elements;
     }
+#endif
 
     // will find first parent satisfying given css selector(s)
     HELEMENT find_nearest_parent(const char* selector, ...) const
@@ -1120,33 +1107,20 @@ namespace dom
       assert(r == SCDOM_OK); (void)r;
     }
 
-    // get scripting object associated with this DOM element
-    SCITER_VALUE get_expando(bool force_create = false)
+    // wrap DOM element reference into sciter::value
+    SCITER_VALUE as_value()
     {
       SCITER_VALUE rv;
-      SCDOM_RESULT r = SciterGetExpando(he, &rv, force_create);
+      SCDOM_RESULT r = SciterGetExpando(he, &rv, TRUE);
       assert(r == SCDOM_OK); (void)r;
       return rv;
     }
 
-    // get scripting object associated with this DOM element
-    tiscript::value get_object(bool force_create = false)
-    {
-      tiscript::value rv;
-      SCDOM_RESULT r = SciterGetObject(he, &rv, force_create);
-      assert(r == SCDOM_OK); (void)r;
-      return rv;
+    static element from_value(const SCITER_VALUE& v) {
+      element el = (HELEMENT)v.get_object_data();
+      return el;
     }
-
-    tiscript::value get_namespace()
-    {
-      tiscript::value rv;
-      SCDOM_RESULT r = SciterGetElementNamespace(he, &rv);
-      assert(r == SCDOM_OK); (void)r;
-      return rv;
-    }
-
-
+    
     struct find_first_callback: callback
     {
       HELEMENT hfound;
