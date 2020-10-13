@@ -11,7 +11,7 @@ configu*
 install*
 libtool
 .libs
-Makefile*
+/Makefile*
 ltmain.sh
 missing
 mkinstalldirs
