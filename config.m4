@@ -59,7 +59,7 @@ if test "$PHP_PHPsciter" != "no"; then
         PHP_ADD_LIBRARY_WITH_PATH(sciter-osx-64, ./lib, PHPSCITER_SHARED_LIBADD)
         PHP_ADD_FRAMEWORK_WITH_PATH(Cocoa, /System/Library/Frameworks)
         CXXFLAGS="$CXXFLAGS -Wno-unused-function -Wno-deprecated -Wno-deprecated-declarations -std=c++11"
-        window_file="lib/php-window.mm"
+        window_file="lib/window/mac/php-window.mm"
     ;;
     *linux*)
         gtkconfig=`pkg-config --cflags --libs gtk+-3.0`
