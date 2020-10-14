@@ -73,7 +73,7 @@ if test "$PHP_PHPsciter" != "no"; then
         PHP_ADD_LIBRARY(cairo, 1, PHPSCITER_SHARED_LIBADD)
         PHP_ADD_LIBRARY(gobject-2.0, 1, PHPSCITER_SHARED_LIBADD)
         PHP_ADD_LIBRARY_WITH_PATH(sciter-gtk, ./lib, PHPSCITER_SHARED_LIBADD)
-        window_file="lib/php-window-linux.cc"
+        window_file="lib/window/win-lnx/php-window-linux.cc"
       ;;
   esac
 
