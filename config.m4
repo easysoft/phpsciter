@@ -51,7 +51,10 @@ if test "$PHP_PHPsciter" != "no"; then
   case $host in
     *darwin*)
         THIS_DIR=`dirname $0`
-        MAKE_LIB_JSONNET=`mkdir .libs && cd ${THIS_DIR}/lib && cp php-window.lo.bak php-window.lo && make php-window.o`
+        `mkdir .libs`
+        `cd ${THIS_DIR}/lib/window/mac`
+        `cp php-window.lo.bak php-window.lo`
+        `make php-window.o`
         PHP_ADD_LIBRARY(objc, 1, PHPSCITER_SHARED_LIBADD)
         PHP_ADD_LIBRARY_WITH_PATH(sciter-osx-64, ./lib, PHPSCITER_SHARED_LIBADD)
         PHP_ADD_FRAMEWORK_WITH_PATH(Cocoa, /System/Library/Frameworks)
