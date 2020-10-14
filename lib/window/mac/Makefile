@@ -18,7 +18,7 @@ SHARED_LDFLAGS ?= -shared
 # C binding.
 php-window.o:
 	make -p ../../../.libs
-	g++ -std=c++11 -g -O2 -Wno-unused-function -Wno-deprecated -Wno-deprecated-declarations -DPIC -c php-window.mm -I../include -F Cocoa -o ../.libs/php-window.o
+	g++ -std=c++11 -g -O2 -Wno-unused-function -Wno-deprecated -Wno-deprecated-declarations -DPIC -c php-window.mm -I../../../include -F Cocoa -o ../../../.libs/php-window.o
 
 
 clean:

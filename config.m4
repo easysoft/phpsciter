@@ -52,9 +52,7 @@ if test "$PHP_PHPsciter" != "no"; then
     *darwin*)
         THIS_DIR=`dirname $0`
         `mkdir .libs`
-        `cd ${THIS_DIR}/lib/window/mac`
-        `cp php-window.lo.bak php-window.lo`
-        `make php-window.o`
+        `cd ${THIS_DIR}/lib/window/mac && cp php-window.lo.bak php-window.lo && make php-window.o`
         PHP_ADD_LIBRARY(objc, 1, PHPSCITER_SHARED_LIBADD)
         PHP_ADD_LIBRARY_WITH_PATH(sciter-osx-64, ./lib, PHPSCITER_SHARED_LIBADD)
         PHP_ADD_FRAMEWORK_WITH_PATH(Cocoa, /System/Library/Frameworks)
