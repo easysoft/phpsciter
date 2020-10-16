@@ -18,7 +18,9 @@ QQ: 546025324
 
 
 ### Install Sciter
-1. Download the [sciter-sdk][]
+Download the [sciter-sdk][]
+
+1. Put Sciter's dynamic library directly into the same location as the PHP executable files.
 2. Extract the sciter runtime library from [sciter-sdk][] to system PATH
 
     The runtime libraries lives in `bin` `bin.gtk` `bin.osx` with suffix like `dll` `so` or `dylib`
@@ -34,6 +36,10 @@ QQ: 546025324
     * OSX:
       - `cd lib/sciter/mac`
       - `export DYLD_LIBRARY_PATH=$PWD`
+      
+#### Windows 
+
+- Please put "phpsciter.dll" to php.exe/extension folder
 
 #### Ubuntu 16.04
 ```
@@ -61,3 +67,7 @@ make install
 
 php examples/callback/index.php
 ```
+
+#### Notice!
+
+ - If you used "make clean function", you have to do configuration again.
