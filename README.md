@@ -40,7 +40,7 @@ QQ: 546025324
 apt-get install build-essential pkg-config
 apt install libgtk-3-dev
 
-git clone https://github.com/easysoft/phpsciter.git
+git clone https://github.com/longyan/phpsciter.git
 cd phpsciter
 phpize
 ./configure
@@ -52,7 +52,7 @@ php examples/phpsciter-callback/index.php
 
 #### Mac OS
 ```
-git clone https://github.com/easysoft/phpsciter.git
+git clone https://github.com/longyan/phpsciter.git
 cd phpsciter
 phpize
 ./configure
