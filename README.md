@@ -53,7 +53,7 @@ phpize
 make
 make install
 
-php examples/phpsciter-callback/index.php
+php examples/phpsciter-load-frame/index.phpt
 ```
 
 #### Mac OS
@@ -65,7 +65,7 @@ phpize
 make
 make install
 
-php examples/callback/index.php
+php examples/phpsciter-load-frame/index.phpt
 ```
 
 #### Notice!
