@@ -12,6 +12,8 @@ Email: [wwccss@gmail.com](wwccss@gmail.com)
 QQ: 546025324
 ### 关于PHPSciter
 [Sciter](http://www.sciter.com)是一个非常优秀的的跨平台的GUI框架，它使用HTML5 + CSS来绘制界面，使用TIScritpt来做交互。 PHPSciter是一个PHP绑定Sciter的扩展。
+
+![](./cover/sciter.png)
 ### 联系我们
 Email: [wwccss@gmail.com](wwccss@gmail.com)
 QQ: 546025324
@@ -71,3 +73,13 @@ php examples/phpsciter-load-frame/index.phpt
 #### Notice!
 
  - If you used "make clean function", you have to do configuration again.
+ 
+#### Debug
+
+ - 如何进行Sciter软件方面的调试？
+
+ - 需要将sciter-sdk下面的inspector 拷贝到 与php.exe 同级目录下，点击Dom inspector
+ 
+  ![](./cover/sciter-inspector.png)
+
+ 
