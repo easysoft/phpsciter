@@ -57,6 +57,7 @@ if test "$PHP_PHPsciter" != "no"; then
         window_file="lib/window/mac/php-window.mm"
     ;;
     *linux*)
+       `cd lib/sciter/linux && tar zxvf libsciter-gtk-lnx.tar.gz`
         gtkconfig=`pkg-config --cflags --libs gtk+-3.0`
         CXXFLAGS="$CXXFLAGS $gtkconfig -w -std=c++11 -fno-stack-protector"
         PHP_ADD_LIBRARY(gtk-3, 1, PHPSCITER_SHARED_LIBADD)
