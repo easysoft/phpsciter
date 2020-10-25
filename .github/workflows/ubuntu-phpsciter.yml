@@ -36,7 +36,7 @@ jobs:
         run: sudo ldconfig
 
       - name: add sciter-library 4
-        run: ls /home/runner/work/timing-wheel/timing-wheel/lib/sciter/linux
+        run: ls lib/sciter/linux
 
       - name: run-tests
         run: php -c php.ini -f examples/phpsciter-load-frame/index.phpt
