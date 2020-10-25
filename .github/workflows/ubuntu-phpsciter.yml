@@ -1,0 +1,28 @@
+name: linux-phpsciter
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: franzliedke/gh-action-php@master
+
+      - name: gtk-install
+        run: sudo apt-get install libgtk-3-dev
+
+      - name: phpsciter build
+        run : phpize && ./configure && make && sudo make install
+
+      - name: add phpsciter
+        run: echo "extension=phpsciter.so" >> php.ini
+
+      - name: php modules
+        run: php -c php.ini -m
