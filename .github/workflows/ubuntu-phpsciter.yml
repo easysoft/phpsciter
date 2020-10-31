@@ -37,6 +37,3 @@ jobs:
 
       - name: add sciter-library 4
         run: ls lib/sciter/linux
-
-      - name: run-tests
-        run: php -c php.ini -f examples/phpsciter-load-frame/index.phpt
