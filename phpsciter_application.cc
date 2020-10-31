@@ -342,6 +342,7 @@ PHP_METHOD(phpsciter, run)
             checkFileExist(file_path);
             aux::a2w file_name_as_wstr(file_name);
             SciterLoadFile(hw, LPCWSTR(file_name_as_wstr.c_str()));
+            efree(file_name);
         } break;
         case LOAD_PHP: {
 
@@ -398,11 +399,12 @@ PHP_METHOD(phpsciter, run)
 PHP_METHOD(phpsciter, getVersion)
 {
         int len;
-        char *strg;
+        char* strg;
 
         len = spprintf(&strg, 0, "%d", SciterVersion(FALSE));
-
-        PHPSCITER_RETURN_STRINGL(strg, len);
+        std::string version(strg);
+        efree(strg);
+        PHPSCITER_RETURN_STRINGL(version.c_str(), version.length());
 }
 
 PHP_METHOD(phpsciter, getPHPSciterVersion)
