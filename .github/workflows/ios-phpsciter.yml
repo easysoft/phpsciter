@@ -14,12 +14,23 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Set Default Scheme
-        run: |
-          phpize
-          ./configure
-          cd lib/sciter/mac
-          export DYLD_LIBRARY_PATH=$PWD
-          cd ../../../
-          make
-          sudo make install
+      - name: phpize
+        run: phpize
+      - name:
+        run: ./configure
+      - name: add sciter library
+        run: cd lib/sciter/mac && export DYLD_LIBRARY_PATH=$PWD
+      - name: test DYLD_LIBRARY_PATH
+        run: echo $DYLD_LIBRARY_PATH
+      - name: make
+        run: make
+      - name: make install
+        run: sudo make install
+      - name: find phpsciter.so
+        run: ls modules/phpsciter.so
+      - name: add php.ini
+        run: rm -rf php.ini && echo "extension=`pwd`/modules/phpsciter.so" >> php.ini
+      - name: test php module
+        run: php -c php.ini -m
+
+
