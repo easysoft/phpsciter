@@ -1,5 +1,3 @@
-English | [英文](./README-EN.md)
-
 ### About PHPSciter
 
 
@@ -8,9 +6,12 @@ English | [英文](./README-EN.md)
 * 目前仅支持zts
 
 
+PHPSciter is a PHP extension to bind the [Sciter](http://www.sciter.com/) framework which is a cross platform GUI framework.
+### Contact us
+Email: [wwccss@gmail.com](wwccss@gmail.com)
+QQ: 546025324
 ### 关于PHPSciter
 [Sciter](http://www.sciter.com)是一个非常优秀的的跨平台的GUI框架，它使用HTML5 + CSS来绘制界面，使用TIScritpt来做交互。 PHPSciter是一个PHP绑定Sciter的扩展。
-PHPSciter 是一个基于[Sciter]GUI框架(http://www.sciter.com/)的php扩展
 
 ![](./cover/sciter.jpg)
 ### 联系我们
@@ -18,16 +19,15 @@ Email: [wwccss@gmail.com](wwccss@gmail.com)
 QQ: 546025324
 
 
-### 安装Sciter库
-使用源码lib/sciter各个平台下面的sciter库进行安装，sciter库是一个c++运行时库，这里有两种安装方式，我们推荐第一种
+### Install Sciter
+Download the [sciter-sdk][]
 
-sciter库是lib/sciter中的libsciter-gtk.so、sciter.dll、libsciter-osx-64.dylib
+1. Put Sciter's dynamic library directly into the same location as the PHP executable files.
+2. Extract the sciter runtime library from [sciter-sdk][] to system PATH
 
-1. 将sciter的动态库放入到php可执行目录下
-2. 安装sciter库到系统路径下
+    The runtime libraries lives in `bin` `bin.gtk` `bin.osx` with suffix like `dll` `so` or `dylib`
 
-    * Windows: 
-      - 仅仅只需要简单拷贝 `lib\sciter\win\sciter.dll` 到 `c:\windows\system32`
+    * Windows: simply copying `bin\64\sciter.dll` to `c:\windows\system32` is just enough
     * Linux: 
       - `cd lib/sciter/linux`
       - `tar zxvf libsciter-gtk-lnx.tar.gz`
@@ -41,11 +41,7 @@ sciter库是lib/sciter中的libsciter-gtk.so、sciter.dll、libsciter-osx-64.dyl
       
 #### Windows 
 
-- 将phpsciter.dll加入到php.ini中
-
-```
-php examples/phpsciter-load-frame/index.phpt
-```
+- Please put "phpsciter.dll" to php.exe/extension folder
 
 #### Ubuntu 16.04
 ```
@@ -74,21 +70,16 @@ make install
 php examples/phpsciter-load-frame/index.phpt
 ```
 
-#### 注意了!
+#### Notice!
 
- - 如果你在mac或者linux下面调用了make clean，必须要重新使用./configure后在继续make && make install
+ - If you used "make clean function", you have to do configuration again.
  
-#### Sciter调试
+#### Debug
 
  - 如何进行Sciter软件方面的调试？
- 
- #### Windows 
 
- - 需要将sciter-sdk下面的inspector.exe 拷贝到 与php.exe 同级目录下，点击Dom inspector
+ - 需要将sciter-sdk下面的inspector 拷贝到 与php.exe 同级目录下，点击Dom inspector
  
   ![](./cover/sciter-inspector.jpg)
 
- #### Linux 和 Mac
- 
-  - 需要将 inspector 放置到和php可执行文件的同一级别目录下，就可以使用调试工具了
  
