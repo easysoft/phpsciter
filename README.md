@@ -1,24 +1,11 @@
 English | [英文](./README-EN.md)
 
-### About PHPSciter
+## About PHPSciter
 
+## 关于PHPSciter
+[Sciter](http://www.sciter.com)是一个非常优秀的的跨平台GUI框架，它使用HTML5 + CSS来绘制界面，使用TIScritpt来做交互。 PHPSciter是一个PHP绑定Sciter的扩展。PHP程序员可以使用这个扩展来开发跨平台的桌面应用，并且可以重用之前B/S架构下的开发经验。
 
-[![Build status](https://ci.appveyor.com/api/projects/status/hx8atlbq1ilx5ex5?svg=true)](https://ci.appveyor.com/project/Neeke/phpsciter)
-
-* 目前仅支持zts
-
-
-### 关于PHPSciter
-[Sciter](http://www.sciter.com)是一个非常优秀的的跨平台的GUI框架，它使用HTML5 + CSS来绘制界面，使用TIScritpt来做交互。 PHPSciter是一个PHP绑定Sciter的扩展。
-PHPSciter 是一个基于[Sciter]GUI框架(http://www.sciter.com/)的php扩展
-
-![](./cover/sciter.jpg)
-### 联系我们
-Email: [wwccss@gmail.com](wwccss@gmail.com)
-QQ: 546025324
-
-
-### 安装Sciter库
+## 安装Sciter库
 使用源码lib/sciter各个平台下面的sciter库进行安装，sciter库是一个c++运行时库，这里有两种安装方式，我们推荐第一种
 
 sciter库是lib/sciter中的libsciter-gtk.so、sciter.dll、libsciter-osx-64.dylib
