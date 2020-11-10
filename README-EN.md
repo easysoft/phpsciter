@@ -1,3 +1,5 @@
+English | [中文](./README.md)
+
 ### About PHPSciter
 
 

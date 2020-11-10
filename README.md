@@ -1,4 +1,4 @@
-English | [英文](./README-EN.md)
+中文 | [英文](./README-EN.md)
 
 ### About PHPSciter
 
