@@ -45,11 +45,11 @@ php examples/phpsciter-load-frame/index.phpt
 
 #### 注意事项
 
-如果你在mac或者linux下面调用了make clean，必须要重新使用./configure后在继续make && make install
+1.如果你在mac或者linux下面调用了make clean，必须要重新使用./configure后在继续make && make install
 
-出现找不到VCRUNTIME140.dll 的运行代码应该如何解决？
+2.出现找不到VCRUNTIME140.dll 的运行代码应该如何解决？
 
-请到，https://support.microsoft.com/zh-cn/help/2977003/the-latest-supported-visual-c-downloads 去下载相对应的  vc_redist.exe，
+ - 请到，https://support.microsoft.com/zh-cn/help/2977003/the-latest-supported-visual-c-downloads 去下载相对应的  vc_redist.exe，
 就可以解决这个问题
  
 #### 如何调试
