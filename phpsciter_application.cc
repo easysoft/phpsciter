@@ -248,17 +248,20 @@ PHP_METHOD(phpsciter, ifDefined)
     RETURN_FALSE;
 }
 
-static void inline checkFileExist(const std::string& resource_path)
+static int inline checkFileExist(const std::string& resource_path)
 {
     if(resource_path.length() > PHPSCITER_FILE_HLEN) {
         if (PHPSCITER_G(tool)->isFile(resource_path.c_str() + PHPSCITER_FILE_HLEN) == FAILURE) {
             zend_error(E_WARNING, PHPSCITER_G(tool)->getError());
+            return -1;
         }
     }else{
         if (PHPSCITER_G(tool)->isFile(resource_path.c_str()) == FAILURE) {
             zend_error(E_WARNING, PHPSCITER_G(tool)->getError());
+            return -1;
         }
     }
+    return 0;
 }
 
 PHP_METHOD(phpsciter, run)
@@ -339,7 +342,9 @@ PHP_METHOD(phpsciter, run)
                                                     ZEND_STRL(PHPSCITER_PROPERTY_LOAD_FILE));
             file_name_len = spprintf(&file_name, 0, "%s%s", Z_STRVAL_P(resource_path), Z_STRVAL_P(loadFile));
             file_path.append(file_name);
-            checkFileExist(file_path);
+            if (checkFileExist(file_path) == -1) {
+                RETURN_FALSE
+            }
             aux::a2w file_name_as_wstr(file_name);
             SciterLoadFile(hw, LPCWSTR(file_name_as_wstr.c_str()));
             efree(file_name);
@@ -360,7 +365,9 @@ PHP_METHOD(phpsciter, run)
                                                     ZEND_STRL(PHPSCITER_PROPERTY_LOAD_FILE));
             file_name_len = spprintf(&file_name, 0, "%s%s", Z_STRVAL_P(resource_path), Z_STRVAL_P(loadFile));
             file_path.append(file_name);
-            checkFileExist(file_path);
+            if (checkFileExist(file_path) == -1) {
+                RETURN_FALSE;
+            }
             bool ret = PHPSCITER_G(zend)->zendExecuteScript(file_name, nullptr);
             if(!ret)
             {
