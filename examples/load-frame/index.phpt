@@ -1,6 +1,3 @@
---TEST--
-phpsciter load frame
---FILE--
 <?php
 
 var_dump($oSciter = new PHPSciter());
@@ -18,5 +15,3 @@ PHPSciter::ALLOW_FILE_IO | PHPSciter::ALLOW_SOCKET_IO | PHPSciter::ALLOW_EVAL |
 $oSciter->run(PHPSciter::SW_TITLEBAR | PHPSciter::SW_RESIZEABLE | PHPSciter::SW_MAIN | PHPSciter::SW_ENABLE_DEBUG
 |PHPSciter::SW_CONTROLS);
 ?>
---EXPECT--
-true

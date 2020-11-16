@@ -1,6 +1,3 @@
---TEST--
-phpsciter load html
---FILE--
 <?php
 
 include_once 'res/OutPut.php';
@@ -33,5 +30,3 @@ $oSciter->run(PHPSciter::SW_TITLEBAR | PHPSciter::SW_RESIZEABLE | PHPSciter::SW_
 |PHPSciter::SW_CONTROLS);
 
 ?>
---EXPECT--
-true
