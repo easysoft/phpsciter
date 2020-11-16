@@ -1,4 +1,3 @@
-<?php $data = 1;var_dump($b); ?>
 <html>
 <head>
     <title>Test</title>
