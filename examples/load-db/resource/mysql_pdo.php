@@ -20,12 +20,12 @@ class mysql_pdo
 
     public function __construct()
     {
-        $this->dbh = new PDO('mysql:host=10.0.3.161;port=3306;dbname=db_license', 'root', '123456', array(PDO::ATTR_PERSISTENT => false));
+        $this->dbh = new PDO('mysql:host=127.0.0.1;port=3306;dbname=monitor', 'root', 'root', array(PDO::ATTR_PERSISTENT => false));
     }
 
     public function testQuery($limit)
     {
-        $rs     = $this->dbh->query('select user_id,user_company from license_user_info limit ' . (int)$limit);
+        $rs     = $this->dbh->query('select client_ip,description from monitor_client_ip limit ' . (int)$limit);
         $result = $rs->fetchAll();
 
         return $result;
