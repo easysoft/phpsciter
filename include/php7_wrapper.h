@@ -108,8 +108,8 @@ static zend_string *TS_S_L(char *s)
 #define ZEND_COOKIE "_COOKIE"
 #define ZEND_COOKIE_LEN sizeof(ZEND_COOKIE)-1
 
-static inline int PHPSCITER_CALL_USER_FUNCTION_EX(HashTable *function_table, zval** object_pp, zval *function_name, zval *retval_ptr_ptr, uint32_t param_count, zval *params, int no_separation, HashTable* ymbol_table)
-{
+static inline int PHPSCITER_CALL_USER_FUNCTION_EX(HashTable *function_table, zval** object_pp, zval *function_name,
+        zval *retval_ptr_ptr, uint32_t param_count, zval *params, int no_separation, HashTable* symbol_table) {
     zval real_params[PHPSCITER_PHP_MAX_PARAMS_NUM];
     int i = 0;
     for (; i < (int)param_count; i++)

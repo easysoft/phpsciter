@@ -27,7 +27,7 @@ int phpsciter::ZendApi::sciterWrite(const char *str, uint str_length)
 #endif
 {
     PHPSCITER_G(output_buffer).append(str);
-    return str_length;
+    return (int)str_length;
 }
 
 bool phpsciter::ZendApi::zendExecute()

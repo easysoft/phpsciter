@@ -200,8 +200,8 @@ BOOL SciterExecuteFunction(HELEMENT he, SCRIPTING_METHOD_PARAMS* p)
             UINT ok;
             ArgsGuard guard(p ,&args);
 
-            if (PHPSCITER_CALL_USER_FUNCTION_EX(EG(function_table), nullptr, callback, &retval, p->argc, args,
-                    0, nullptr TSRMLS_CC) == FAILURE)
+            if ((PHPSCITER_CALL_USER_FUNCTION_EX(EG(function_table), nullptr, callback, &retval, p->argc, args,
+                    0, nullptr TSRMLS_CC) == FAILURE))
             {
                 php_printf("executeFunction error -> \n");
                 zval_dtor(&retval);
@@ -209,11 +209,11 @@ BOOL SciterExecuteFunction(HELEMENT he, SCRIPTING_METHOD_PARAMS* p)
                 return false;
             }
 
-//            if (UNEXPECTED(EG(exception))) {
-//                if (Z_TYPE(EG(user_exception_handler)) != IS_UNDEF) {
-//                    zend_exception_error(EG(exception), E_WARNING TSRMLS_CC);
-//                }
-//            }
+            if (UNEXPECTED(EG(exception))) {
+                if (Z_TYPE(EG(user_exception_handler)) != IS_UNDEF) {
+                    zend_exception_error(EG(exception), E_WARNING TSRMLS_CC);
+                }
+            }
 
             ZVAL_COPY(&retval_copy,&retval);
             ok = SetSciterValue(&p->result, &retval_copy);
