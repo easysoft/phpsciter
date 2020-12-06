@@ -43,9 +43,6 @@ bool phpsciter::ZendApi::zendExecute()
 
 #if PHP_VERSION_ID >= 70000
     zval result;
-    if (EG(exception) != NULL) {
-        return false;
-    }
     zend_execute(PHPSCITER_G(current_op_array), &result);
 #else
     zval *result = NULL;
@@ -54,10 +51,7 @@ bool phpsciter::ZendApi::zendExecute()
     EG(active_op_array) 	 = PHPSCITER_G(current_op_array);
     zend_execute(PHPSCITER_G(current_op_array));
 #endif
-    if (EG(exception))
-    {
-        zend_exception_error(EG(exception), E_WARNING TSRMLS_CC);
-    }
+
 #if PHP_VERSION_ID < 70000
     if (!EG(exception)) {
         if (EG(return_value_ptr_ptr) && *EG(return_value_ptr_ptr)) {
@@ -65,6 +59,12 @@ bool phpsciter::ZendApi::zendExecute()
         }
     }
     reStoreOldExecuteInfo();
+#else
+    if (UNEXPECTED(EG(exception))) {
+        if (Z_TYPE(EG(user_exception_handler)) != IS_UNDEF) {
+            zend_exception_error(EG(exception), E_WARNING TSRMLS_CC);
+        }
+    }
 #endif
     return true;
 }

@@ -32,6 +32,8 @@ void SciterWindowInit()
 void SciterSetWindowTitle(HWINDOW hw, char* title)
 {
     //gtk_window_set_title(GTK_WINDOW(hw), title);
+    auaux::a2w wTitle(title);
+    SetWindowText(hw, wTitle);
 }
 
 void SciterShowWindow(HWINDOW hw)

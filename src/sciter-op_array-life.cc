@@ -236,16 +236,20 @@ phpsciter::OpArrayCriticalSection::~OpArrayCriticalSection()
         end = EG(objects_store).object_buckets + 1;
         obj_ptr = EG(objects_store).object_buckets + EG(objects_store).top;
 
-        do {
-            obj_ptr--;
-            obj = *obj_ptr;
-            if (IS_OBJ_VALID(obj)) {
-                if (!(OBJ_FLAGS(obj) & IS_OBJ_FREE_CALLED)) {
-                    GC_SET_REFCOUNT(obj, 0);
-                    zend_objects_store_del(obj);
+        //solve windows core dump
+        if (obj_ptr) {
+            do {
+                obj_ptr--;
+                obj = *obj_ptr;
+                if (IS_OBJ_VALID(obj)) {
+                    if (!(OBJ_FLAGS(obj) & IS_OBJ_FREE_CALLED)) {
+                        GC_SET_REFCOUNT(obj, 0);
+                        zend_objects_store_del(obj);
+                    }
                 }
-            }
-        } while (obj_ptr != end);
+            } while (obj_ptr != end);
+        }
+
 #else
         call_destructors_and_shutdown_functions();
 #endif

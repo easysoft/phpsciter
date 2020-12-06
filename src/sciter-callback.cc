@@ -209,11 +209,11 @@ BOOL SciterExecuteFunction(HELEMENT he, SCRIPTING_METHOD_PARAMS* p)
                 return false;
             }
 
-            if (EG(exception))
-            {
-                zend_exception_error(EG(exception), E_ERROR TSRMLS_CC);
+            if (UNEXPECTED(EG(exception))) {
+                if (Z_TYPE(EG(user_exception_handler)) != IS_UNDEF) {
+                    zend_exception_error(EG(exception), E_WARNING TSRMLS_CC);
+                }
             }
-
 
             ZVAL_COPY(&retval_copy,&retval);
             ok = SetSciterValue(&p->result, &retval_copy);
