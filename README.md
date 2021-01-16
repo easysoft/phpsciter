@@ -1,4 +1,4 @@
-中文 | [英文](./README-EN.md)
+中文 | [English](./README-EN.md)
 
 ## 关于PHPSciter
 [Sciter](http://www.sciter.com)是一个非常优秀的的跨平台GUI框架，它使用HTML5 + CSS来绘制界面，使用TIScritpt来做交互。 PHPSciter是一个PHP绑定Sciter的扩展。PHP程序员可以使用这个扩展来开发跨平台的桌面应用，并且可以重用之前B/S架构下的开发经验。
