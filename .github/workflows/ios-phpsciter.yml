@@ -8,12 +8,16 @@ on:
 
 jobs:
   build:
-    name: Build and Test default scheme using any available iPhone simulator
+    name: phpsciter macos
     runs-on: macos-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Setup PHP with PECL extension
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
       - name: phpize
         run: phpize
       - name:
