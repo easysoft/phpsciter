@@ -119,6 +119,10 @@ static inline int PHPSCITER_CALL_USER_FUNCTION_EX(HashTable *function_table, zva
     zval *object_p = (object_pp == NULL) ? NULL : *object_pp;
     return call_user_function_ex(function_table, object_p, function_name, retval_ptr_ptr, param_count, params, no_separation, NULL);
 }
+
+#ifndef ZEND_CONSTANT_MODULE_NUMBER
+#define ZEND_CONSTANT_MODULE_NUMBER(val) val->module_number
+#endif
 #else
 
 #define zend_string char

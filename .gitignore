@@ -26,3 +26,4 @@ autom4te.cache
 .idea
 CMakeLists.txt
 .deps
+*.loT
