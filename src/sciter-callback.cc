@@ -17,14 +17,14 @@
 using namespace std;
 static HashTable callbacks;
 
-BOOL initFunctions()
+SBOOL initFunctions()
 {
     zend_hash_init(&callbacks, 0, NULL, NULL, 1);
 
     return true;
 }
 
-BOOL functionRegister(zend_string *event_name, zval *callback)
+SBOOL functionRegister(zend_string *event_name, zval *callback)
 {
 #if PHP_VERSION_ID >= 70000
     if(!zend_hash_add(&callbacks,event_name,callback))
@@ -43,7 +43,7 @@ BOOL functionRegister(zend_string *event_name, zval *callback)
     return true;
 }
 
-BOOL checkRegisted(zend_string *event_name)
+SBOOL checkRegisted(zend_string *event_name)
 {
 #if PHP_VERSION_ID >= 70000
     if (zend_hash_find(&callbacks, event_name))
@@ -65,7 +65,7 @@ HINSTANCE ghInstance = 0;
 // handle SC_LOAD_DATA requests - get data from resources of this application
 UINT SC_CALLBACK SciterViewCallback(LPSCITER_CALLBACK_NOTIFICATION pns, LPVOID callbackParam )
 {
-    BOOL res;
+    SBOOL res;
     switch(pns->code)
     {
         case SC_LOAD_DATA:
@@ -166,7 +166,7 @@ private:
 /**
 *Sciter and php function proxy
 */
-BOOL SciterExecuteFunction(HELEMENT he, SCRIPTING_METHOD_PARAMS* p)
+SBOOL SciterExecuteFunction(HELEMENT he, SCRIPTING_METHOD_PARAMS* p)
 {
     zend_string *event_name;
     event_name = TS_S_L((char *)(p->name));
@@ -280,7 +280,7 @@ BOOL SciterExecuteFunction(HELEMENT he, SCRIPTING_METHOD_PARAMS* p)
     return true;
 }
 
-BOOL SC_CALLBACK  ElementEventProcImplementeation(LPVOID tag, HELEMENT he, UINT evtg, LPVOID prms)
+SBOOL SC_CALLBACK  ElementEventProcImplementeation(LPVOID tag, HELEMENT he, UINT evtg, LPVOID prms)
 {
     // HELEMENT *pThis = Sciter_UseElement((HELEMENT *)he);
     // Sciter_UseElement(he);
@@ -418,7 +418,7 @@ BOOL SC_CALLBACK  ElementEventProcImplementeation(LPVOID tag, HELEMENT he, UINT 
 }
 
 
-BOOL clearCallBack()
+SBOOL clearCallBack()
 {
 #if PHP_VERSION_ID >= 70000
     zend_symtable_clean(&callbacks);

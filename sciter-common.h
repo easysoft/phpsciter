@@ -55,7 +55,7 @@ extern "C"
 #include <Zend/zend_API.h>
 #include <ext/standard/info.h>
 #include <zend_exceptions.h>
-#include <php7_wrapper.h>
+#include <php/php7_wrapper.h>
 #include <zend_types.h>
 #include <zend_compile.h>
 #include <php_variables.h>
@@ -78,10 +78,10 @@ extern "C"
 #include <map>
 #include <string>
 
-#include <sciter-x-api.h>
-#include <include/sciter-x.h>
+#include <sciter/sciter-x-api.h>
+#include <sciter/sciter-x.h>
 
-#include "php_window.h"
+#include "php/php_window.h"
 extern zend_module_entry phpsciter_module_entry;
 #define phpext_phpsciter_ptr &phpsciter_module_entry
 
@@ -147,16 +147,16 @@ extern zend_module_entry phpsciter_module_entry;
 #endif
 
 
-#include "sciter-nocopy.h"
-#include "sciter-util.h"
-#include "php_sciter.h"
-#include "sciter-zend-request.h"
-#include "sciter-zend-api.h"
+#include "php/sciter-nocopy.h"
+#include "php/sciter-util.h"
+#include "php/php_sciter.h"
+#include "php/sciter-zend-request.h"
+#include "php/sciter-zend-api.h"
 #include "phpsciter_global.h"
-#include "sciter-zend-hook.h"
-#include "sciter-op_array-life.h"
-#include "sciter-zend-hook.h"
-#include "sciter-customer-log.h"
+#include "php/sciter-zend-hook.h"
+#include "php/sciter-op_array-life.h"
+#include "php/sciter-zend-hook.h"
+#include "php/sciter-customer-log.h"
 #include "phpsciter_application.h"
 
 

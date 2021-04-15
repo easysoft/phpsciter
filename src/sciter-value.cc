@@ -52,7 +52,7 @@ VALUE NewValue()
 }
 
 //@TODO Support nested array incoming
-BOOL SC_CALLBACK KeyValueCallbackElement(LPVOID param, const VALUE* pkey, const VALUE* pval)
+SBOOL SC_CALLBACK KeyValueCallbackElement(LPVOID param, const VALUE* pkey, const VALUE* pval)
 {
     zval zval_key_tmp;
     zval zval_val_tmp;

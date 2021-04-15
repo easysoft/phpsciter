@@ -48,6 +48,7 @@ if test "$PHP_PHPsciter" != "no"; then
 
   # PHP_SUBST(PHP_FRAMEWORKS)
   # PHPSCITER_CFLAGS=-DKAFFE
+
   case $host in
     *darwin*)
         THIS_DIR=`dirname $0`
@@ -60,7 +61,7 @@ if test "$PHP_PHPsciter" != "no"; then
     *linux*)
        `cd lib/sciter/linux && tar zxvf libsciter-gtk-lnx.tar.gz`
         gtkconfig=`pkg-config --cflags --libs gtk+-3.0`
-        CXXFLAGS="$CXXFLAGS $gtkconfig -w -std=c++11 -fno-stack-protector"
+        CXXFLAGS="$CXXFLAGS $gtkconfig -w -std=c++14 -fno-stack-protector"
         PHP_ADD_LIBRARY(gtk-3, 1, PHPSCITER_SHARED_LIBADD)
         PHP_ADD_LIBRARY(gdk-3, 1, PHPSCITER_SHARED_LIBADD)
         PHP_ADD_LIBRARY(atk-1.0, 1, PHPSCITER_SHARED_LIBADD)
@@ -86,6 +87,8 @@ if test "$PHP_PHPsciter" != "no"; then
     lib/sciter-util.cc"
 
   PHP_ADD_INCLUDE(./include)
+  PHP_ADD_INCLUDE(./include/php)
+  PHP_ADD_INCLUDE(./include/sciter)
   PHP_ADD_BUILD_DIR($ext_builddir/lib)
   PHP_ADD_BUILD_DIR($ext_builddir/src)
 

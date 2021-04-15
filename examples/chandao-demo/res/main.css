@@ -1,0 +1,32 @@
+#header-toolbar{
+    width:100%;
+    text-align: center;
+    background: white;
+}
+
+#header-toolbar button{
+    margin-left: 1%;
+}
+
+#button-collect{
+    height: 50px;
+    margin-top: 50px;
+    text-align: center;
+
+}
+
+#button-collect button{
+    display: block;
+    height: 40px;
+    width: 11%;
+    line-height: 40px;
+    vertical-align:middle;
+    text-align: center;
+    margin-left: 5%;
+    border-color: #cccccc;
+}
+
+textarea {
+    width: 100%;
+    margin-top: 50px;
+}

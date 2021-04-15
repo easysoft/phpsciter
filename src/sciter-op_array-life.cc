@@ -68,7 +68,6 @@ void phpsciter::OpArrayCriticalSection::cleanNonPersistentConstants()
         {
             continue;
         }
-
         if (ZEND_CONSTANT_MODULE_NUMBER(val) == PHP_USER_CONSTANT) {
             zend_hash_del(EG(zend_constants) ,val->name);
         }else{
@@ -242,8 +241,8 @@ phpsciter::OpArrayCriticalSection::~OpArrayCriticalSection()
                 obj_ptr--;
                 obj = *obj_ptr;
                 if (IS_OBJ_VALID(obj)) {
-                    if (!(OBJ_FLAGS(obj) & IS_OBJ_FREE_CALLED)) {
-                        GC_SET_REFCOUNT(obj, 0);
+                    if (!(GC_FLAGS(obj) & IS_OBJ_FREE_CALLED)) {
+                        obj->gc.refcount = 0;
                         zend_objects_store_del(obj);
                     }
                 }

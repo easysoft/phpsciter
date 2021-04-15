@@ -3,7 +3,7 @@
 //
 
 #include "phpsciter_application.h"
-#include "php_sciter.h"
+#include "php/php_sciter.h"
 
 zend_class_entry *phpsciter_ce,*php_com_exception_class_entry;
 
