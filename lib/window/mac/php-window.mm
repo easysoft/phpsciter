@@ -16,7 +16,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import <AppKit/NSApplication.h>
-#include "php_window.h"
+#include "php/php_window.h"
 
 void SciterWindowInit()
 {
