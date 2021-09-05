@@ -18,7 +18,7 @@
 #ifndef __CPP_FILE__
 #define __CPP_FILE__
 
-#include "sciter-x-types.h"
+#include "sciter/sciter-x-types.h"
 
 void SciterWindowInit();
 
