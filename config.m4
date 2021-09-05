@@ -55,7 +55,7 @@ if test "$PHP_PHPsciter" != "no"; then
         `mkdir .libs`
         `cd ${THIS_DIR}/lib/window/mac && cp php-window.lo.bak php-window.lo && make php-window.o`
         PHP_ADD_LIBRARY_WITH_PATH(sciter-osx-64, ./lib/sciter/mac, PHPSCITER_SHARED_LIBADD)
-        CXXFLAGS="$CXXFLAGS -Wno-unused-function -Wno-deprecated -Wno-deprecated-declarations -std=c++11"
+        CXXFLAGS="$CXXFLAGS -Wno-unused-function -Wno-deprecated -Wno-deprecated-declarations -std=c++14"
         window_file="lib/window/mac/php-window.mm"
     ;;
     *linux*)
